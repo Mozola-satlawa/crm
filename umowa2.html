@@ -1,278 +1,238 @@
 
+
 <!doctype html>
 <html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ARKON — Umowa 2 (rozbudowana, edytowalna)</title>
-<meta name="description" content="Rozbudowany wzór umowy ARKON: fotowoltaika, źródło ciepła, ocieplenie. Z tagami {{...}}, edytowalny i gotowy do druku.">
+<title>UMOWA – ARKON (szablon do wydruku, z kropkami)</title>
+<meta name="description" content="Szablon umowy ARKON do ręcznego uzupełnienia. Zawiera pełne paragrafy, RODO i sekcje komponentów: fotowoltaika, pompy ciepła, kotły, ocieplenie, stolarka.">
 <style>
-  :root{ --bg:#0b1020; --card:#0f1636; --ink:#e8edff; --muted:#aeb8da; --line:#263168; --accent:#3a6df0; --ok:#2b8a57; --bad:#b34343;}
   *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
-  nav{position:sticky;top:0;z-index:9;background:#10173c;border-bottom:1px solid var(--line);padding:10px 12px}
-  nav a{color:#cfe1ff;text-decoration:none;margin-right:12px}
-  .wrap{max-width:980px;margin:18px auto;padding:0 16px}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
-  .btn{background:var(--accent);border:0;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-  .btn.ghost{background:transparent;border:1px solid var(--accent);color:#cfe1ff}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .small{color:var(--muted);font-size:13px}
+  :root{ --ink:#111; --muted:#555; }
+  body{margin:0;padding:18px;font:14px/1.5 system-ui,Segoe UI,Roboto,Arial;color:var(--ink);background:#fff}
+  .wrap{max-width:900px;margin:0 auto}
+  h1,h2,h3{margin:0 0 8px}
+  h1{font-size:20px;text-align:center}
+  h2{font-size:16px;margin-top:16px}
+  h3{font-size:14px;margin-top:12px}
   .muted{color:var(--muted)}
-  .doc{background:#0e1433;border:1px solid #2b3a77;border-radius:12px;padding:20px}
-  h1,h2,h3{margin:12px 0 8px}
-  h1{font-size:22px}
-  h2{font-size:18px}
-  h3{font-size:16px}
-  [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:8px;padding:6px}
-  code.tag{background:#101a45;border:1px solid #2b3a77;border-radius:6px;padding:2px 6px}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .sig{margin-top:28px;display:flex;justify-content:space-between;gap:40px}
-  .sig span{display:inline-block;min-width:280px;text-align:center}
-  .box{border:1px dashed #2b3a77;border-radius:10px;padding:10px;margin:8px 0}
-  .hide{display:none}
-  .hr{height:1px;background:#2b3a77;margin:10px 0}
-  ul.tight li{margin:4px 0}
-  .warn{color:#ffcc88}
+  .block{margin:8px 0}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .col{flex:1 1 260px}
+  .box{border:1px solid #ccc;border-radius:6px;padding:10px;margin:10px 0}
+  .signs{display:flex;justify-content:space-between;gap:40px;margin-top:28px}
+  .sign{width:48%;text-align:center}
+  .hr{height:1px;background:#ccc;margin:12px 0}
+  ul.check{list-style:none;padding-left:0;margin:6px 0}
+  ul.check li{margin:4px 0}
+  .kropki{white-space:pre-wrap}
+  .tbl{width:100%;border-collapse:collapse;margin:6px 0}
+  .tbl th,.tbl td{border:1px solid #ccc;padding:6px;text-align:left;vertical-align:top}
   @media print{
-    nav,.card.hints,.toolbar{display:none!important}
-    body{background:#fff;color:#000}
-    .doc{background:#fff;border:0;padding:0}
-    a{color:#000;text-decoration:none}
+    body{padding:0}
+    .box{border:1px solid #000}
+    .hr{background:#000}
+    .muted{color:#000}
   }
 </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">← Menu główne</a>
-    <a href="klienci.html">Klienci</a>
-    <a href="upload.html">Upload</a>
-    <a href="umowy.html">Edytor umów</a>
-    <button class="btn" onclick="window.print()" style="float:right">Drukuj / PDF</button>
-  </nav>
+<div class="wrap">
 
-  <div class="wrap">
-    <div class="card hints">
-      <h1>Umowa 2 — wzór rozbudowany (ARKON)</h1>
-      <div class="small">
-        Plik edytowalny (kliknij w treść). Zawiera tagi: 
-        <code class="tag">{{client.}}</code> <code class="tag">{{project.}}</code> 
-        <code class="tag">{{contract.}}</code> <code class="tag">{{payments.}}</code> 
-        <code class="tag">{{dates.}}</code> <code class="tag">{{warranty.}}</code> 
-        <code class="tag">{{company.*}}</code> <code class="tag">{{custom.NAZWA_POLA}}</code>.
-        Sekcje PV/Źródło ciepła/Ocieplenie ukrywają się automatycznie, jeśli brak danych.
+  <h1>UMOWA NR ............................................</h1>
+  <div class="muted" style="text-align:center">zawarta w dniu ............................. w ..........................................................</div>
+
+  <div class="box">
+    <h2>§ 1. Strony</h2>
+    <div class="row">
+      <div class="col">
+        <b>Zamawiający (Klient):</b><br>
+        Imię i nazwisko / Firma: <span class="kropki">..........................................................................................................................</span><br>
+        Adres: <span class="kropki">....................................................................................................................................................</span><br>
+        NIP/PESEL: <span class="kropki">..........................................................................................................................</span><br>
+        E-mail: <span class="kropki">..........................................................................................................................</span><br>
+        Telefon: <span class="kropki">..........................................................................................................................</span>
       </div>
-    </div>
-
-    <!-- WŁAŚCIWA TREŚĆ UMOWY -->
-    <div id="doc" class="doc" contenteditable="true">
-      <h2 style="text-align:center;margin-top:0">UMOWA O WYKONANIE USŁUG / DOSTAWĘ I MONTAŻ</h2>
-      <p><b>Data i miejsce:</b> {{city}}, dnia {{today}}</p>
-
-      <p><b>Strony umowy:</b><br>
-      <b>Zamawiający (Klient):</b> {{client.name}}, adres: {{client.address}}, e-mail: {{client.email}}, tel: {{client.phone}}.<br>
-      <b>Wykonawca:</b> ARKON (dane firmowe do uzupełnienia): NIP: {{company.nip}}, REGON: {{company.regon}}, siedziba: {{company.address}}, e-mail: <b>biuro@arkoncentrum.pl</b>, tel: <b>+48 ___ ___ ___</b>.</p>
-
-      <p><b>Przedmiot umowy:</b> Realizacja projektu „{{project.name}}” (etap: {{project.stage}}) zgodnie z ofertą/wyceną nr {{contract.no}} z dnia {{contract.date}} o wartości {{contract.value}} zł brutto, obejmująca dostawę, montaż, uruchomienie, dokumentację i szkolenie użytkownika, zgodnie z poniższymi warunkami.</p>
-
-      <div class="hr"></div>
-
-      <!-- BLOK KOMPONENTÓW -->
-      <h3>§1. Specyfikacja zakresu (komponenty)</h3>
-      <p>Niniejsza umowa może obejmować jeden lub więcej komponentów. Dane techniczne i materiałowe podano w odpowiednich sekcjach.</p>
-
-      <!-- FOTOWOLTAIKA -->
-      <div id="sec-pv" class="box">
-        <h3>Fotowoltaika (PV)</h3>
-        <div class="cols">
-          <div>
-            <ul class="tight">
-              <li><b>Moc instalacji:</b> {{custom.pv_moc_kWp}} kWp</li>
-              <li><b>Moduły (model/producent):</b> {{custom.pv_moduly}}</li>
-              <li><b>Falownik / mikroinwertery:</b> {{custom.pv_falownik}}</li>
-              <li><b>Struktura/mocowanie:</b> {{custom.pv_konstrukcja}}</li>
-              <li><b>Rodzaj dachu/pokrycia:</b> {{custom.pv_dach}}</li>
-            </ul>
-          </div>
-          <div>
-            <ul class="tight">
-              <li><b>Ułożenie (azymut/nachylenie):</b> {{custom.pv_azymut}}° / {{custom.pv_kat}}°</li>
-              <li><b>System zabezpieczeń/ppoż:</b> {{custom.pv_zabezpieczenia}}</li>
-              <li><b>Przyłącze / moc przyłączeniowa:</b> {{custom.pv_przylacze}}</li>
-              <li><b>Magazyn energii (jeśli dotyczy):</b> {{custom.pv_storage}}</li>
-              <li><b>Kolor/estetyka okablowania:</b> {{custom.pv_okablowanie}}</li>
-            </ul>
-          </div>
-        </div>
-        <p><b>Zakres:</b> dostawa komponentów, montaż na konstrukcji, wykonanie okablowania DC/AC, uruchomienie i konfiguracja falownika, pomiary elektryczne, dokumentacja powykonawcza, wsparcie przy zgłoszeniu do OSD.</p>
+      <div class="col">
+        <b>Wykonawca:</b> ARKON ......................................................................................<br>
+        Adres siedziby: <span class="kropki">..........................................................................................................................</span><br>
+        NIP: <span class="kropki">...................................................</span> REGON: <span class="kropki">...................................................</span><br>
+        E-mail: <b>biuro@arkoncentrum.pl</b><br>
+        Tel.: <b>511&nbsp;514&nbsp;818</b>
       </div>
-
-      <!-- ŹRÓDŁO CIEPŁA / PIEC / POMPA CIEPŁA -->
-      <div id="sec-heat" class="box">
-        <h3>Źródło ciepła (piec/pompa ciepła)</h3>
-        <div class="cols">
-          <div>
-            <ul class="tight">
-              <li><b>Rodzaj urządzenia:</b> {{custom.heat_typ}} (np. pompa ciepła monoblok/split, piec gazowy/kocioł)</li>
-              <li><b>Moc grzewcza (nominalna):</b> {{custom.heat_moc_kW}} kW</li>
-              <li><b>Producent/model:</b> {{custom.heat_model}}</li>
-              <li><b>Bufor/zasobnik c.w.u.:</b> {{custom.heat_zbiornik}}</li>
-            </ul>
-          </div>
-          <div>
-            <ul class="tight">
-              <li><b>Instalacja hydrauliczna (rury/armatura):</b> {{custom.heat_instalacja}}</li>
-              <li><b>Schemat hydrauliczny/elektryczny:</b> {{custom.heat_schemat}}</li>
-              <li><b>Sterowanie/automatyka:</b> {{custom.heat_sterowanie}}</li>
-              <li><b>Próby szczelności/rozruch:</b> {{custom.heat_proby}}</li>
-            </ul>
-          </div>
-        </div>
-        <p><b>Zakres:</b> dostawa urządzeń i armatury, montaż, podłączenia hydrauliczne/elektryczne, napełnienie/odpowietrzenie, pierwsze uruchomienie, regulacja i szkolenie użytkownika.</p>
-      </div>
-
-      <!-- OCIEPLENIE -->
-      <div id="sec-insul" class="box">
-        <h3>Ocieplenie (termomodernizacja)</h3>
-        <div class="cols">
-          <div>
-            <ul class="tight">
-              <li><b>Powierzchnia ocieplenia:</b> {{custom.oc_area_m2}} m²</li>
-              <li><b>Materiał / grubość:</b> {{custom.oc_material}} / {{custom.oc_grubosc_mm}} mm</li>
-              <li><b>System (klej/siatka/tynk):</b> {{custom.oc_system}}</li>
-              <li><b>Warstwa wykończeniowa (kolor/tynk):</b> {{custom.oc_wykonczenie}}</li>
-            </ul>
-          </div>
-          <div>
-            <ul class="tight">
-              <li><b>Mostki termiczne / detale:</b> {{custom.oc_detale}}</li>
-              <li><b>Rusztowanie/podnośnik:</b> {{custom.oc_rusztowanie}}</li>
-              <li><b>Szacowany U-po modernizacji:</b> {{custom.oc_U}} W/m²K</li>
-              <li><b>Zakres napraw podłoża:</b> {{custom.oc_podloze}}</li>
-            </ul>
-          </div>
-        </div>
-        <p><b>Zakres:</b> przygotowanie podłoża, klejenie/kołkowanie izolacji, warstwa zbrojona, grunt, tynk, obróbki blacharskie, uporządkowanie terenu.</p>
-      </div>
-
-      <div class="hr"></div>
-
-      <!-- WARUNKI OGÓLNE / PRAWNE -->
-      <h3>§2. Warunki realizacji</h3>
-      <ol>
-        <li>Wykonawca zrealizuje przedmiot umowy z należytą starannością, zgodnie z dokumentacją, zasadami wiedzy technicznej, przepisami i normami.</li>
-        <li>Klient zapewni dostęp do miejsca montażu, zasilanie, i inne uzgodnione warunki techniczne (np. wyłącznik główny, miejsce pod urządzenia).</li>
-        <li>Zmiany zakresu/komponentów wymagają formy pisemnej (także e-mail) i mogą skutkować korektą ceny/terminu (aneks).</li>
-      </ol>
-
-      <h3>§3. Terminy</h3>
-      <p>Planowany termin rozpoczęcia: {{dates.start}}. Planowany termin zakończenia: {{dates.end}}. Terminy mogą ulec zmianie z przyczyn niezależnych (pogoda, siła wyższa, braki dostaw), o czym Strony poinformują się niezwłocznie; nowy termin zostanie uzgodniony.</p>
-
-      <h3>§4. Wynagrodzenie i płatności</h3>
-      <ol>
-        <li>Wynagrodzenie ryczałtowe brutto: <b>{{contract.value}} zł</b>.</li>
-        <li>Harmonogram płatności:
-          <ul class="tight">
-            <li>Zaliczka: <b>{{payments.deposit}} zł</b>, płatna do {{payments.deposit_date}}.</li>
-            <li>Pozostała część po odbiorze końcowym / protokole.</li>
-          </ul>
-        </li>
-        <li>Płatność przelewem na rachunek Wykonawcy wskazany na fakturze. Opóźnienie w płatności ⇒ odsetki ustawowe za opóźnienie.</li>
-      </ol>
-
-      <h3>§5. Odbiór i odpowiedzialność</h3>
-      <ol>
-        <li>Po zakończeniu prac Strony sporządzają protokół odbioru; uwagi/usterki wpisuje się do protokołu, a Wykonawca usuwa je w terminie uzgodnionym.</li>
-        <li>Ryzyko przypadkowej utraty/uszkodzenia przechodzi na Klienta z chwilą wydania/uruchomienia instalacji.</li>
-        <li>Materiał stanowi własność Wykonawcy do czasu pełnej zapłaty wynagrodzenia (zastrzeżenie własności).</li>
-      </ol>
-
-      <h3>§6. Gwarancja i rękojmia</h3>
-      <ol>
-        <li>Wykonawca udziela gwarancji na montaż przez okres <b>{{warranty.months}} miesięcy</b> od odbioru.</li>
-        <li>Warunki gwarancji producentów (np. moduły/falownik/pompa) zgodnie z kartami gwarancyjnymi – przekazywanymi Klientowi.</li>
-        <li>Rękojmia wg Kodeksu cywilnego; zgłoszenia w formie e-mail/pisemnej z opisem wady i dokumentacją zdjęciową.</li>
-      </ol>
-
-      <h3>§7. Serwis i eksploatacja</h3>
-      <ol>
-        <li>Wykonawca przekaże instrukcje użytkowania i eksploatacji. Klient zobowiązany jest ich przestrzegać (w tym przeglądów okresowych, jeśli wymagane).</li>
-        <li>Usługi serwisowe pogwarancyjne – wg aktualnego cennika, o ile nie postanowiono inaczej.</li>
-      </ol>
-
-      <h3>§8. Odstąpienie / wypowiedzenie</h3>
-      <ol>
-        <li>Strona może odstąpić od umowy w przypadkach przewidzianych w przepisach lub w razie istotnego naruszenia postanowień umowy przez drugą Stronę, po uprzednim wezwaniu do usunięcia naruszeń (7 dni).</li>
-        <li>W razie odstąpienia rozlicza się: część wynagrodzenia odpowiadającą faktycznie wykonanym pracom/kosztom + ewentualne koszty zamówionych/niezwracalnych materiałów.</li>
-      </ol>
-
-      <h3>§9. Siła wyższa</h3>
-      <p>Strony nie odpowiadają za niewykonanie lub nienależyte wykonanie zobowiązań, jeżeli spowodowała to siła wyższa (zdarzenie zewnętrzne, niemożliwe do przewidzenia i zapobieżenia). O zaistnieniu siły wyższej Strona zawiadomi drugą niezwłocznie.</p>
-
-      <h3>§10. Ochrona danych (RODO)</h3>
-      <ol>
-        <li>Administratorem danych osobowych Klienta jest Wykonawca: ARKON ({{company.address}}, NIP: {{company.nip}}).</li>
-        <li>Dane przetwarzane w celu zawarcia i wykonania umowy (art. 6 ust. 1 lit. b RODO), rozliczeń (lit. c), dochodzenia roszczeń (lit. f). Odbiorcy: biuro rachunkowe, dostawcy/OSD (gdy wymagane), podwykonawcy.</li>
-        <li>Okres przechowywania: do upływu terminów przedawnienia roszczeń i obowiązków archiwizacyjnych.</li>
-        <li>Klientowi przysługują prawa: dostępu, sprostowania, ograniczenia, przenoszenia, sprzeciwu, usunięcia – w granicach prawa; skarga do PUODO.</li>
-        <li>Kontakt w sprawach RODO: <b>biuro@arkoncentrum.pl</b>, tel: <b>+48 ___ ___ ___</b>.</li>
-      </ol>
-
-      <h3>§11. Postanowienia końcowe</h3>
-      <ol>
-        <li>Integralną część umowy stanowią: oferta/wycena, schematy, karty gwarancyjne, instrukcje, uzgodnienia e-mailowe.</li>
-        <li>Zmiany wymagają formy pisemnej lub e-mail pod rygorem nieważności.</li>
-        <li>W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego i pozostałych właściwych ustaw.</li>
-        <li>Właściwy miejscowo sąd dla siedziby Wykonawcy, o ile przepisy bezwzględnie obowiązujące nie stanowią inaczej.</li>
-        <li>Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.</li>
-      </ol>
-
-      <div class="sig">
-        <span>..............................................<br>Podpis Zamawiającego</span>
-        <span>..............................................<br>Podpis Wykonawcy</span>
-      </div>
-    </div>
-
-    <div class="card small" style="margin-top:12px">
-      Podstawiane tagi: <code class="tag">{{client.}}</code>, <code class="tag">{{project.}}</code>,
-      <code class="tag">{{contract.}}</code>, <code class="tag">{{payments.}}</code>,
-      <code class="tag">{{dates.}}</code>, <code class="tag">{{warranty.}}</code>,
-      <code class="tag">{{company.*}}</code>, <code class="tag">{{custom.NAZWA_POLA}}</code>.<br>
-      Przykładowe pola własne (dodaj w CRM → Struktura pól):<br>
-      PV: <code>pv_moc_kWp</code>, <code>pv_moduly</code>, <code>pv_falownik</code>, <code>pv_konstrukcja</code>, <code>pv_dach</code>, <code>pv_azymut</code>, <code>pv_kat</code>, <code>pv_zabezpieczenia</code>, <code>pv_przylacze</code>, <code>pv_storage</code>, <code>pv_okablowanie</code>.<br>
-      Źródło ciepła: <code>heat_typ</code>, <code>heat_moc_kW</code>, <code>heat_model</code>, <code>heat_zbiornik</code>, <code>heat_instalacja</code>, <code>heat_schemat</code>, <code>heat_sterowanie</code>, <code>heat_proby</code>.<br>
-      Ocieplenie: <code>oc_area_m2</code>, <code>oc_material</code>, <code>oc_grubosc_mm</code>, <code>oc_system</code>, <code>oc_wykonczenie</code>, <code>oc_detale</code>, <code>oc_rusztowanie</code>, <code>oc_U</code>, <code>oc_podloze</code>.
     </div>
   </div>
 
-<script>
-/* Auto-hide sekcji komponentów, jeśli po merge tagi pozostały puste. */
-(function(){
-  function isEmptyText(s){
-    if(s==null) return true;
-    s = String(s).trim();
-    if(!s) return true;
-    return ['{{custom.pv_moc_kWp}}','{{custom.pv_moduly}}','{{custom.pv_falownik}}','{{custom.pv_konstrukcja}}','{{custom.pv_dach}}','{{custom.pv_azymut}}','{{custom.pv_kat}}','{{custom.pv_zabezpieczenia}}','{{custom.pv_przylacze}}','{{custom.pv_storage}}','{{custom.pv_okablowanie}}',
-            '{{custom.heat_typ}}','{{custom.heat_moc_kW}}','{{custom.heat_model}}','{{custom.heat_zbiornik}}','{{custom.heat_instalacja}}','{{custom.heat_schemat}}','{{custom.heat_sterowanie}}','{{custom.heat_proby}}',
-            '{{custom.oc_area_m2}}','{{custom.oc_material}}','{{custom.oc_grubosc_mm}}','{{custom.oc_system}}','{{custom.oc_wykonczenie}}','{{custom.oc_detale}}','{{custom.oc_rusztowanie}}','{{custom.oc_U}}','{{custom.oc_podloze}}'
-           ].includes(s);
-  }
-  function sectionHasData(el){
-    const texts = Array.from(el.querySelectorAll('li,b,span')).map(x=>x.textContent);
-    return texts.some(t => !isEmptyText(t));
-  }
-  function hideIfEmpty(id){
-    const box = document.getElementById(id);
-    if(!box) return;
-    if(!sectionHasData(box)) box.classList.add('hide');
-  }
-  setTimeout(()=>{
-    hideIfEmpty('sec-pv');
-    hideIfEmpty('sec-heat');
-    hideIfEmpty('sec-insul');
-  }, 50);
-})();
-</script>
+  <div class="box">
+    <h2>§ 2. Przedmiot Umowy</h2>
+    <p>
+      1. Przedmiotem Umowy jest dostawa, montaż i uruchomienie niżej wskazanych instalacji/urządzeń
+      oraz wykonanie prac towarzyszących, zgodnie z ofertą/zakresem prac i specyfikacją stanowiącymi
+      załączniki do Umowy.
+    </p>
+    <p>
+      2. Adres realizacji: <span class="kropki">............................................................................................................................................................</span>
+    </p>
+    <p>
+      3. Podstawa cenowa/oferta nr: <span class="kropki">.......................................................</span> z dnia: <span class="kropki">..............................................</span>
+    </p>
+  </div>
+
+  <!-- ZAKRES – KOMPONENTY -->
+  <div class="box">
+    <h2>§ 3. Zakres rzeczowy (komponenty do wyboru i uzupełnienia)</h2>
+
+    <h3>A. FOTOWOLTAIKA</h3>
+    <ul class="check">
+      <li>1) Moc instalacji DC: <span class="kropki">....................</span> kWp, typ: <span class="kropki">...........................................................</span></li>
+      <li>2) Moduły: producent/model <span class="kropki">....................................................................</span>, ilość <span class="kropki">........</span> szt., gwarancja prod. <span class="kropki">........</span> lat</li>
+      <li>3) Falownik (inwerter): producent/model <span class="kropki">.................................................................</span>, moc <span class="kropki">........</span> kW</li>
+      <li>4) Konstrukcja montażowa: dach/pow. gruntu/inna: <span class="kropki">..............................................................</span></li>
+      <li>5) Okablowanie DC/AC oraz złącza: <span class="kropki">.................................................................................................</span></li>
+      <li>6) Zabezpieczenia DC/AC i rozdzielnia: <span class="kropki">.............................................................................................</span></li>
+      <li>7) Monitoring/komunikacja: <span class="kropki">...............................................................................................................</span></li>
+      <li>8) Zgłoszenie do OSD/uruchomienie – tak/nie: <span class="kropki">..............................................</span>, przyłącze: <span class="kropki">...................</span></li>
+    </ul>
+
+    <h3>B. POMPA CIEPŁA / MODERNIZACJA ŹRÓDŁA CIEPŁA</h3>
+    <ul class="check">
+      <li>1) Typ PC: powietrze/woda | gruntowa | inna: <span class="kropki">.................................................................</span></li>
+      <li>2) Model/moc grzewcza: <span class="kropki">..............................................................................</span> kW, SCOP/COP: <span class="kropki">.........</span></li>
+      <li>3) Zasobnik CWU: <span class="kropki">........</span> l, bufor: <span class="kropki">........</span> l, armatura (zawory, zaw. 3D, mieszające): <span class="kropki">.........................................</span></li>
+      <li>4) Pompy: obiegowa <span class="kropki">........................................</span>, cyrkulacyjna <span class="kropki">........................................</span></li>
+      <li>5) Rozdzielacze/instalacja: rury (typ/średnice) <span class="kropki">...............................................................................</span></li>
+      <li>6) Ogrzewanie płaszczyznowe: <span class="kropki">........</span> m², ilość pętli: <span class="kropki">........</span>, rozstaw: <span class="kropki">........</span></li>
+      <li>7) Grzejniki: typ/model <span class="kropki">..........................................................</span>, ilość <span class="kropki">........</span> szt., moce: <span class="kropki">.......................................</span></li>
+      <li>8) Automatyka/sterowanie: <span class="kropki">...............................................................................................................</span></li>
+      <li>9) Demontaż starego źródła / utylizacja – tak/nie: <span class="kropki">...................................................</span></li>
+    </ul>
+
+    <h3>C. KOCIOŁ (gazowy/pellet/stałopalny)</h3>
+    <ul class="check">
+      <li>1) Rodzaj i model: <span class="kropki">......................................................................................................................</span>, moc: <span class="kropki">........</span> kW</li>
+      <li>2) Komin/spaliny: <span class="kropki">..........................................................................................................................</span></li>
+      <li>3) Osprzęt: naczynie, zawory bezp., pompy, mieszacze: <span class="kropki">......................................................................</span></li>
+      <li>4) Grzejniki/podłogówka – jak w pkt B.6–B.7 (doprecyzować): <span class="kropki">..................................................</span></li>
+    </ul>
+
+    <h3>D. OCIEPLENIE / TERMOIZOLACJA</h3>
+    <ul class="check">
+      <li>1) Zakres: ściany/poddasze/strop/fundamenty: <span class="kropki">..............................................................................</span></li>
+      <li>2) Materiał: <span class="kropki">........................................................</span>, grubość: <span class="kropki">........</span> cm, λ: <span class="kropki">................</span></li>
+      <li>3) System ociepleń/tynk: <span class="kropki">...........................................................................................................</span></li>
+      <li>4) Powierzchnia: <span class="kropki">........</span> m², kolor: <span class="kropki">..........................................</span></li>
+      <li>5) Obróbki blacharskie/parapety/listwy: <span class="kropki">.......................................................................................</span></li>
+      <li>6) Rusztowania/organizacja: <span class="kropki">............................................................................................................</span></li>
+    </ul>
+
+    <h3>E. STOLARKA OKIENNA/DRZWIOWA/BRAMY</h3>
+    <ul class="check">
+      <li>1) Okna: ilość <span class="kropki">........</span> szt., wymiary/typy: <span class="kropki">...................................................................................</span></li>
+      <li>2) Drzwi/b rama: ilość <span class="kropki">........</span> szt., parametry: <span class="kropki">..................................................................................</span></li>
+      <li>3) Montaż: ciepły/standard, uszczelnienia/taśmy/piany: <span class="kropki">.................................................................</span></li>
+      <li>4) Parapety/obróbki/demontaż starej stolarki: <span class="kropki">.............................................................................</span></li>
+    </ul>
+
+    <h3>F. INNE PRACE / DODATKOWE UZGODNIENIA</h3>
+    <div class="kropki">................................................................................................................................................................................</div>
+    <div class="kropki">................................................................................................................................................................................</div>
+  </div>
+
+  <div class="box">
+    <h2>§ 4. Wynagrodzenie i płatności</h2>
+    <p>1. Wynagrodzenie ryczałtowe/brutto w wysokości: <span class="kropki">..........................................................</span> zł (słownie: <span class="kropki">........................................................................................................</span>).</p>
+    <p>2. Harmonogram płatności:</p>
+    <table class="tbl">
+      <thead><tr><th>Etap</th><th>Podstawa</th><th>Kwota / %</th><th>Termin</th></tr></thead>
+      <tbody>
+        <tr><td>Zaliczka</td><td>po podpisaniu umowy</td><td><span class="kropki">................</span></td><td><span class="kropki">..........................</span></td></tr>
+        <tr><td>II rata</td><td>po dostawie urządzeń</td><td><span class="kropki">................</span></td><td><span class="kropki">..........................</span></td></tr>
+        <tr><td>III rata</td><td>po montażu/rozruchu</td><td><span class="kropki">................</span></td><td><span class="kropki">..........................</span></td></tr>
+        <tr><td>Końcowa</td><td>po odbiorze końcowym</td><td><span class="kropki">................</span></td><td><span class="kropki">..........................</span></td></tr>
+      </tbody>
+    </table>
+    <p>3. Płatność przelewem/ gotówką na rachunek: <span class="kropki">.................................................................................</span>.</p>
+    <p>4. W przypadku opóźnienia płatności naliczane będą odsetki ustawowe za opóźnienie.</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 5. Terminy i warunki realizacji</h2>
+    <p>1. Rozpoczęcie prac: <span class="kropki">........................................</span> | Zakończenie: <span class="kropki">........................................</span>.</p>
+    <p>2. Warunki techniczne i dostęp do obiektu zapewnia Zamawiający (zasilanie, dostęp do wody, miejsce składowania itp.).</p>
+    <p>3. Termin może ulec zmianie z przyczyn niezależnych (warunki pogodowe, siła wyższa, opóźnienia dostaw, czynności OSD, decyzje administracyjne).</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 6. Odbiór i dokumenty</h2>
+    <p>1. Po zakończeniu prac Strony sporządzą protokół odbioru. Ewentualne usterki zostaną usunięte w terminie: <span class="kropki">.......................................</span>.</p>
+    <p>2. Wykonawca przekaże: instrukcje, karty gwarancyjne producentów, schematy, deklaracje zgodności, protokoły prób, dokumenty zgłoszeniowe (PV).</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 7. Gwarancja i rękojmia</h2>
+    <p>1. Gwarancja Wykonawcy na montaż: <span class="kropki">........</span> miesięcy od odbioru. Gwarancje producentów – zgodnie z kartami gwarancyjnymi.</p>
+    <p>2. Rękojmia za wady – na zasadach Kodeksu cywilnego. Wyłączenia: uszkodzenia z winy użytkownika, zaniedbanie serwisu, modyfikacje nieautoryzowane, nieprawidłowa eksploatacja.</p>
+    <p>3. Przeglądy/serwis okresowy – częstotliwość: <span class="kropki">..................................................</span>, odpłatność: <span class="kropki">.......................</span>.</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 8. Obowiązki Stron i BHP</h2>
+    <p>1. Wykonawca zobowiązuje się wykonać prace zgodnie z wiedzą techniczną, przepisami BHP i ppoż., normami oraz instrukcjami producentów.</p>
+    <p>2. Zamawiający zapewnia nieprzerwany dostęp do pomieszczeń, umożliwiając montaż w uzgodnionym czasie.</p>
+    <p>3. Materiały odpadowe będą zagospodarowane zgodnie z przepisami; utylizacja specjalna (jeśli dotyczy): <span class="kropki">.....................................</span>.</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 9. Odpowiedzialność i siła wyższa</h2>
+    <p>1. Strony nie ponoszą odpowiedzialności za niewykonanie/zwłokę spowodowaną siłą wyższą (zdarzenie zewnętrzne, nadzwyczajne, niemożliwe do przewidzenia i zapobieżenia).</p>
+    <p>2. O zaistnieniu siły wyższej Strona zawiadomi drugą Stronę niezwłocznie, wskazując przewidywany wpływ na harmonogram.</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 10. Odstąpienie/rozwiązanie umowy</h2>
+    <p>1. Zamawiający może odstąpić od Umowy w przypadkach przewidzianych przepisami prawa oraz w razie istotnego naruszenia Umowy przez Wykonawcę po bezskutecznym wezwaniu do usunięcia naruszeń (min. 7 dni).</p>
+    <p>2. Wykonawca może odstąpić w razie braku współdziałania Zamawiającego uniemożliwiającego wykonanie Umowy lub w razie zwłoki w płatnościach przekraczającej <span class="kropki">........</span> dni.</p>
+    <p>3. Skutki finansowe odstąpienia – rozliczenie za faktycznie wykonane prace, koszty zakupu i dostawy materiałów oraz ewentualna kara umowna (jeśli przewidziano): <span class="kropki">...................................</span>.</p>
+  </div>
+
+  <div class="box">
+    <h2>§ 11. Dane osobowe (RODO)</h2>
+    <p>1. Administratorem danych osobowych jest: ARKON (dokładna nazwa) z siedzibą w <span class="kropki">..........................................................</span>,
+       e-mail: <b>biuro@arkoncentrum.pl</b>, tel.: <b>511&nbsp;514&nbsp;818</b>.</p>
+    <p>2. Dane przetwarzane są w celu zawarcia i wykonania Umowy (art. 6 ust. 1 lit. b RODO), spełnienia obowiązków prawnych (lit. c) oraz w prawnie uzasadnionym interesie Administratora (lit. f) – m.in. dochodzenie roszczeń.</p>
+    <p>3. Odbiorcami danych mogą być dostawcy/serwisy urządzeń, podmioty zapewniające obsługę IT/księgową, operatorzy płatności, OSD (w zgłoszeniach PV) – w zakresie niezbędnym do realizacji Umowy.</p>
+    <p>4. Dane będą przechowywane przez okres trwania Umowy i przedawnienia roszczeń oraz wynikający z przepisów rachunkowych/podatkowych.</p>
+    <p>5. Osobie, której dane dotyczą, przysługuje prawo dostępu, sprostowania, usunięcia, ograniczenia, przenoszenia, sprzeciwu oraz skargi do PUODO. Podanie danych jest dobrowolne, lecz niezbędne do zawarcia i wykonania Umowy.</p>
+    <p>6. Inspektor Ochrony Danych (jeśli powołano): <span class="kropki">............................................................................................</span></p>
+  </div>
+
+  <div class="box">
+    <h2>§ 12. Postanowienia końcowe</h2>
+    <p>1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.</p>
+    <p>2. W sprawach nieuregulowanych zastosowanie mają przepisy Kodeksu cywilnego oraz właściwe przepisy szczególne.</p>
+    <p>3. Spory rozstrzyga sąd właściwy miejscowo dla siedziby Wykonawcy / Zamawiającego <span class="kropki">(&lt;zaznaczyć&gt;) ...................................</span></p>
+    <p>4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.</p>
+    <p>5. Załączniki stanowią integralną część Umowy: oferta/specyfikacja, rysunki/projekt, karty gwarancyjne, harmonogram, inne: <span class="kropki">........................................</span></p>
+  </div>
+
+  <div class="signs">
+    <div class="sign">
+      ..............................................................<br>
+      <span class="muted">Podpis i pieczęć Wykonawcy</span>
+    </div>
+    <div class="sign">
+      ..............................................................<br>
+      <span class="muted">Podpis Zamawiającego</span>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+  <div class="muted" style="font-size:12px">
+    Uwaga: To jest wzór – w zależności od inwestycji uzupełnij/wykreśl niewłaściwe pozycje (np. tylko PV lub tylko PC+ocieplenie),
+    dopisz parametry techniczne oraz – jeżeli przewidujesz – kary umowne i dokładny harmonogram. W razie wątpliwości skonsultuj treść z prawnikiem.
+  </div>
+
+</div>
 </body>
 </html>
