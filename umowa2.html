@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMOWA – PW ARKON • umowa2.html</title>
+<meta name="description" content="Edytowalny szablon umowy PW ARKON z tabelami komponentów (pompa ciepła, piec, PV, ocieplenie, stolarka/dodatki), kropkami do wypełnienia, RODO, reklamacje, odstąpienie, OWU.">
+<style>
+  :root{
+    --bg:#0b1020; --card:#0f1636; --ink:#e8edff; --muted:#aeb8da; --line:#263168; --accent:#4cc9f0;
+    --ok:#2b8a57; --warn:#b37a1a; --bad:#a93a4b; --paper:#0e1433;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  nav{position:sticky;top:0;z-index:10;background:#10183b;border-bottom:1px solid #223065;padding:10px 14px;display:flex;gap:10px;flex-wrap:wrap}
+  nav a{color:#cfe1ff;text-decoration:none;padding:6px 10px;border:1px solid #2a3a75;border-radius:999px}
+  nav a:hover{background:#223160}
+  .wrap{max-width:980px;margin:18px auto;padding:0 16px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
+  .btn.ok{background:#194d34;border-color:#2b8a57}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .card{background:linear-gradient(180deg,#111a3e,#121f4a);border:1px solid #2b3a77;border-radius:14px;padding:16px}
+  .doc{background:var(--paper);border:1px solid #2b3a77;border-radius:12px;padding:22px}
+  .muted{color:var(--muted)}
+  .small{font-size:13px;color:var(--muted)}
+  h1,h2,h3{margin:0 0 10px}
+  h1{font-size:22px}
+  h2{font-size:18px;margin-top:16px}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{border:1px solid #31417f;padding:8px;vertical-align:top}
+  th{background:#121e49;color:#cfe1ff;text-align:left;font-weight:600}
+  tr:nth-child(even) td{background:#0f1a44}
+
+  /* Zapewnienie jednolitych szerokości kolumn we wszystkich tabelach komponentów */
+  table.component{width:100%;table-layout:fixed}
+  table.component th, table.component td{word-break:break-word}
+  /* Pierwsza kolumna (etykiety) ma stałą szerokość, druga wypełnia resztę */
+  table.component tbody tr th:first-child:not([colspan]){width:28%;}
+  table.component tbody tr td{width:72%;}
+  .dots{font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .right{display:flex;gap:8px;justify-content:flex-end}
+  .center{text-align:center}
+  .signRow{display:flex;justify-content:space-between;gap:40px;margin-top:26px}
+  .sign{width:44%;text-align:center}
+  .box{border:1px dashed #3a4ca3;padding:10px;border-radius:10px;background:#0f1740}
+  [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:6px;padding:4px}
+  .kv{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:center}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:4px 8px;color:#aeb8da;font-size:12px}
+
+  /* element do wymuszania podziału stron przy drukowaniu; ukryty na ekranie */
+  .page-break{display:none;height:0;}
+  @media print{
+    .page-break{display:block;page-break-before:always;}
+  }
+
+  /* Upewnij się, że każda tabela komponentu zajmuje pełną szerokość i posiada odstęp poniżej. */
+  .component{width:100%;margin-bottom:24px;}
+
+  /* wymuszenie podziału stron dla poszczególnych sekcji w wersji do druku */
+  .page-break{display:none;}
+  @media print{
+    .page-break{display:block;page-break-after:always;}
+  }
+  @media print{
+    nav,.card.toolbar{display:none!important}
+    body{background:#fff;color:#000}
+    .doc{background:#fff;border:0;padding:0}
+    th,td{border-color:#000}
+    a{color:#000;text-decoration:none}
+    /* Wersja drukowana: każdy rozdział (h2) i podrozdział (h3) zaczyna się na nowej stronie,
+       aby wygenerować dłuższy dokument (min. 6 stron). */
+    h2,h3{page-break-before:always;}
+  }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">← Pulpit</a>
+    <a href="klienci.html">Klienci</a>
+    <a href="upload.html">Przesył dokumentów</a>
+  </nav>
+
+  <div class="wrap">
+    <div class="card toolbar">
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <button class="btn" onclick="window.print()">Drukuj / PDF</button>
+          <button class="btn ok" id="btnToggleEdit">Zablokuj/odblokuj edycję</button>
+          <span class="pill">Podstawianie z Klienci: <b id="mergeState">auto</b></span>
+        </div>
+        <div class="row small">
+          Otworzono: <span id="now"></span> • URL param: <code>?clientId=…</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOKUMENT -->
+    <div id="doc" class="doc" contenteditable="true">
+      <h1 class="center">UMOWA O WYKONANIE ROBÓT / DOSTAWĘ I MONTAŻ</h1>
+      <p class="center small">Nr umowy: <span class="dots" data-bind="contract.no">...............................</span> • Data: <span class="dots" data-bind="contract.date">...............................</span> • Miejsce: <span class="dots" data-bind="city">...............................</span></p>
+
+      <h2>§1. Strony umowy</h2>
+      <div class="box">
+        <p><b>Wykonawca:</b> PW ARKON Czesław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków, NIP: 5020038830, REGON: 020258190, e-mail: biuro@arkoncentrum.pl, tel. 511 514 818.</p>
+        <p><b>Zamawiający (Klient):</b>
+          <span class="dots" data-bind="client.name">................................................................................................</span>,
+          adres: <span class="dots" data-bind="client.address">.......................................................................................</span>,
+          e-mail: <span class="dots" data-bind="client.email">..............................................................</span>,
+          tel.: <span class="dots" data-bind="client.phone">..............................................</span>.
+        </p>
+      </div>
+
+      <h2>§2. Postanowienia ogólne</h2>
+      <ol>
+        <li>Umowa dotyczy wykonania i/lub dostawy oraz montażu urządzeń i materiałów zgodnie z niniejszą umową i załącznikami.</li>
+        <li>Wykonawca oświadcza, że posiada kwalifikacje, doświadczenie oraz uprawnienia niezbędne do realizacji przedmiotu umowy, a czynności będą wykonywane zgodnie z <i>sztuką budowlaną</i>, właściwymi normami i przepisami prawa.</li>
+        <li>Integralną częścią umowy są: <b>Załącznik nr 1 – Specyfikacja/Oferta</b>, <b>Załącznik nr 2 – Protokół odbioru</b>, <b>Załącznik nr 3 – OWU</b> (Ogólne Warunki Umowy), <b>Załącznik nr 4 – Karta gwarancyjna</b>, ewentualnie dokumentacja projektowa i schematy.</li>
+      </ol>
+
+      <h2>§3. Przedmiot umowy – komponenty i parametry</h2>
+      <p class="small">Uzupełnij kropki w tabelach. Niepotrzebne wiersze możesz skasować (dokument jest edytowalny).</p>
+
+      <!-- Pompa ciepła -->
+      <h3>3.1. Pompa ciepła</h3>
+      <!-- Zmieniono układ tabeli z szerokiej na pionową, tak aby pola były wypisane jedno pod drugim. -->
+      <table aria-label="Pompa ciepła" class="component">
+        <tbody>
+          <tr><th>Producent / Model</th><td class="dots">.............................................................................</td></tr>
+          <tr><th>Moc [kW]</th><td class="dots">..................</td></tr>
+          <tr><th>Jedn. zew./wew.</th><td class="dots">..................................</td></tr>
+          <tr><th>Bufor / Zawór 3D</th><td class="dots">..................................</td></tr>
+          <tr><th>Ilość [szt.]</th><td class="dots">..........</td></tr>
+          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Cena brutto</th><td class="dots">..................</td></tr>
+        </tbody>
+      </table>
+      <p class="small">Dodatki PC: zasobnik c.w.u. <span class="dots">..................</span> l, naczynie przeponowe <span class="dots">........</span> l, zawory odcinające <span class="dots">........</span>, izolacje <span class="dots">........</span>, uruchomienie serwisowe <span class="dots">........</span>.</p>
+
+      <!-- Podział strony po zakończeniu sekcji 3.1 w wersji do druku -->
+      <div class="page-break"></div>
+
+      <!-- Podział strony przed sekcją 3.2 -->
+      <div class="page-break"></div>
+      <!-- Piec / Kocioł -->
+      <h3>3.2. Piec / Kocioł</h3>
+      <!-- Układ pionowy zamiast wielu kolumn -->
+      <table aria-label="Piec / Kocioł" class="component">
+        <tbody>
+          <tr><th>Typ (gaz/elek/stałe)</th><td class="dots">........................................</td></tr>
+          <tr><th>Marka / Model</th><td class="dots">............................................................</td></tr>
+          <tr><th>Moc [kW]</th><td class="dots">........</td></tr>
+          <tr><th>Klasa / Sprawność</th><td class="dots">....................</td></tr>
+          <tr><th>Komplet armatury</th><td class="dots">....................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+        </tbody>
+      </table>
+      <p class="small">Dodatki kotłowni: pompa obiegowa <span class="dots">........</span>, pompa cyrkulacyjna <span class="dots">........</span>, zawór mieszający <span class="dots">........</span>, grupa bezpieczeństwa <span class="dots">........</span>, komin/spalinowy <span class="dots">........</span>.</p>
+
+      <!-- Podział strony po zakończeniu sekcji 3.2 w wersji do druku -->
+      <div class="page-break"></div>
+
+      <!-- Podział strony przed sekcją 3.3 -->
+      <div class="page-break"></div>
+      <!-- Fotowoltaika -->
+      <h3>3.3. Fotowoltaika</h3>
+      <!-- Pionowy układ tabeli fotowoltaiki -->
+      <table aria-label="Fotowoltaika" class="component">
+        <tbody>
+          <tr><th>Moduły (producent / model)</th><td class="dots">.............................................................................</td></tr>
+          <tr><th>Ilość [szt.]</th><td class="dots">........</td></tr>
+          <tr><th>Moc instalacji [kWp]</th><td class="dots">................</td></tr>
+          <tr><th>Inwerter (model / moc)</th><td class="dots">...................................................</td></tr>
+          <tr><th>Konstrukcja montażowa</th><td class="dots">..................................</td></tr>
+          <tr><th>Zabezp. AC/DC</th><td class="dots">....................</td></tr>
+          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+        </tbody>
+      </table>
+      <p class="small">Okablowanie DC <span class="dots">........</span> m, AC <span class="dots">........</span> m, uziemienie <span class="dots">........</span>, monitoring <span class="dots">........</span>, typ dachu/pokrycia <span class="dots">..................................</span>.</p>
+
+      <!-- Podział strony po zakończeniu sekcji 3.3 w wersji do druku -->
+      <div class="page-break"></div>
+
+      <!-- Podział strony przed sekcją 3.4 -->
+      <div class="page-break"></div>
+      <!-- Ocieplenie -->
+      <h3>3.4. Ocieplenie</h3>
+      <!-- Pionowy układ tabeli ocieplenia; sekcja otrzymuje id do obsługi chowania w wydruku -->
+      <table aria-label="Ocieplenie" class="component" id="ocieplenie-table">
+        <tbody>
+          <tr><th>Materiał (styropian/wełna/PUR)</th><td class="dots">.................................................</td></tr>
+          <tr><th>Grubość [cm]</th><td class="dots">......</td></tr>
+          <tr><th>λ</th><td class="dots">......</td></tr>
+          <tr><th>Powierzchnia [m²]</th><td class="dots">............</td></tr>
+          <tr><th>System/tynk</th><td class="dots">................................</td></tr>
+          <tr><th>Obróbki/Parapety</th><td class="dots">................................</td></tr>
+          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Podział strony po zakończeniu sekcji 3.4 w wersji do druku -->
+      <div class="page-break"></div>
+
+      <!-- Podział strony przed sekcją 3.5 -->
+      <div class="page-break"></div>
+      <!-- Stolarka & Dodatkowe elementy -->
+      <h3>3.5. Stolarka i elementy dodatkowe</h3>
+      <!-- Wersja pionowa: każdy element (grzejnik, rozdzielacz, rury, okna, inne) posiada własny blok w tabeli,
+           a poszczególne parametry są umieszczone jeden pod drugim. -->
+      <table aria-label="Stolarka i dodatki" class="component">
+        <!-- Grzejnik / typ -->
+        <tbody id="group-grzejnik">
+          <tr><th colspan="2">Grzejnik / typ</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <!-- Rozdzielacz / obiegi -->
+        <tbody id="group-rozdzielacz">
+          <tr><th colspan="2">Rozdzielacz / obiegi</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <!-- Rury / prowadzenie -->
+        <tbody id="group-rury">
+          <tr><th colspan="2">Rury / prowadzenie</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <!-- Okna / drzwi -->
+        <!-- Rozbudowana sekcja: osobno okna, drzwi, bramy garażowe oraz rekuperacja ścienna -->
+        <tbody id="group-okna">
+          <tr><th colspan="2">Okna</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <tbody id="group-drzwi">
+          <tr><th colspan="2">Drzwi</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <tbody id="group-garaz">
+          <tr><th colspan="2">Bramy garażowe</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <tbody id="group-rekuperacja">
+          <tr><th colspan="2">Rekuperacja ścienna</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <!-- Klimatyzacja -->
+        <tbody id="group-klimatyzacja">
+          <tr><th colspan="2">Klimatyzacja</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+        <!-- Inne (audyt, demontaż, utylizacja) -->
+        <tbody id="group-inne">
+          <tr><th colspan="2">Inne (audyt, demontaż, utylizacja)</th></tr>
+          <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
+          <tr><th>Ilość</th><td class="dots">....</td></tr>
+          <tr><th>Cena netto</th><td class="dots">................</td></tr>
+          <tr><th>VAT</th><td class="dots">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots">................</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Podział strony po zakończeniu sekcji 3.5 w wersji do druku -->
+      <div class="page-break"></div>
+
+      <h2>§4. Wynagrodzenie i warunki płatności</h2>
+      <ol>
+        <li>Wynagrodzenie łączone za przedmiot umowy (netto): <span class="dots">..........................................................</span> zł; stawka VAT: <span class="dots">....</span>%; wartość brutto: <span class="dots">..........................................................</span> zł.</li>
+        <li>Zaliczka: <span class="dots">................................</span> zł, płatna do dnia: <span class="dots">.........................</span>, na rachunek: <span class="dots">..........................................................</span>.</li>
+        <li>Harmonogram płatności (jeśli dotyczy): I etap <span class="dots">........%</span> do dnia <span class="dots">........</span>; II etap <span class="dots">........%</span> do dnia <span class="dots">........</span>; końcowa <span class="dots">........%</span> po odbiorze.</li>
+        <li>Jeżeli Zamawiający korzysta z dofinansowania (np. „Czyste Powietrze”), strony uzgadniają, że: <span class="dots">...........................................................................................................................................................................................</span></li>
+        <li>W przypadku opóźnienia w płatności Wykonawca może naliczyć odsetki ustawowe za opóźnienie oraz wstrzymać prace do czasu uregulowania należności.</li>
+      </ol>
+
+      <h2>§5. Terminy</h2>
+      <ol>
+        <li>Rozpoczęcie prac: <span class="dots">................................</span>. Zakończenie: <span class="dots">................................</span>.</li>
+        <li>Terminy mogą ulec zmianie w przypadku: braku dostępu do frontu robót, nieprzewidzianych warunków technicznych, siły wyższej, opóźnień po stronie Zamawiającego, opóźnień dostaw niezawinionych przez Wykonawcę.</li>
+      </ol>
+
+      <h2>§6. Odbiór</h2>
+      <ol>
+        <li>Po zakończeniu prac sporządzony zostanie <b>Protokół odbioru</b> (Załącznik nr 2). Odbiór obejmuje sprawdzenie kompletności, zgodności i uruchomienie (jeśli dotyczy).</li>
+        <li>Stwierdzone wady/usterki zostaną usunięte w terminie uzgodnionym w protokole.</li>
+      </ol>
+
+      <h2>§7. Gwarancja i rękojmia</h2>
+      <ol>
+        <li>Wykonawca udziela gwarancji na montaż na okres <span class="dots">................</span> miesięcy od daty odbioru. Gwarancja producenta na urządzenia zgodnie z kartą gwarancyjną.</li>
+        <li>Wady należy zgłaszać e-mailowo na adres: <b>biuro@arkoncentrum.pl</b> lub telefonicznie: <b>511 514 818</b>, opisując objawy, datę i numer umowy.</li>
+        <li>Wady usuwane będą w rozsądnym terminie, z uwzględnieniem dostępności części. Gwarancja nie obejmuje: uszkodzeń mechanicznych, szkód z winy użytkownika, braku przeglądów i eksploatacji niezgodnej z instrukcją, przepięć, zalania, szkód losowych.</li>
+        <li>Uprawnienia z gwarancji nie wyłączają uprawnień z rękojmi przysługujących konsumentowi na podstawie Kodeksu cywilnego.</li>
+      </ol>
+
+      <h2>§8. Reklamacje</h2>
+      <p>Reklamacje Zamawiający składa na piśmie lub e-mailem na adres Wykonawcy. Wykonawca potwierdzi przyjęcie reklamacji i udzieli odpowiedzi w terminie <span class="dots">....</span> dni roboczych.</p>
+
+      <h2>§9. Prawo odstąpienia</h2>
+      <ol>
+        <li>Jeśli Zamawiający jest konsumentem i umowa zawarta została poza lokalem lub na odległość, przysługuje mu prawo odstąpienia w terminie 14 dni zgodnie z ustawą o prawach konsumenta.</li>
+        <li>Jeżeli na wyraźną prośbę Zamawiającego rozpoczęto świadczenie przed upływem 14 dni, Zamawiający ponosi koszty wykonanych czynności do chwili odstąpienia.</li>
+        <li>Oświadczenie o odstąpieniu należy złożyć w formie pisemnej na adres siedziby Wykonawcy lub e-mailem.</li>
+      </ol>
+
+      <h2>§10. Obowiązki Zamawiającego</h2>
+      <ol>
+        <li>Zapewnienie dostępu do miejsca montażu, zasilania elektrycznego, mediów oraz uzyskanie wymaganych zgód (w tym wspólnoty/spółdzielni).</li>
+        <li>Przygotowanie pomieszczeń i zabezpieczenie mienia; wskazanie miejsc prowadzenia tras i posadowienia urządzeń.</li>
+      </ol>
+
+      <h2>§11. Kary umowne</h2>
+      <p>Za zwłokę z winy Wykonawcy w wykonaniu przedmiotu umowy kary wynoszą <span class="dots">....</span>% wynagrodzenia brutto za każdy dzień zwłoki, nie więcej niż <span class="dots">....</span>%. Analogiczne kary mogą dotyczyć zwłoki Zamawiającego w zapewnieniu frontu robót/płatnościach.</p>
+
+      <h2>§12. Siła wyższa</h2>
+      <p>Strony nie ponoszą odpowiedzialności za niewykonanie umowy w zakresie spowodowanym wystąpieniem siły wyższej (w szczególności: klęski żywiołowe, wojna, epidemie, przerwy w dostawach, akty władzy publicznej). Terminy ulegają odpowiedniemu przedłużeniu.</p>
+
+      <h2>§13. Ochrona danych (RODO)</h2>
+      <div class="small">
+        Administratorem danych jest PW ARKON Czesław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków, e-mail: biuro@arkoncentrum.pl, tel. 511 514 818.  
+        Dane przetwarzane są w celu zawarcia i wykonania umowy (art. 6 ust. 1 lit. b RODO), wypełnienia obowiązków prawnych (lit. c) oraz prawnie uzasadnionych interesów administratora (lit. f), w szczególności dochodzenia roszczeń i obsługi reklamacji.  
+        Dane mogą być powierzone podmiotom świadczącym usługi na rzecz Administratora (np. serwis, transport, księgowość, hosting).  
+        Dane będą przechowywane przez okres obowiązywania umowy, a następnie do upływu terminów przedawnienia roszczeń oraz wynikających z przepisów podatkowych/rachunkowych.  
+        Osobie, której dane dotyczą, przysługuje prawo dostępu do danych, ich sprostowania, ograniczenia przetwarzania, przenoszenia danych, sprzeciwu, a w zakresie zgody – prawo jej cofnięcia. Przysługuje też prawo wniesienia skargi do Prezesa UODO.  
+        Podanie danych jest dobrowolne, lecz niezbędne do zawarcia i realizacji umowy.
+      </div>
+
+      <h2>§14. Postanowienia końcowe</h2>
+      <ol>
+        <li>W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego i właściwe przepisy szczególne.</li>
+        <li>Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.</li>
+        <li>Spory będzie rozstrzygał sąd powszechny właściwy według przepisów – dla konsumenta zgodnie z właściwością ogólną; w pozostałych przypadkach sąd właściwy dla siedziby Wykonawcy.</li>
+        <li>Umowę sporządzono w <span class="dots">....</span> jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
+      </ol>
+
+      <h2>Załączniki</h2>
+      <ul>
+        <li>Załącznik nr 1 – Specyfikacja/Oferta szczegółowa.</li>
+        <li>Załącznik nr 2 – Protokół odbioru.</li>
+        <li>Załącznik nr 3 – OWU (Ogólne Warunki Umowy).</li>
+        <li>Załącznik nr 4 – Karta gwarancyjna/Instrukcje producentów.</li>
+      </ul>
+
+      <div class="signRow">
+        <div class="sign">
+          ..................................................<br>
+          <span class="small">Podpis Zamawiającego</span>
+        </div>
+        <div class="sign">
+          ..................................................<br>
+          <span class="small">Podpis Wykonawcy – PW ARKON</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top:10px">
+      Podpowiedź: wypełnij kropki bezpośrednio w tekście. Jeśli otworzysz z <code>klienci.html</code> (przycisk „📄 Umowa 2”), pola <i>Klient</i>/<i>adres</i>/<i>e-mail</i>/<i>telefon</i> uzupełnią się automatycznie z bazy.
+    </p>
+  </div>
+
+<script>
+(function(){
+  // wyświetl czas otwarcia
+  const now = new Date().toLocaleString('pl-PL');
+  document.getElementById('now').textContent = now;
+  
+  // przełącznik edycji
+  const doc = document.getElementById('doc');
+  document.getElementById('btnToggleEdit').addEventListener('click', ()=>{
+    const on = doc.getAttribute('contenteditable') === 'true';
+    doc.setAttribute('contenteditable', on ? 'false' : 'true');
+  });
+  
+  // prosta funkcja do param z URL
+  function params(){ try{ return Object.fromEntries(new URL(location.href).searchParams.entries()); }catch{ return {}; } }
+  
+  // wczytaj klientów z localStorage
+  function loadClients(){
+    try{ return JSON.parse(localStorage.getItem('arkon_clients_v2')||'[]'); }catch(e){ return []; }
+  }
+  
+  // wstaw wartość do elementów z data-bind
+  function setDot(selector, value){
+    document.querySelectorAll('[data-bind="'+selector+'"]').forEach(el=>{
+      if(value && String(value).trim()){
+        el.textContent = String(value);
+      }
+    });
+  }
+  
+  // wstaw dane jeśli jest clientId
+  const p = params();
+  if(p.clientId){
+    const clients = loadClients();
+    const c = clients.find(x=>x.id===p.clientId);
+    if(c){
+      setDot('client.name',  c.name||'');
+      setDot('client.address', c.address||'');
+      setDot('client.email', c.email||'');
+      setDot('client.phone', c.phone||'');
+      // parametry umowy w URL (opcjonalne)
+      if(p.no)   setDot('contract.no', p.no);
+      if(p.date) setDot('contract.date', p.date);
+      if(p.city) setDot('city', p.city);
+      document.getElementById('mergeState').textContent = 'OK';
+    }else{
+      document.getElementById('mergeState').textContent = 'brak klienta';
+    }
+  }else{
+    document.getElementById('mergeState').textContent = 'brak clientId';
+  }
+})();
+</script>
+
+<!-- Skrypt ukrywający niewypełnione sekcje (grzejnik oraz ocieplenie) podczas drukowania.  -->
+<script>
+// Upewnij się, że logika wykonywana jest po załadowaniu strony
+window.addEventListener('beforeprint', () => {
+  try {
+    // Funkcja pomocnicza: sprawdza, czy w grupie elementów .dots występują litery/cyfry
+    function isFilled(nodeList) {
+      let filled = false;
+      nodeList.forEach(el => {
+        const txt = (el.textContent || '').trim();
+        if(/[A-Za-z0-9]/.test(txt)) {
+          filled = true;
+        }
+      });
+      return filled;
+    }
+    // Ukryj sekcję "Grzejnik" jeśli wszystkie pola są puste (same kropki)
+    const grzejnikRow = document.getElementById('group-grzejnik');
+    if(grzejnikRow) {
+      const dotCells = grzejnikRow.querySelectorAll('.dots');
+      if(!isFilled(dotCells)) {
+        grzejnikRow.dataset.originalDisplay = grzejnikRow.style.display || '';
+        grzejnikRow.style.display = 'none';
+      }
+    }
+    // Ukryj całą tabelę ocieplenia, jeśli nie zawiera wypełnionych pól
+    const ocieplenieTable = document.getElementById('ocieplenie-table');
+    if(ocieplenieTable) {
+      const dotCells = ocieplenieTable.querySelectorAll('.dots');
+      if(!isFilled(dotCells)) {
+        ocieplenieTable.dataset.originalDisplay = ocieplenieTable.style.display || '';
+        ocieplenieTable.style.display = 'none';
+      }
+    }
+  } catch(e) {
+    console.error(e);
+  }
+});
+// Po zakończeniu drukowania przywróć oryginalny wygląd ukrytych elementów
+window.addEventListener('afterprint', () => {
+  // Przywróć sekcję grzejnika
+  const grzejnikRow = document.getElementById('group-grzejnik');
+  if(grzejnikRow && grzejnikRow.dataset.originalDisplay !== undefined) {
+    grzejnikRow.style.display = grzejnikRow.dataset.originalDisplay;
+    delete grzejnikRow.dataset.originalDisplay;
+  }
+  // Przywróć tabelę ocieplenia
+  const ocieplenieTable = document.getElementById('ocieplenie-table');
+  if(ocieplenieTable && ocieplenieTable.dataset.originalDisplay !== undefined) {
+    ocieplenieTable.style.display = ocieplenieTable.dataset.originalDisplay;
+    delete ocieplenieTable.dataset.originalDisplay;
+  }
+});
+</script>
+</body>
+</html>
