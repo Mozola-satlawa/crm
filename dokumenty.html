@@ -1,148 +1,137 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ARKON — Dokumenty</title>
-<meta name="description" content="Wzory umów i oświadczeń. Wyszukiwarka, sortowanie, tagi, podgląd PDF.">
+<title>ARKON — Wszystkie pliki i umowy</title>
+<meta name="description" content="Jeden ekran: wzory dokumentów, pliki z Upload (IndexedDB) oraz umowy zapisane przy klientów. Podgląd PDF/IMG, pobieranie, wyszukiwanie, tagi.">
 <style>
   :root{
     --bg:#0c0c0c; --panel:#121212; --card:#181818; --line:#2a2a2a;
-    --ink:#f2f3f5; --muted:#b9c0cc;
-    --accent:#3ea6ff; --accent2:#00e5ff;
-    --bad:#ff5c5c; --ok:#2ecc71;
+    --ink:#f2f3f5; --muted:#b9c0cc; --accent:#3ea6ff; --ok:#2ecc71; --bad:#ff5c5c;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{color:#fff}
   header{padding:16px;background:#0f0f0f;border-bottom:1px solid var(--line)}
   header h1{margin:0;font-size:22px}
   .small{font-size:12px;color:var(--muted)}
-  nav{background:#141414;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-  nav a,nav button{
-    color:var(--ink);background:#1b1b1b;border:1px solid var(--line);padding:8px 12px;border-radius:8px;cursor:pointer
-  }
-  nav a[aria-current="page"],nav button.active{background:#202020;border-color:#3b3b3b}
-  nav a:hover,nav button:hover{background:#262626}
+  nav{background:#141414;display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  nav button{color:var(--ink);background:#1b1b1b;border:1px solid var(--line);padding:8px 12px;border-radius:8px;cursor:pointer}
+  nav button.active{background:#202020;border-color:#3b3b3b}
   .wrap{max-width:1320px;margin:auto;padding:16px}
-  .grid{display:grid;gap:16px}
-  @media(min-width:1200px){.cols-2{grid-template-columns:2fr 1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
   .btn{background:#2a2a2a;border:1px solid #3b3b3b;color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}
   .btn.ghost{background:transparent;border-style:dashed;color:var(--accent)}
-  .btn.bad{background:#351b1b;border-color:#613232}
   .btn.ok{background:#173525;border-color:#2c7a52}
+  .btn.bad{background:#351b1b;border-color:#613232}
   input,select,textarea{background:#111;border:1px solid #343434;border-radius:8px;padding:8px 10px;color:var(--ink);font:inherit}
   input::placeholder{color:#9aa3b3}
-  textarea{min-height:72px;resize:vertical}
-  .pill{font-size:12px;color:var(--muted);border:1px solid #343434;border-radius:999px;padding:4px 10px}
-  .tag{display:inline-block;margin:4px 6px 0 0;padding:4px 10px;border:1px solid #3c3c3c;border-radius:999px;font-size:12px;cursor:pointer}
-  .tag:hover{background:#232323}
+  .grid{display:grid;gap:16px}
+  .cols-2{grid-template-columns:2fr 1fr}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
   table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  thead{background:#202020}
+  thead{background:#202020;position:sticky;top:0;z-index:1}
   th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
   tbody tr:nth-child(odd){background:#151515}
   tbody tr:hover{background:#202020}
-  td .name{display:flex;gap:10px;align-items:center;min-width:240px}
+  .name{display:flex;gap:10px;align-items:center;min-width:240px}
   .ico{width:26px;height:26px;border-radius:6px;background:#222;display:grid;place-items:center;font-size:15px}
-  .pdf{color:#ff6b6b}.doc{color:#63a6ff}.xls{color:#2ecc71}.zip{color:#f0b23e}.txt{color:#cfcfcf}
-  .star{cursor:pointer;font-size:18px;line-height:1}
-  .star.on{color:#ffd86b}
+  .pdf{color:#ff6b6b}.doc{color:#63a6ff}.img{color:#f5d06f}.html{color:#9fe29f}
   .right{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+  .pill{font-size:12px;color:var(--muted);border:1px solid #343434;border-radius:999px;padding:4px 10px}
+  .tag{display:inline-block;margin:4px 6px 0 0;padding:4px 10px;border:1px solid #3c3c3c;border-radius:999px;font-size:12px;cursor:pointer}
+  .tag:hover{background:#232323}
   .hint{font-size:12px;color:var(--muted)}
+  .tabs{display:flex;gap:8px;margin:8px 0}
+  .tabs button{border-radius:999px}
+  .section{display:none}
+  .section.active{display:block}
+  /* modal */
   .modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:60}
   .modal.open{display:flex}
   .modal .box{width:1100px;max-width:95vw;max-height:92vh;background:#111;border:1px solid #343434;border-radius:12px;display:flex;flex-direction:column}
   .modal .hd{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #343434}
   .modal .bd{padding:0;height:80vh}
   .modal iframe{width:100%;height:100%;border:0;background:#000}
+  @media(min-width:1200px){ .cols-2{grid-template-columns:2fr 1fr} }
   @media print{ nav,.toolbar,.modal{display:none!important} }
 </style>
 </head>
 <body>
 <header>
-  <h1>Dokumenty • ARKON CRM</h1>
-  <div class="small">Wzory umów i oświadczeń. Wyszukiwarka, sortowanie, tagi, podgląd PDF (inline). Dane pomocnicze zapisują się lokalnie.</div>
+  <h1>Wszystkie pliki i umowy • ARKON CRM</h1>
+  <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
 </header>
 
-<nav>
-  <a href="index.html">Pulpit</a>
-  <a href="dokumenty.html" aria-current="page">Dokumenty</a>
-  <button id="btnAll" type="button">Wszystkie</button>
-  <button id="btnGen" type="button">Ogólne</button>
-  <button id="btnPref" type="button">Prefinansowanie</button>
-  <button id="btnDofi" type="button">Dofinansowanie</button>
+<nav class="tabs" role="tablist">
+  <button id="tabDocs" class="active" type="button">📁 Dokumenty (FILES)</button>
+  <button id="tabUpload" type="button">⬆️ Upload (IndexedDB)</button>
+  <button id="tabContracts" type="button">🧾 Umowy (z Klientów)</button>
 </nav>
 
-<div class="wrap grid cols-2">
-  <section class="card">
-    <div class="toolbar">
-      <input id="q" placeholder="🔎 Szukaj po nazwie, opisie lub tagu…" style="min-width:260px" aria-label="Szukaj">
-      <select id="fType" title="Typ pliku" aria-label="Typ pliku">
-        <option value="">Typ: wszystkie</option>
-        <option value="pdf">PDF</option>
-        <option value="doc">DOC/DOCX</option>
-        <option value="xls">XLS/XLSX</option>
-        <option value="txt">TXT</option>
-        <option value="zip">ZIP</option>
-      </select>
-      <select id="sort" aria-label="Sortowanie">
-        <option value="name.asc">Sort: nazwa ↑</option>
-        <option value="name.desc">Sort: nazwa ↓</option>
-        <option value="fav.desc">Sort: ulubione →</option>
-        <option value="mod.desc">Sort: ostatnio modyfikowane</option>
-      </select>
-      <span class="pill">Widocznych: <b id="countVis">0</b></span>
-      <div class="right" style="margin-left:auto">
-        <button id="btnExportCSV" class="btn ghost" type="button">CSV (lista)</button>
-        <label class="btn ghost" title="Wczytaj lokalne pliki żeby pobrać ich datę modyfikacji (bez wysyłania)">
-          Wczytaj metadane<input id="pickMeta" type="file" multiple hidden>
-        </label>
-        <button id="btnReset" class="btn bad" type="button" title="Czyści tylko opisy/tagi/ulubione w przeglądarce">Wyczyść notatki</button>
-      </div>
+<div class="wrap">
+  <!-- Wspólna toolbar -->
+  <div class="toolbar">
+    <input id="q" placeholder="🔎 Szukaj po nazwie/opisie/tagach…" style="min-width:280px" aria-label="Szukaj">
+    <select id="fType" title="Typ pliku" aria-label="Typ">
+      <option value="">Typ: wszystkie</option>
+      <option value="pdf">PDF</option>
+      <option value="doc">DOC/DOCX</option>
+      <option value="img">IMG (jpg/png)</option>
+      <option value="html">HTML</option>
+    </select>
+    <select id="sort" aria-label="Sortowanie">
+      <option value="name.asc">Sort: nazwa ↑</option>
+      <option value="name.desc">Sort: nazwa ↓</option>
+      <option value="mod.desc">Sort: ostatnio modyfikowane</option>
+    </select>
+    <span class="pill">Widocznych: <b id="countVis">0</b></span>
+    <div class="right" style="margin-left:auto">
+      <button id="btnExportCSV" class="btn ghost" type="button">CSV (lista)</button>
+      <button id="btnReloadUpload" class="btn ghost" type="button" title="Przeładuj listę z IndexedDB">Odśwież Upload</button>
     </div>
+  </div>
 
-    <div style="overflow:auto">
-      <table id="tblDocs" role="grid" aria-label="Tabela dokumentów">
-        <thead>
-          <tr>
-            <th>★</th>
-            <th>Nazwa</th>
-            <th>Opis (edytowalny)</th>
-            <th>Tagi</th>
-            <th>Ost. modyfikacja</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
+  <!-- Sekcja: Dokumenty (FILES) -->
+  <section id="secDocs" class="section active">
+    <div class="card">
+      <table>
+        <thead><tr><th>Nazwa</th><th>Opis</th><th>Tagi</th><th>Akcje</th></tr></thead>
+        <tbody id="tbodyDocs"></tbody>
       </table>
+      <div class="hint" style="margin-top:8px">Upewnij się, że pliki z `href` leżą w tym samym katalogu co ta strona (lub zaktualizuj ścieżki).</div>
     </div>
   </section>
 
-  <aside class="grid">
+  <!-- Sekcja: Upload (IndexedDB) -->
+  <section id="secUpload" class="section">
     <div class="card">
-      <b>Szybkie filtry (tagi)</b>
-      <div class="small" style="margin-top:8px">
-        <div class="list-reset" id="quickTags"></div>
+      <div class="right" style="margin-bottom:8px">
+        <button id="btnAddFromUpload" class="btn ok" type="button">Załaduj z Upload</button>
       </div>
-      <div class="hint" style="margin-top:8px">Kliknij tag, aby filtrować. Ponowne kliknięcie usuwa filtr.</div>
+      <table>
+        <thead><tr><th>Nazwa</th><th>Typ</th><th>Źródło</th><th>Akcje</th></tr></thead>
+        <tbody id="tbodyUpload"></tbody>
+      </table>
+      <div class="hint" style="margin-top:8px">Źródło: IndexedDB <code>arkonCRM_local → files</code>. PDF/IMG mają podgląd, inne — pobieranie.</div>
     </div>
+  </section>
 
-    <div class="card small">
-      <b>Gdy PDF „nie wczytuje się”:</b>
-      <ol>
-        <li>Sprawdź <i>dokładną</i> nazwę (polskie znaki, spacje/myślniki).</li>
-        <li>Plik musi leżeć w tym samym katalogu co ta strona.</li>
-        <li>Diakrytyki mogą mieć różne formy Unicode (NFC/NFD) — można też tymczasowo zmienić nazwę na ASCII.</li>
-      </ol>
+  <!-- Sekcja: Umowy (z Klientów) -->
+  <section id="secContracts" class="section">
+    <div class="card">
+      <table>
+        <thead><tr><th>Nr / Data</th><th>Klient / Projekt</th><th>Wartość</th><th>Akcje</th></tr></thead>
+        <tbody id="tbodyContracts"></tbody>
+      </table>
+      <div class="hint" style="margin-top:8px">Ładowane z <code>localStorage['arkon_clients_v1']</code> (pole <code>contracts[]</code> przy kliencie).</div>
     </div>
-  </aside>
+  </section>
 </div>
 
-<!-- MODAL PREVIEW -->
+<!-- MODAL podgląd -->
 <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="box">
     <div class="hd">
@@ -152,316 +141,283 @@
         <button id="mClose" class="btn" type="button">Zamknij</button>
       </div>
     </div>
-    <div class="bd"><iframe id="mFrame" src="about:blank" title="Podgląd dokumentu"></iframe></div>
+    <div class="bd"><iframe id="mFrame" src="about:blank" title="Podgląd"></iframe></div>
   </div>
 </div>
 
 <script>
 'use strict';
-
 /* ===== helpers ===== */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-const INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
-const fmtDate = ts => ts ? new Date(ts).toLocaleString('pl-PL') : '—';
 const fileExt = n => (n.split('.').pop()||'').toLowerCase();
-const sl = (s) => (s||'').toString().toLowerCase();
-const CSVesc = v => { let s = String(v==null?'':v); return /[\";\n]/.test(s) ? '"' + s.replace(/\"/g,'""') + '"' : s; };
+const mimeToType = (name, mime='')=>{
+  const n = (name||'').toLowerCase();
+  if(mime.includes('pdf') || /\.pdf$/.test(n)) return 'pdf';
+  if(mime.includes('image') || /\.(jpe?g|png|gif|webp)$/i.test(n)) return 'img';
+  if(mime.includes('html') || /\.html?$/.test(n)) return 'html';
+  if(mime.includes('word') || /\.(docx?|rtf)$/i.test(n)) return 'doc';
+  return (fileExt(n) || 'file');
+};
+const icoChar = t => t==='pdf'?'📄' : t==='doc'?'📝' : t==='img'?'🖼️' : t==='html'?'🌐' : '📄';
+const clsByType = t => t==='pdf'?'pdf' : t==='doc'?'doc' : t==='img'?'img' : t==='html'?'html' : '';
 
-/* ===== local storage for notes ===== */
-const LS_KEY = 'arkon_docs_notes_v1'; // { [fileName]: {desc, tags:string[], fav:boolean, mod?:number}}
-let notes = load(LS_KEY, {});
+/* ===== WSPÓLNE UI ===== */
+let activeTab = 'docs'; // 'docs' | 'upload' | 'contracts'
+let filter = { q:'', type:'', sort:'name.asc' };
 
-function load(key, fallback){
-  try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; }
+$('#tabDocs').onclick = ()=>switchTab('docs');
+$('#tabUpload').onclick = ()=>switchTab('upload');
+$('#tabContracts').onclick = ()=>switchTab('contracts');
+
+function switchTab(key){
+  activeTab = key;
+  $$('#secDocs, #secUpload, #secContracts').forEach(el=>el.classList.remove('active'));
+  if(key==='docs') $('#secDocs').classList.add('active');
+  if(key==='upload') $('#secUpload').classList.add('active');
+  if(key==='contracts') $('#secContracts').classList.add('active');
+  $$('.tabs button').forEach(b=>b.classList.remove('active'));
+  (key==='docs'?$('#tabDocs'):key==='upload'?$('#tabUpload'):$('#tabContracts')).classList.add('active');
+  render();
 }
-function saveNotes(){
-  localStorage.setItem(LS_KEY, JSON.stringify(notes));
-  buildQuickTags();
-}
 
-/* ===== pliki ===== */
+$('#q').oninput = e=>{ filter.q = e.target.value; render(); };
+$('#fType').onchange = e=>{ filter.type = e.target.value; render(); };
+$('#sort').onchange = e=>{ filter.sort = e.target.value; render(); };
+$('#btnExportCSV').onclick = exportCSV;
+
+/* ===== MODAL ===== */
+const modal = $('#modal'), mFrame = $('#mFrame'), mOpen = $('#mOpen'), mTitle = $('#mTitle');
+$('#mClose').onclick = closePreview;
+function openPreview(name, href, type){
+  mTitle.textContent = name;
+  if(type==='html'){ // osadzamy html (blob URL lub ścieżka)
+    mFrame.src = href;
+  }else{
+    mFrame.src = href;
+  }
+  mOpen.href = href;
+  modal.classList.add('open');
+}
+function closePreview(){ mFrame.src='about:blank'; modal.classList.remove('open'); }
+
+/* ===== DOKUMENTY (FILES) ===== */
 const FILES = [
+  /* KLIENT — ZAŁĄCZNIKI */
+  { name:'ANKIETA Audyt Energetyczny .docx', href:'ANKIETA Audyt Energetyczny .docx', desc:'Ankieta do audytu energetycznego (DOCX).', tags:['ogólne','audyt','doc'] },
+  { name:'OŚWIADCZENIE BENEFICJENTA – wizja lokalna (audyt energetyczny).pdf',
+    href:'OSÌ WIADCZENIE BENEFICJENTA O PRZEPROWADZENIU WIZJI LOKALNEJ NIERUCHOMOSÌ CI W CELU WYKONANIA AUDYTU ENERGETYCZNEGO BUDYNKU.pdf',
+    desc:'Oświadczenie beneficjenta o przeprowadzeniu wizji lokalnej (PDF).', tags:['ogólne','oświadczenie','audyt','pdf'] },
+  { name:'Umowa ARKON – ocieplenie 2025.pdf',
+    href:'umowa arkon ocieplenie 2025 (3) (1) (1) (1) (1) (1) (1) (1) (1).pdf',
+    desc:'Wzór umowy ARKON – ocieplenie (2025).', tags:['umowa','ogólne','pdf'] },
+  { name:'Zdjęcie WhatsApp 2025-07-20.jpg',
+    href:'Zdjęcie WhatsApp 2025-07-20 o 19.05.43_2df47b5f.jpg22.jpg',
+    desc:'Zdjęcie z wizji lokalnej.', tags:['wizja','foto'] },
+
   /* OGÓLNE */
-  { name:'UMOWA Z WYKONAWCĄ  arkon.pdf', href:'UMOWA Z WYKONAWCĄ  arkon.pdf',
-    desc:'Wzór umowy z Wykonawcą (PDF).', tags:['umowa','ogólne','prefinansowanie','dofinansowanie'] },
-  { name:'PEŁNOMOCNICTWO.docx', href:'PEŁNOMOCNICTWO.docx',
-    desc:'Pełnomocnictwo do reprezentowania w programie/urzędzie.', tags:['pełnomocnictwo','ogólne','prefinansowanie','dofinansowanie'] },
-  { name:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx', href:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx',
-    desc:'Zgoda współmałżonka na wykonanie zakresu/zgłoszenie.', tags:['oświadczenie','ogólne','prefinansowanie','dofinansowanie'] },
-  { name:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx', href:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx',
-    desc:'Zgoda współwłaściciela nieruchomości na realizację inwestycji.', tags:['oświadczenie','ogólne','prefinansowanie','dofinansowanie'] },
-  { name:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf', href:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf',
-    desc:'Dokument PDF (identyfikator).', tags:['ogólne','pdf'] },
-
-  /* PREFINANSOWANIE — + zaliczka, protokół */
-  { name:'zalacznik_do_instrukcji_wniosku_o_dofinansowanie_wzor_dyspozycji_wyplaty_zaliczki-14-06-2024.pdf',
-    href:'zalacznik_do_instrukcji_wniosku_o_dofinansowanie_wzor_dyspozycji_wyplaty_zaliczki-14-06-2024.pdf',
-    desc:'Wzór dyspozycji wypłaty zaliczki.', tags:['prefinansowanie','zaliczka','pdf'] },
-  { name:'PROTOKÓŁ ODBIORU PRAC.docx', href:'PROTOKÓŁ ODBIORU PRAC.docx',
-    desc:'Protokół odbioru prac (DOCX).', tags:['prefinansowanie','protokół'] },
-  { name:'protokolu_odbioru_prac_wykonawcy.pdf', href:'protokolu_odbioru_prac_wykonawcy.pdf',
-    desc:'Protokół odbioru prac (PDF).', tags:['prefinansowanie','protokół','pdf'] },
-
-  /* DOFINANSOWANIE — + zapłata, PB-5 */
-  { name:'OŚWIADCZENIE O DOKONANIU ZAPŁATY.docx', href:'OŚWIADCZENIE O DOKONANIU ZAPŁATY.docx',
-    desc:'Oświadczenie potwierdzające dokonanie zapłaty.', tags:['dofinansowanie','oświadczenie','płatność'] },
-  { name:'oswiadczenie_o_posiadanym_prawie_do_dysponowania_nieruchomoscia_na_cele_budowlane_pb-5v11.docx',
-    href:'oswiadczenie_o_posiadanym_prawie_do_dysponowania_nieruchomoscia_na_cele_budowlane_pb-5v11.docx',
-    desc:'PB-5 v11: oświadczenie o prawie do dysponowania nieruchomością.', tags:['dofinansowanie','oświadczenie'] }
+  { name:'UMOWA Z WYKONAWCĄ  arkon.pdf', href:'UMOWA Z WYKONAWCĄ  arkon.pdf', desc:'Wzór umowy z Wykonawcą (PDF).', tags:['umowa','ogólne','prefinansowanie','dofinansowanie'] },
+  { name:'PEŁNOMOCNICTWO.docx', href:'PEŁNOMOCNICTWO.docx', desc:'Pełnomocnictwo do reprezentowania w programie/urzędzie.', tags:['pełnomocnictwo','ogólne','prefinansowanie','dofinansowanie'] },
+  { name:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx', href:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx', desc:'Zgoda współmałżonka.', tags:['oświadczenie','ogólne'] },
+  { name:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx', href:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx', desc:'Zgoda współwłaściciela.', tags:['oświadczenie','ogólne'] },
+  { name:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf', href:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf', desc:'Dokument PDF (identyfikator).', tags:['ogólne','pdf'] },
+  { name:'protokolu_odbioru_prac_wykonawcy.pdf', href:'protokolu_odbioru_prac_wykonawcy.pdf', desc:'Protokół odbioru prac (PDF).', tags:['prefinansowanie','protokół','pdf'] }
 ];
 
-/* ===== stan & UI ===== */
-let filter = { q:'', type:'', sort:'name.asc', tag:'' };
+function renderDocs(){
+  const tb = $('#tbodyDocs'); tb.innerHTML='';
+  let rows = FILES.slice();
+  rows = applyCommonFilters(rows.map(x=>({
+    type: mimeToType(x.name,''), name:x.name, desc:x.desc||'', tags:x.tags||[], href: x.href
+  })));
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const tdN = document.createElement('td');
+    tdN.innerHTML = `<div class="name"><div class="ico ${clsByType(r.type)}">${icoChar(r.type)}</div><a href="${encodeURI(r.href)}" target="_blank" rel="noopener">${r.name}</a></div>`;
+    const tdD = document.createElement('td'); tdD.textContent = r.desc||'';
+    const tdT = document.createElement('td'); tdT.textContent = (r.tags||[]).join(', ');
+    const tdA = document.createElement('td'); tdA.className='right';
+    const btnOpen = document.createElement('a'); btnOpen.className='btn ghost'; btnOpen.textContent='Otwórz'; btnOpen.href=encodeURI(r.href); btnOpen.target='_blank'; btnOpen.rel='noopener';
+    if(r.type==='pdf'){ btnOpen.onclick=(e)=>{ e.preventDefault(); openPreview(r.name, encodeURI(r.href), r.type); }; }
+    const btnDl = document.createElement('a'); btnDl.className='btn'; btnDl.textContent='Pobierz'; btnDl.href=encodeURI(r.href); btnDl.download=r.name;
+    tdA.appendChild(btnOpen); tdA.appendChild(btnDl);
+    tr.appendChild(tdN); tr.appendChild(tdD); tr.appendChild(tdT); tr.appendChild(tdA);
+    tb.appendChild(tr);
+  });
+}
 
-/* tag z URL (?tag=dofinansowanie) */
-const usp = new URLSearchParams(location.search);
-if(usp.get('tag')){ filter.tag = usp.get('tag'); }
+/* ===== UPLOAD (IndexedDB) ===== */
+let db;
+function dbOpen(){
+  return new Promise((resolve,reject)=>{
+    const r = indexedDB.open('arkonCRM_local', 2);
+    r.onupgradeneeded = ()=>{ const d=r.result; if(!d.objectStoreNames.contains('files')) d.createObjectStore('files',{keyPath:'id'}); };
+    r.onsuccess = ()=>{ db=r.result; resolve(); };
+    r.onerror   = ()=>reject(r.error);
+  });
+}
+async function dbListFiles(){
+  await dbOpen();
+  return new Promise((resolve,reject)=>{
+    const out=[];
+    const tx=db.transaction('files','readonly');
+    const store=tx.objectStore('files');
+    const req=store.openCursor();
+    req.onsuccess = (e)=>{
+      const cur=e.target.result;
+      if(cur){ out.push(cur.value); cur.continue(); } else resolve(out);
+    };
+    req.onerror=()=>reject(req.error);
+  });
+}
 
-$('#q').addEventListener('input', e=>{ filter.q=e.target.value; render(); });
-$('#fType').addEventListener('change', e=>{ filter.type=e.target.value; render(); });
-$('#sort').addEventListener('change', e=>{ filter.sort=e.target.value; render(); });
-$('#btnReset').addEventListener('click', ()=>{ 
-  if(!confirm('Wyczyścić lokalne opisy, tagi i ulubione?')) return;
-  notes = {}; saveNotes(); render();
-});
-$('#btnExportCSV').addEventListener('click', exportCSV);
-$('#pickMeta').addEventListener('change', handlePickMeta);
+async function loadUpload(){
+  const tb = $('#tbodyUpload'); tb.innerHTML='';
+  const list = await dbListFiles();
+  let rows = list.map(f=>{
+    const name = f.name || f.filename || f.originalName || 'plik';
+    const type = mimeToType(name, (f.type||''));
+    const href = f.blob ? URL.createObjectURL(f.blob) : '#';
+    const src  = f.origin || 'Upload';
+    return {name,type,href,src};
+  });
+  rows = applyCommonFilters(rows);
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const tdN = document.createElement('td');
+    tdN.innerHTML = `<div class="name"><div class="ico ${clsByType(r.type)}">${icoChar(r.type)}</div>${r.name}</div>`;
+    const tdT = document.createElement('td'); tdT.textContent = r.type.toUpperCase();
+    const tdS = document.createElement('td'); tdS.textContent = r.src;
+    const tdA = document.createElement('td'); tdA.className='right';
+    const btnOpen = document.createElement('button'); btnOpen.className='btn ghost'; btnOpen.textContent='Podgląd/Otwórz';
+    btnOpen.onclick = ()=> openPreview(r.name, r.href, r.type);
+    const aDl = document.createElement('a'); aDl.className='btn'; aDl.textContent='Pobierz'; aDl.href=r.href; aDl.download=r.name;
+    tdA.appendChild(btnOpen); tdA.appendChild(aDl);
+    tr.appendChild(tdN); tr.appendChild(tdT); tr.appendChild(tdS); tr.appendChild(tdA);
+    tb.appendChild(tr);
+  });
+}
+$('#btnAddFromUpload').onclick = loadUpload;
+$('#btnReloadUpload').onclick = loadUpload;
 
-/* szybkie filtry — działy */
-$('#btnAll').addEventListener('click', ()=>{ filter.tag=''; render(); });
-$('#btnGen').addEventListener('click', ()=>{ filter.tag='ogólne'; render(); });
-$('#btnPref').addEventListener('click', ()=>{ filter.tag='prefinansowanie'; render(); });
-$('#btnDofi').addEventListener('click', ()=>{ filter.tag='dofinansowanie'; render(); });
-
-/* ===== render ===== */
-function applyFilters(rows){
-  // scal notatki (desc/tags/fav/mod)
-  rows = rows.map(r=>{
-    const n = notes[r.name] || {};
-    return Object.assign({}, r, { _desc: n.desc ?? r.desc ?? '', _tags: Array.isArray(n.tags)? n.tags : (r.tags||[]), _fav: !!n.fav, _mod: n.mod || 0 });
+/* ===== UMOWY (z Klientów) ===== */
+function readClients(){
+  try{ return JSON.parse(localStorage.getItem('arkon_clients_v1')||'[]') }catch{ return [] }
+}
+function renderContracts(){
+  const tb = $('#tbodyContracts'); tb.innerHTML='';
+  const clients = readClients();
+  let rows = [];
+  clients.forEach(c=>{
+    (c.contracts||[]).forEach(k=>{
+      rows.push({
+        name: (k.no||'bez nr'),
+        date: k.date||'',
+        client: c.name||'',
+        project: k.projectId || '',
+        value: k.value || 0,
+        html: k.html || '',
+        savedAt: k.savedAt || 0
+      });
+    });
+  });
+  // map do wspólnego formatu dla filtrów
+  rows = rows.map(r=>({
+    type:'html',
+    name: `${r.name} / ${r.date||''}`,
+    desc: r.client + (r.project?` — ${r.project}`:''),
+    tags:['umowa'],
+    href: r.html ? URL.createObjectURL(new Blob([`<!doctype html><meta charset="utf-8">`+r.html],{type:'text/html'})) : '#',
+    value: r.value,
+    savedAt: r.savedAt
+  }));
+  rows = applyCommonFilters(rows);
+  rows.sort((a,b)=>{
+    if(filter.sort==='mod.desc') return (b.savedAt||0)-(a.savedAt||0);
+    return a.name.localeCompare(b.name,'pl',{sensitivity:'base'});
   });
 
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const tdNo = document.createElement('td');
+    tdNo.innerHTML = `<div class="name"><div class="ico ${clsByType(r.type)}">${icoChar(r.type)}</div>${r.name}</div>`;
+    const tdCli = document.createElement('td'); tdCli.textContent = r.desc;
+    const tdVal = document.createElement('td'); tdVal.textContent = r.value ? (new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0}).format(r.value)+' zł') : '—';
+    const tdA = document.createElement('td'); tdA.className='right';
+    const btnPrev = document.createElement('button'); btnPrev.className='btn ghost'; btnPrev.textContent='Podgląd'; btnPrev.onclick=()=>openPreview(r.name, r.href,'html');
+    const aDl = document.createElement('a'); aDl.className='btn'; aDl.textContent='Pobierz (HTML)'; aDl.href=r.href; aDl.download=(r.name.replace(/\s+/g,'_')+'.html');
+    tdA.appendChild(btnPrev); tdA.appendChild(aDl);
+    tr.appendChild(tdNo); tr.appendChild(tdCli); tr.appendChild(tdVal); tr.appendChild(tdA);
+    $('#tbodyContracts').appendChild(tr);
+  });
+}
+
+/* ===== WSPÓLNE: filtrowanie/sort ===== */
+function applyCommonFilters(rows){
+  // wyszukiwanie
   if(filter.q){
-    const q = sl(filter.q);
-    rows = rows.filter(r => sl(r.name).includes(q) || sl(r._desc).includes(q) || (r._tags||[]).some(t=>sl(t).includes(q)));
-  }
-  if(filter.type){
+    const q = filter.q.toLowerCase();
     rows = rows.filter(r=>{
-      const ext = fileExt(r.name);
-      if(filter.type==='doc') return ['doc','docx'].includes(ext);
-      if(filter.type==='xls') return ['xls','xlsx'].includes(ext);
-      return ext===filter.type;
+      const tags = (r.tags||[]).join(' ').toLowerCase();
+      const desc = (r.desc||'').toLowerCase();
+      return (r.name||'').toLowerCase().includes(q) || desc.includes(q) || tags.includes(q);
     });
   }
-  if(filter.tag){
-    const t = sl(filter.tag);
-    rows = rows.filter(r => (r._tags||[]).some(x=>sl(x)===t));
+  // typ
+  if(filter.type){
+    rows = rows.filter(r=>mimeToType(r.name).replace('file','') === filter.type || r.type===filter.type);
   }
-
+  // sort
   rows.sort((a,b)=>{
     switch(filter.sort){
       case 'name.asc':  return a.name.localeCompare(b.name,'pl',{sensitivity:'base'});
       case 'name.desc': return b.name.localeCompare(a.name,'pl',{sensitivity:'base'});
-      case 'fav.desc':  return (b._fav?1:0) - (a._fav?1:0) || a.name.localeCompare(b.name,'pl');
-      case 'mod.desc':  return (b._mod||0) - (a._mod||0) || a.name.localeCompare(b.name,'pl');
+      case 'mod.desc':  return (b.savedAt||0)-(a.savedAt||0);
       default: return 0;
     }
   });
+  // licznik
+  $('#countVis').textContent = rows.length;
   return rows;
 }
 
-function render(){
-  let rows = applyFilters(FILES.slice());
-  $('#countVis').textContent = rows.length;
-  const tb = $('#tbody'); tb.innerHTML='';
-
-  if(!rows.length){
-    tb.innerHTML = '<tr><td colspan="6" class="small">Brak wyników dla bieżących filtrów.</td></tr>';
-    return;
-  }
-
-  rows.forEach(file=>{
-    const tr = document.createElement('tr');
-    // ★ ulubione
-    const tdFav = document.createElement('td');
-    const star = document.createElement('span');
-    star.className = 'star' + (file._fav?' on':'');
-    star.textContent = file._fav ? '★' : '☆';
-    star.title = file._fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych';
-    star.addEventListener('click', ()=>{
-      const n = notes[file.name] || {};
-      n.fav = !file._fav;
-      notes[file.name] = n; saveNotes(); render();
-    });
-    tdFav.appendChild(star);
-
-    // Nazwa + ikonka
-    const tdName = document.createElement('td');
-    const box = document.createElement('div'); box.className='name';
-    const ico = document.createElement('div');
-    const ext = fileExt(file.name);
-    ico.className = 'ico ' + (ext==='pdf'?'pdf': (['doc','docx'].includes(ext)?'doc': (['xls','xlsx'].includes(ext)?'xls': (ext==='zip'?'zip': (ext==='txt'?'txt':'')))));
-    ico.textContent = ext==='pdf'?'📄': (['doc','docx'].includes(ext)?'📝': (['xls','xlsx'].includes(ext)?'📊': (ext==='zip'?'🗜':'📄')));
-    const a = document.createElement('a'); a.href=encodeURI(file.href); a.textContent=file.name; a.title='Otwórz';
-    a.addEventListener('click', (e)=>{
-      // PDF podgląd w modalu; inne — standardowo
-      if(fileExt(file.name)==='pdf'){
-        e.preventDefault();
-        openPreview(file);
-      }
-    });
-    box.appendChild(ico); box.appendChild(a);
-    tdName.appendChild(box);
-
-    // Opis (edytowalny)
-    const tdDesc = document.createElement('td');
-    const ta = document.createElement('textarea'); ta.placeholder='Opis dokumentu…'; ta.value=file._desc||'';
-    ta.addEventListener('input', debounce(()=>{ setNote(file.name, {desc:ta.value}); }, 200));
-    tdDesc.appendChild(ta);
-
-    // Tagi (edytowalne, po przecinku)
-    const tdTags = document.createElement('td');
-    const inpTags = document.createElement('input'); inpTags.placeholder='np. umowa, prawne'; inpTags.value=(file._tags||[]).join(', ');
-    inpTags.addEventListener('input', debounce(()=>{
-      const tags = inpTags.value.split(',').map(s=>s.trim()).filter(Boolean);
-      setNote(file.name, {tags});
-    }, 200));
-    tdTags.appendChild(inpTags);
-
-    // Ost. modyfikacja
-    const tdMod = document.createElement('td');
-    tdMod.textContent = file._mod ? fmtDate(file._mod) : '—';
-
-    // Akcje
-    const tdAct = document.createElement('td');
-    tdAct.className='right';
-    const btnOpen = document.createElement('a');
-    btnOpen.className='btn ghost'; btnOpen.href=encodeURI(file.href); btnOpen.target='_blank'; btnOpen.rel='noopener';
-    btnOpen.textContent = 'Otwórz';
-    btnOpen.addEventListener('click', (e)=>{
-      if(fileExt(file.name)==='pdf'){ e.preventDefault(); openPreview(file); }
-    });
-    const btnDl = document.createElement('a');
-    btnDl.className='btn'; btnDl.href=encodeURI(file.href); btnDl.download=file.name; btnDl.textContent='Pobierz';
-
-    tdAct.appendChild(btnOpen);
-    tdAct.appendChild(btnDl);
-
-    tr.appendChild(tdFav);
-    tr.appendChild(tdName);
-    tr.appendChild(tdDesc);
-    tr.appendChild(tdTags);
-    tr.appendChild(tdMod);
-    tr.appendChild(tdAct);
-
-    $('#tbody').appendChild(tr);
-  });
-}
-
-/* ===== tag chmura ===== */
-function buildQuickTags(){
-  const box = $('#quickTags'); box.innerHTML='';
-  const map = new Map();
-  FILES.forEach(f=>{ (f.tags||[]).forEach(t=> map.set(t, (map.get(t)||0)+1)); });
-  Object.values(notes).forEach(n=>{ (n.tags||[]).forEach(t=> map.set(t, (map.get(t)||0)+1)); });
-
-  if(map.size===0){ box.innerHTML='<div class="small">Brak tagów. Dodaj w tabeli.</div>'; return; }
-
-  const sorted = [...map.entries()].sort((a,b)=> b[1]-a[1]);
-  sorted.slice(0,30).forEach(([tag,count])=>{
-    const btn = document.createElement('button');
-    btn.className='tag'; btn.type='button';
-    btn.textContent = tag + ' ('+count+')';
-    btn.addEventListener('click', ()=>{
-      filter.tag = (filter.tag===tag ? '' : tag);
-      render();
-    });
-    if(filter.tag===tag){ btn.style.background='#262626'; btn.style.borderColor='#4a4a4a'; }
-    box.appendChild(btn);
-  });
-}
-
-/* ===== notatki ===== */
-function setNote(name, part){
-  const n = notes[name] || {};
-  Object.assign(n, part);
-  notes[name] = n;
-  saveNotes();
-}
-
-/* ===== preview modal (PDF) ===== */
-const modal = $('#modal'), mFrame = $('#mFrame'), mOpen = $('#mOpen'), mTitle = $('#mTitle');
-$('#mClose').addEventListener('click', closePreview);
-function openPreview(file){
-  mTitle.textContent = file.name;
-  mFrame.src = encodeURI(file.href);
-  mOpen.href = encodeURI(file.href);
-  modal.classList.add('open');
-}
-function closePreview(){
-  mFrame.src = 'about:blank';
-  modal.classList.remove('open');
-}
-
-/* ===== wczytaj metadane z lokalnych plików ===== */
-async function handlePickMeta(e){
-  const files = Array.from(e.target.files||[]);
-  if(!files.length) return;
-  let changed = 0;
-  files.forEach(f=>{
-    const match = FILES.find(x=>x.name===f.name);
-    if(!match) return;
-    const n = notes[match.name] || {};
-    n.mod = f.lastModified || Date.now();
-    notes[match.name] = n;
-    changed++;
-  });
-  saveNotes();
-  if(changed===0) alert('Nie dopasowano nazw — upewnij się, że wybierasz te same pliki.');
-  render();
-  e.target.value = '';
-}
-
-/* ===== eksport CSV ===== */
+/* ===== eksport CSV (wg aktywnej zakładki) ===== */
 function exportCSV(){
-  const rows = applyFilters(FILES.slice());
-  const out = [['Ulubione','Nazwa','Opis','Tagi','Ost. modyfikacja','Ścieżka']];
-  rows.forEach(r=>{
-    out.push([
-      r._fav?'TAK':'NIE',
-      r.name,
-      (r._desc||'').replace(/\s+/g,' ').trim(),
-      (r._tags||[]).join('|'),
-      r._mod? new Date(r._mod).toISOString() : '',
-      r.href
-    ]);
-  });
+  let rows=[];
+  if(activeTab==='docs'){
+    rows = FILES.map(x=>({name:x.name, desc:x.desc||'', tags:(x.tags||[]).join('|'), href:x.href, type:mimeToType(x.name)}));
+  }else if(activeTab==='upload'){
+    // Wymuszone przeładowanie i zrzut (bez podglądów)
+    rows = Array.from($('#tbodyUpload').querySelectorAll('tr')).map(tr=>{
+      const tds = tr.querySelectorAll('td');
+      return { name: tds[0]?.innerText.trim(), desc:'', tags:'', href:'(blob:URL)', type:(tds[1]?.innerText.trim()||'').toLowerCase() };
+    });
+  }else{
+    rows = Array.from($('#tbodyContracts').querySelectorAll('tr')).map(tr=>{
+      const tds = tr.querySelectorAll('td');
+      return { name: tds[0]?.innerText.trim(), desc: tds[1]?.innerText.trim(), tags:'umowa', href:'(blob:HTML)', type:'html' };
+    });
+  }
+  const CSVesc = v => { let s=String(v==null?'':v); return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+  const out = [['Nazwa','Opis','Tagi','Typ','Ścieżka']];
+  rows.forEach(r=>out.push([r.name,r.desc,r.tags,r.type,r.href]));
   const csv = out.map(line=>line.map(CSVesc).join(';')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'arkon_dokumenty.csv';
+  a.download = 'arkon_wszystko.csv';
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
-/* ===== debounce ===== */
-function debounce(fn,ms){ let t; return function(){ const a=arguments; clearTimeout(t); t=setTimeout(()=>fn.apply(null,a), ms||180); }; }
-
 /* ===== init ===== */
-function init(){
-  // zasiej domyślne opisy/tagi jeśli brak notatek
-  FILES.forEach(f=>{
-    if(!notes[f.name]){
-      notes[f.name] = { desc:f.desc||'', tags:(f.tags||[]), fav:false };
-    }
-  });
-  saveNotes();
-  buildQuickTags();
-  render();
+function render(){
+  if(activeTab==='docs') renderDocs();
+  if(activeTab==='upload') {/* nic — sekcja renderuje się po loadUpload() */ }
+  if(activeTab==='contracts') renderContracts();
 }
-init();
+// auto-start
+render();
 </script>
 </body>
 </html>
