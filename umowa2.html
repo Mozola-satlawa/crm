@@ -45,11 +45,8 @@
     <div class="card hints">
       <h1>Szablon umowy ARKON</h1>
       <div class="small">
-        Ten plik to <b>edytowalny szablon</b>. Zawiera znaczniki (merge‑tagi), które mogą zostać
-        automatycznie zastąpione danymi klienta w pliku <b>umowy.html</b>:
-        <code class="tag">{{client.name}}</code> <code class="tag">{{client.address}}</code>
-        <code class="tag">{{project.name}}</code> <code class="tag">{{today}}</code>
-        itd. W tym pliku możesz również <b>wkleić pełną treść swojej umowy</b>, do której posiadasz prawa.
+        To <b>edytowalny szablon</b> z tagami (np. <code class="tag">{{client.name}}</code>) automatycznie uzupełnianymi danymi klienta.  
+        Wklejona jest pełna treść z klauzulami i kruczkami prawnymi.
       </div>
       <div class="toolbar">
         <button class="btn" onclick="window.print()">Drukuj / PDF</button>
@@ -59,38 +56,67 @@
 
     <!-- WŁAŚCIWA TREŚĆ UMOWY -->
     <div id="contract" class="doc" contenteditable="true">
-      <h2 style="text-align:center;margin-top:0">UMOWA O WYKONANIE USŁUG / DOSTAWĘ</h2>
+      <h2 style="text-align:center;margin-top:0">UMOWA O WYKONANIE USŁUG BUDOWLANYCH</h2>
       <p><b>Data i miejsce:</b> {{city}}, dnia {{today}}</p>
 
       <p><b>Strony:</b><br>
-      <b>Zamawiający (Klient):</b> {{client.name}}, adres: {{client.address}}, e‑mail: {{client.email}}, tel: {{client.phone}}.<br>
-      <b>Wykonawca:</b> ARKON sp. z o.o., NIP: {{company.nip}}, REGON: {{company.regon}}, siedziba: {{company.address}}.</p>
+      <b>Zamawiający (Klient):</b> {{client.name}}, adres: {{client.address}}, e-mail: {{client.email}}, tel: {{client.phone}}.<br>
+      <b>Wykonawca:</b> ARKON Sp. z o.o., ul. Żagańska 36/5, 68-200 Żary, NIP: {{company.nip}}, REGON: {{company.regon}}, reprezentowana przez {{company.representative}}.</p>
 
       <p><b>Przedmiot umowy:</b> Realizacja projektu: „{{project.name}}” (etap: {{project.stage}}) zgodnie z ofertą nr {{contract.no}} z dnia {{contract.date}} o wartości {{contract.value}} zł brutto.</p>
 
       <h3>§1 Postanowienia ogólne</h3>
-      <p>(Tutaj wklej swoją pełną treść paragrafów. Zachowaj numerację i śródtytuły. Możesz używać list numerowanych i podpunktów.)</p>
-
-      <h3>§2 Warunki płatności</h3>
       <ol>
-        <li>Zaliczka w wysokości {{payments.deposit}} zł płatna do {{payments.deposit_date}}.</li>
-        <li>Pozostała kwota płatna po odbiorze końcowym.</li>
+        <li>Umowa zostaje zawarta na podstawie art. 647 Kodeksu cywilnego.</li>
+        <li>Wykonawca zobowiązuje się wykonać roboty budowlane zgodnie z zasadami sztuki budowlanej oraz obowiązującymi przepisami prawa.</li>
+        <li>Zamawiający zobowiązuje się do terminowego regulowania należności i współdziałania przy realizacji prac.</li>
       </ol>
 
-      <h3>§3 Terminy</h3>
-      <p>Planowany termin rozpoczęcia: {{dates.start}}. Planowany termin zakończenia: {{dates.end}}.</p>
+      <h3>§2 Wynagrodzenie i płatności</h3>
+      <ol>
+        <li>Całkowite wynagrodzenie ustala się na {{contract.value}} zł brutto.</li>
+        <li>Zamawiający zapłaci Wykonawcy zaliczkę w wysokości {{payments.deposit}} zł do dnia {{payments.deposit_date}}.</li>
+        <li>Pozostała część wynagrodzenia płatna przelewem w terminie 7 dni od podpisania protokołu odbioru końcowego.</li>
+        <li>W przypadku opóźnień w płatnościach naliczane będą odsetki ustawowe za opóźnienie.</li>
+      </ol>
 
-      <h3>§4 Gwarancja / Rękojmia</h3>
-      <p>Okres gwarancji: {{warranty.months}} miesięcy. Warunki gwarancji wg karty gwarancyjnej i przepisów prawa.</p>
+      <h3>§3 Terminy realizacji</h3>
+      <p>Rozpoczęcie prac: {{dates.start}}. Zakończenie prac: {{dates.end}}. Terminy mogą ulec zmianie w przypadku siły wyższej lub zawinionego opóźnienia Zamawiającego.</p>
 
-      <h3>§5 Odstąpienie od umowy</h3>
-      <p>(Wklej pełny zapis dotyczący odstąpienia od umowy i trybu wykonania tego prawa zgodnie z posiadanym wzorcem.)</p>
+      <h3>§4 Gwarancja i rękojmia</h3>
+      <ol>
+        <li>Wykonawca udziela gwarancji na okres {{warranty.months}} miesięcy.</li>
+        <li>Zakres gwarancji obejmuje wady fizyczne powstałe z winy Wykonawcy.</li>
+        <li>Uprawnienia z rękojmi wynikają z przepisów Kodeksu cywilnego.</li>
+      </ol>
 
-      <h3>§6 Ochrona danych</h3>
-      <p>(Wklej klauzulę RODO / przetwarzania danych, jeśli jest przewidziana.)</p>
+      <h3>§5 Obowiązki stron</h3>
+      <ol>
+        <li>Wykonawca zapewni materiały i narzędzia zgodnie z ofertą.</li>
+        <li>Zamawiający umożliwi dostęp do miejsca realizacji oraz zapewni media niezbędne do wykonania prac.</li>
+      </ol>
 
-      <h3>§7 Postanowienia końcowe</h3>
-      <p>(Pozostałe klauzule, sąd właściwy, liczba egzemplarzy itd.)</p>
+      <h3>§6 Odstąpienie od umowy</h3>
+      <ol>
+        <li>Zamawiający może odstąpić od umowy w terminie 14 dni od jej zawarcia bez podania przyczyny, składając pisemne oświadczenie.</li>
+        <li>W razie odstąpienia Wykonawca zwróci Zamawiającemu otrzymaną zaliczkę w terminie 14 dni, pomniejszoną o poniesione koszty.</li>
+        <li>Po rozpoczęciu prac odstąpienie możliwe jest jedynie z ważnych przyczyn przewidzianych w Kodeksie cywilnym.</li>
+      </ol>
+
+      <h3>§7 Odpowiedzialność</h3>
+      <p>Wykonawca ponosi odpowiedzialność za szkody powstałe z jego winy podczas realizacji umowy. Zamawiający odpowiada za szkody wynikłe z dostarczenia wadliwych danych, dokumentacji lub braku dostępu do terenu.</p>
+
+      <h3>§8 Ochrona danych osobowych (RODO)</h3>
+      <p>Administratorem danych osobowych jest ARKON Sp. z o.o. Dane osobowe Zamawiającego będą przetwarzane w celu realizacji umowy, wystawienia dokumentów księgowych oraz ewentualnych roszczeń prawnych.  
+      Zamawiającemu przysługuje prawo dostępu do treści swoich danych, ich sprostowania, ograniczenia przetwarzania, przeniesienia, wniesienia sprzeciwu oraz złożenia skargi do PUODO.</p>
+
+      <h3>§9 Postanowienia końcowe</h3>
+      <ol>
+        <li>W sprawach nieuregulowanych niniejszą umową zastosowanie mają przepisy Kodeksu cywilnego.</li>
+        <li>Wszelkie zmiany wymagają formy pisemnej pod rygorem nieważności.</li>
+        <li>Spory wynikłe z niniejszej umowy rozstrzygać będzie sąd właściwy dla siedziby Wykonawcy.</li>
+        <li>Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
+      </ol>
 
       <p style="margin-top:28px;display:flex;justify-content:space-between;gap:40px">
         <span>..............................................<br>Podpis Zamawiającego</span>
@@ -110,7 +136,7 @@
 <script>
 function toggleHelp(){
   const c=document.querySelector('.card.hints');
-  c.style.display = c.style.display==='none' ? '' : 'none';
+  c.style.display = c.style.display==='none' ? '' : 'block';
 }
 </script>
 </body>
