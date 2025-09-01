@@ -22,9 +22,11 @@
   .doc{background:#0e1433;border:1px solid #2b3a77;border-radius:12px;padding:18px}
   h1{margin:0 0 8px}
   h2{margin:16px 0 8px;font-size:18px}
+  h3{margin:18px 0 8px;font-size:16px}
   .muted{color:var(--muted)}
   [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:8px;padding:6px}
   code.tag{background:#101a45;border:1px solid #2b3a77;border-radius:6px;padding:2px 6px}
+  ul,ol{margin:8px 0 8px 20px}
   @media print{
     nav,.toolbar,.card.hints{display:none!important}
     body{background:#fff;color:#000}
@@ -45,77 +47,121 @@
     <div class="card hints">
       <h1>Szablon umowy ARKON</h1>
       <div class="small">
-        To <b>edytowalny szablon</b> z tagami (np. <code class="tag">{{client.name}}</code>) automatycznie uzupełnianymi danymi klienta.  
-        Wklejona jest pełna treść z klauzulami i kruczkami prawnymi.
+        Ten plik to <b>edytowalny szablon</b>. Zawiera znaczniki (merge-tagi), które mogą zostać
+        automatycznie zastąpione danymi klienta w pliku <b>umowy.html</b>:
+        <code class="tag">{{client.name}}</code> <code class="tag">{{client.address}}</code>
+        <code class="tag">{{project.name}}</code> <code class="tag">{{today}}</code> itd.
+        Poniżej wklejona jest pełna treść wzorca z klauzulami i RODO. Możesz modyfikować dowolny fragment, drukować oraz zapisywać do Upload.
       </div>
       <div class="toolbar">
         <button class="btn" onclick="window.print()">Drukuj / PDF</button>
-        <button class="btn ghost" onclick="toggleHelp()">Pokaż/ukryj tagi</button>
+        <button class="btn ghost" onclick="toggleHelp()">Pokaż/ukryj podpowiedź</button>
       </div>
     </div>
 
     <!-- WŁAŚCIWA TREŚĆ UMOWY -->
     <div id="contract" class="doc" contenteditable="true">
-      <h2 style="text-align:center;margin-top:0">UMOWA O WYKONANIE USŁUG BUDOWLANYCH</h2>
-      <p><b>Data i miejsce:</b> {{city}}, dnia {{today}}</p>
+      <h2 style="text-align:center;margin-top:0">UMOWA NR {{contract.no}}</h2>
+      <p><b>Data i miejsce:</b> {{city}}, dnia {{contract.date || today}}</p>
 
       <p><b>Strony:</b><br>
       <b>Zamawiający (Klient):</b> {{client.name}}, adres: {{client.address}}, e-mail: {{client.email}}, tel: {{client.phone}}.<br>
-      <b>Wykonawca:</b> ARKON Sp. z o.o., ul. Żagańska 36/5, 68-200 Żary, NIP: {{company.nip}}, REGON: {{company.regon}}, reprezentowana przez {{company.representative}}.</p>
+      <b>Wykonawca (ARKON):</b> PW ARKON Przemysław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków,
+      REGON: 020258190, NIP: 5020038830, e-mail: biuro@arkoncentrum.pl.</p>
 
-      <p><b>Przedmiot umowy:</b> Realizacja projektu: „{{project.name}}” (etap: {{project.stage}}) zgodnie z ofertą nr {{contract.no}} z dnia {{contract.date}} o wartości {{contract.value}} zł brutto.</p>
+      <p><b>Przedmiot umowy:</b> Realizacja projektu „{{project.name}}” (etap: {{project.stage}}) polegająca na dostawie i montażu
+        komponentów wyszczególnionych w § 2, zgodnie z ofertą/ofertami oraz załącznikami stanowiącymi integralną część niniejszej umowy.
+        Wartość brutto umowy: <b>{{contract.value}} zł</b>.</p>
 
-      <h3>§1 Postanowienia ogólne</h3>
+      <h3>§ 1. Postanowienia ogólne i definicje</h3>
       <ol>
-        <li>Umowa zostaje zawarta na podstawie art. 647 Kodeksu cywilnego.</li>
-        <li>Wykonawca zobowiązuje się wykonać roboty budowlane zgodnie z zasadami sztuki budowlanej oraz obowiązującymi przepisami prawa.</li>
-        <li>Zamawiający zobowiązuje się do terminowego regulowania należności i współdziałania przy realizacji prac.</li>
+        <li>Umowa określa warunki wykonania prac w obiekcie Zamawiającego, w szczególności: zakres, terminy, zasady rozliczeń, odbioru, gwarancji, odpowiedzialności, ochrony danych i postanowienia końcowe.</li>
+        <li>Przez <i>Urządzenia</i> rozumie się sprzęt i materiały wskazane w § 2 (np. ocieplenie, instalacja fotowoltaiczna, pompa ciepła, stolarka), wraz z osprzętem i elementami towarzyszącymi, niezbędnymi do uruchomienia i bezpiecznej eksploatacji.</li>
+        <li>Integralną część umowy stanowią: (a) oferta/oferty Wykonawcy, (b) wycena/zakres rzeczowy, (c) projekt/rysunki (jeśli dotyczy), (d) protokół odbioru, (e) karty gwarancyjne producentów.</li>
+        <li>W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego oraz właściwe normy branżowe i przepisy szczególne.</li>
       </ol>
 
-      <h3>§2 Wynagrodzenie i płatności</h3>
+      <h3>§ 2. Zakres rzeczowy (do uszczegółowienia w ofercie/załączniku)</h3>
       <ol>
-        <li>Całkowite wynagrodzenie ustala się na {{contract.value}} zł brutto.</li>
-        <li>Zamawiający zapłaci Wykonawcy zaliczkę w wysokości {{payments.deposit}} zł do dnia {{payments.deposit_date}}.</li>
-        <li>Pozostała część wynagrodzenia płatna przelewem w terminie 7 dni od podpisania protokołu odbioru końcowego.</li>
-        <li>W przypadku opóźnień w płatnościach naliczane będą odsetki ustawowe za opóźnienie.</li>
+        <li><b>Ocieplenie:</b> materiał: {{custom.ocieplenie_material}}; grubość: {{custom.ocieplenie_grubosc}}; kleje/siatka: {{custom.ocieplenie_kleje}}; tynk: {{custom.ocieplenie_tynk}}; kolor: {{custom.ocieplenie_kolor}}; powierzchnia: {{custom.ocieplenie_pow_m2}} m²; obróbki i akcesoria: {{custom.ocieplenie_akcesoria}}.</li>
+        <li><b>Instalacja fotowoltaiczna:</b> moc: {{custom.pv_moc_kw}} kWp; falownik: {{custom.pv_falownik}}; moduły: {{custom.pv_moduly}}; konstrukcja/montaż: {{custom.pv_konstrukcja}}; zabezpieczenia AC/DC: {{custom.pv_zabezpieczenia}}; zgłoszenie do OSD: {{custom.pv_osd}}.</li>
+        <li><b>Pompa ciepła:</b> typ/model: {{custom.pc_model}}; moc: {{custom.pc_moc_kw}} kW; bufor/zasobnik: {{custom.pc_bufor}} / {{custom.pc_cwu}}; armatura i automat.: {{custom.pc_armatura}}; uruchomienie i szkolenie: {{custom.pc_uruchomienie}}.</li>
+        <li><b>Stolarka/pozostałe:</b> {{custom.stolarka_zakres}}.</li>
+        <li>Dokładny zakres i konfiguracje wynikają z oferty i mogą zostać doprecyzowane w trakcie inwentaryzacji technicznej przed montażem.</li>
       </ol>
 
-      <h3>§3 Terminy realizacji</h3>
-      <p>Rozpoczęcie prac: {{dates.start}}. Zakończenie prac: {{dates.end}}. Terminy mogą ulec zmianie w przypadku siły wyższej lub zawinionego opóźnienia Zamawiającego.</p>
-
-      <h3>§4 Gwarancja i rękojmia</h3>
+      <h3>§ 3. Warunki płatności</h3>
       <ol>
-        <li>Wykonawca udziela gwarancji na okres {{warranty.months}} miesięcy.</li>
-        <li>Zakres gwarancji obejmuje wady fizyczne powstałe z winy Wykonawcy.</li>
-        <li>Uprawnienia z rękojmi wynikają z przepisów Kodeksu cywilnego.</li>
+        <li>Zamawiający uiści zaliczkę w kwocie <b>{{payments.deposit}} zł</b> do dnia <b>{{payments.deposit_date}}</b>.</li>
+        <li>Pozostała część wynagrodzenia płatna po podpisaniu protokołu odbioru, na podstawie faktury VAT, przelewem na rachunek wskazany na fakturze, w terminie {{custom.termin_platnosci_dni || '7'}} dni.</li>
+        <li>Wynagrodzenie obejmuje wszelkie koszty wykonania przedmiotu umowy, w tym dojazdów, robocizny, materiałów, uruchomienia i szkolenia, chyba że strony wyraźnie postanowią inaczej.</li>
+        <li><b>Programy dotacyjne (np. WFOŚiGW „Czyste Powietrze”):</b> jeżeli rozliczenie ma być powiązane z dotacją:
+          <ol type="a">
+            <li>Zamawiający zobowiązuje się w terminie <b>14 dni od daty podpisania protokołu odbioru</b> złożyć do WFOŚiGW wniosek o płatność oraz przekazać Wykonawcy potwierdzenie jego złożenia.</li>
+            <li>W razie <u>niezłożenia</u> wniosku o płatność w terminie, złożenia z brakami uniemożliwiającymi wypłatę lub <u>odmowy przyznania</u> dotacji z przyczyn leżących po stronie Zamawiającego — Zamawiający zobowiązuje się do niezwłocznego uregulowania całości należności wynikającej z umowy z własnych środków.</li>
+          </ol>
+        </li>
       </ol>
 
-      <h3>§5 Obowiązki stron</h3>
+      <h3>§ 4. Terminy realizacji</h3>
       <ol>
-        <li>Wykonawca zapewni materiały i narzędzia zgodnie z ofertą.</li>
-        <li>Zamawiający umożliwi dostęp do miejsca realizacji oraz zapewni media niezbędne do wykonania prac.</li>
+        <li>Planowany termin rozpoczęcia: <b>{{dates.start}}</b>. Planowany termin zakończenia: <b>{{dates.end}}</b>. Terminy mogą ulec zmianie w przypadku niesprzyjających warunków pogodowych, siły wyższej, braku dostępu do frontu robót lub opóźnień po stronie dostawców, o czym Wykonawca poinformuje Zamawiającego niezwłocznie.</li>
+        <li>Zamawiający zapewni dostęp do obiektu i mediów, przygotuje front robót oraz — w przypadku pompy ciepła — <b>gotową instalację CO i CWU</b> do przyłączenia; Wykonawca nie odpowiada za dobór i stan wtórnej strony układu (np. grzejniki).</li>
+        <li>Zamawiający zapewni miejsce przygotowane do posadowienia jednostek zewnętrznych/urządzeń zgodnie z wymaganiami producenta.</li>
       </ol>
 
-      <h3>§6 Odstąpienie od umowy</h3>
+      <h3>§ 5. Zmiany zakresu i prace dodatkowe</h3>
       <ol>
-        <li>Zamawiający może odstąpić od umowy w terminie 14 dni od jej zawarcia bez podania przyczyny, składając pisemne oświadczenie.</li>
-        <li>W razie odstąpienia Wykonawca zwróci Zamawiającemu otrzymaną zaliczkę w terminie 14 dni, pomniejszoną o poniesione koszty.</li>
-        <li>Po rozpoczęciu prac odstąpienie możliwe jest jedynie z ważnych przyczyn przewidzianych w Kodeksie cywilnym.</li>
+        <li>Wszelkie zmiany zakresu wymagają formy pisemnej (w tym e-mail) pod rygorem nieważności.</li>
+        <li>Prace nieujęte w umowie rozliczane są jako <b>prace dodatkowe</b> wg zaakceptowanej przez strony wyceny.</li>
       </ol>
 
-      <h3>§7 Odpowiedzialność</h3>
-      <p>Wykonawca ponosi odpowiedzialność za szkody powstałe z jego winy podczas realizacji umowy. Zamawiający odpowiada za szkody wynikłe z dostarczenia wadliwych danych, dokumentacji lub braku dostępu do terenu.</p>
-
-      <h3>§8 Ochrona danych osobowych (RODO)</h3>
-      <p>Administratorem danych osobowych jest ARKON Sp. z o.o. Dane osobowe Zamawiającego będą przetwarzane w celu realizacji umowy, wystawienia dokumentów księgowych oraz ewentualnych roszczeń prawnych.  
-      Zamawiającemu przysługuje prawo dostępu do treści swoich danych, ich sprostowania, ograniczenia przetwarzania, przeniesienia, wniesienia sprzeciwu oraz złożenia skargi do PUODO.</p>
-
-      <h3>§9 Postanowienia końcowe</h3>
+      <h3>§ 6. Odbiór</h3>
       <ol>
-        <li>W sprawach nieuregulowanych niniejszą umową zastosowanie mają przepisy Kodeksu cywilnego.</li>
-        <li>Wszelkie zmiany wymagają formy pisemnej pod rygorem nieważności.</li>
-        <li>Spory wynikłe z niniejszej umowy rozstrzygać będzie sąd właściwy dla siedziby Wykonawcy.</li>
-        <li>Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
+        <li>Po zakończeniu prac strony sporządzają i podpisują <b>protokół odbioru</b>. Ewentualne drobne usterki nieistotne dla użytkowania mogą zostać usunięte w uzgodnionym terminie i nie wstrzymują odbioru.</li>
+        <li>Wykonawca przekaże Zamawiającemu niezbędne instrukcje obsługi i dokumenty gwarancyjne producentów.</li>
+      </ol>
+
+      <h3>§ 7. Gwarancja i rękojmia</h3>
+      <ol>
+        <li>Wykonawca udziela gwarancji jakości na roboty montażowe na okres <b>{{warranty.months}} miesięcy</b> liczony od daty odbioru. Gwarancje producentów urządzeń określają odrębne dokumenty (karty gwarancyjne).</li>
+        <li>Uprawnienia z rękojmi przysługują zgodnie z przepisami Kodeksu cywilnego. Zgłoszenia reklamacyjne Zamawiający kieruje na adres e-mail: biuro@arkoncentrum.pl lub telefonicznie.</li>
+        <li>Gwarancja nie obejmuje zużycia eksploatacyjnego, szkód powstałych wskutek niewłaściwej obsługi, braku przeglądów, ingerencji osób trzecich oraz działania siły wyższej.</li>
+      </ol>
+
+      <h3>§ 8. Odpowiedzialność i kary</h3>
+      <ol>
+        <li>Strony odpowiadają za niewykonanie lub nienależyte wykonanie umowy na zasadach ogólnych, z uwzględnieniem ograniczeń przewidzianych przepisami prawa.</li>
+        <li>Za zwłokę w zapłacie należą się odsetki ustawowe za opóźnienie.</li>
+        <li>W przypadku nieuzasadnionego odstąpienia od umowy przez Zamawiającego po dostawie urządzeń lub rozpoczęciu montażu, Zamawiający zwróci Wykonawcy poniesione, udokumentowane koszty oraz wynagrodzenie za wykonany zakres.</li>
+      </ol>
+
+      <h3>§ 9. Odstąpienie od umowy</h3>
+      <ol>
+        <li>Każda ze Stron może odstąpić od umowy w przypadkach przewidzianych przepisami prawa oraz niniejszą umową (w szczególności rażące naruszenie obowiązków drugiej Strony).</li>
+        <li>W przypadku konsumenta zawierającego umowę poza lokalem przedsiębiorstwa zastosowanie mają przepisy o prawie odstąpienia od umowy, z uwzględnieniem wyjątków przewidzianych dla świadczeń na indywidualne zamówienie oraz świadczeń rozpoczętych za wyraźną zgodą konsumenta przed upływem terminu do odstąpienia.</li>
+      </ol>
+
+      <h3>§ 10. Siła wyższa</h3>
+      <p>Strona dotknięta działaniem siły wyższej (m.in. klęski żywiołowe, wojna, strajki ogólnokrajowe, przerwy w dostawach) nie ponosi odpowiedzialności za opóźnienia w wykonaniu umowy przez czas trwania przeszkody oraz w zakresie przez nią spowodowanym, o ile niezwłocznie poinformuje drugą Stronę.</p>
+
+      <h3>§ 11. Dane osobowe (RODO)</h3>
+      <ol>
+        <li><b>Administrator:</b> PW ARKON Przemysław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków, e-mail: biuro@arkoncentrum.pl.</li>
+        <li><b>Cel i podstawa przetwarzania:</b> zawarcie i wykonanie umowy (art. 6 ust. 1 lit. b RODO), rozliczenia i obowiązki prawne (lit. c), dochodzenie/obrona roszczeń i zapewnienie jakości usług (lit. f – prawnie uzasadniony interes Administratora).</li>
+        <li><b>Zakres danych:</b> m.in. imię i nazwisko/nazwa, adres, kontakt, dane obiektu, numery identyfikacyjne do rozliczeń/wniosków (np. WFOŚiGW/OSD) – w zakresie niezbędnym do realizacji umowy.</li>
+        <li><b>Odbiorcy danych:</b> upoważnieni pracownicy i podwykonawcy, producenci/serwisy urządzeń, operatorzy płatności/banki, OSD i instytucje dotacyjne (np. WFOŚiGW) – gdy to konieczne do realizacji umowy lub przepisów prawa.</li>
+        <li><b>Okres przechowywania:</b> przez czas trwania umowy, następnie do upływu terminów przedawnienia roszczeń i wymogów podatkowo-księgowych, a w zakresie gwarancji – przez okres jej obowiązywania.</li>
+        <li><b>Prawa osoby:</b> dostępu, sprostowania, usunięcia lub ograniczenia przetwarzania, przenoszenia danych, sprzeciwu wobec przetwarzania; skarga do Prezesa UODO. Podanie danych jest dobrowolne, lecz niezbędne do zawarcia i wykonania umowy.</li>
+        <li>Administrator nie stosuje zautomatyzowanego podejmowania decyzji, w tym profilowania, w ramach realizacji niniejszej umowy.</li>
+      </ol>
+
+      <h3>§ 12. Postanowienia końcowe</h3>
+      <ol>
+        <li>Wszelka korespondencja i uzgodnienia mogą być prowadzone również e-mailowo na adresy wskazane w nagłówku; zmiana danych kontaktowych wymaga niezwłocznego powiadomienia.</li>
+        <li>Zmiany umowy wymagają formy pisemnej (w tym e-mail) pod rygorem nieważności, chyba że z treści wynika inaczej.</li>
+        <li>Właściwy do rozstrzygania sporów jest sąd powszechny według przepisów Kodeksu postępowania cywilnego; w relacji B2B – sąd właściwy dla siedziby Wykonawcy.</li>
+        <li>Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.</li>
       </ol>
 
       <p style="margin-top:28px;display:flex;justify-content:space-between;gap:40px">
@@ -128,15 +174,15 @@
       Podstawiane tagi: <code class="tag">{{client.}}</code>, <code class="tag">{{project.}}</code>,
       <code class="tag">{{contract.}}</code>, <code class="tag">{{payments.}}</code>,
       <code class="tag">{{dates.}}</code>, <code class="tag">{{warranty.}}</code>,
-      <code class="tag">{{company.*}}</code>, <code class="tag">{{today}}</code>, <code class="tag">{{city}}</code>,
-      oraz pola własne: <code class="tag">{{custom.NAZWA_POLA}}</code>.
+      <code class="tag">{{custom.*}}</code>, <code class="tag">{{today}}</code>, <code class="tag">{{city}}</code>.
+      Pola „custom.*” możesz dodać w „Struktura pól” i wykorzystywać tutaj (np. <code>{{custom.ocieplenie_material}}</code>).
     </div>
   </div>
 
 <script>
 function toggleHelp(){
   const c=document.querySelector('.card.hints');
-  c.style.display = c.style.display==='none' ? '' : 'block';
+  c.style.display = c.style.display==='none' ? '' : 'none';
 }
 </script>
 </body>
