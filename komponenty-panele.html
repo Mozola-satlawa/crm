@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — Komponenty: Panele</title>
+<meta name="description" content="Katalog paneli PV: filtry, wyszukiwarka, edycja, eksport/import, zapis w LocalStorage.">
+<style>
+  :root{ --bg:#0a0f1e; --ink:#e8edff; --muted:#aeb8da; --line:#243059; --card:#0f1533; --card2:#121a34; --accent:#4cc9f0; --ok:#2b8a57; --bad:#ff6b6b; --warn:#ffb84d; }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:16px;background:#11183a;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  header h1{margin:0;font-size:22px}
+  nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+  nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
+  nav a:hover{background:#223160}
+  .wrap{max-width:1400px;margin:auto;padding:16px}
+  .muted{color:var(--muted);font-size:13px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .btn.ok{background:#194d34;border-color:var(--ok)}
+  input,select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
+  input::placeholder{color:#aeb8da99}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{font-size:13px;color:var(--muted);white-space:nowrap}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff;font-size:13px}
+  .scroll{overflow:auto}
+  .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#101735;border:1px solid #2a3777;padding:2px 6px;border-radius:6px;color:#cfe0ff}
+  .narrow{max-width:160px}
+  .w-120{max-width:120px}
+  .small{font-size:12px;color:#aeb8da}
+  .right{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+  @media print{ .no-print{display:none!important} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Komponenty • Panele — ARKON</h1>
+  <div class="muted">Katalog paneli PV. Edycja w tabeli, filtry, eksport/import, zapis w LocalStorage. Ceny jednostkowe ukryte dla klienta.</div>
+  <nav class="no-print">
+    <a href="index.html">Kalkulator</a>
+    <a href="dotacje.html">Dotacje</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="toolbar">
+      <input id="q" placeholder="🔎 Szukaj… (marka, model, opis)" style="min-width:360px">
+      <select id="f_brand"><option value="">Marka (wszystkie)</option></select>
+      <input id="f_wmin" type="number" placeholder="W min" class="w-120">
+      <input id="f_wmax" type="number" placeholder="W max" class="w-120">
+      <select id="f_bif"><option value="">Bifacial?</option><option>TAK</option><option>NIE</option></select>
+      <button id="btnAdd" class="btn ok">+ Dodaj model</button>
+      <button id="btnCSV" class="btn ghost">CSV eksport</button>
+      <button id="btnJSON" class="btn ghost">JSON eksport</button>
+      <label class="btn ghost">JSON import <input id="inJSON" type="file" accept="application/json" hidden></label>
+      <label class="btn ghost">CSV import <input id="inCSV" type="file" accept=".csv,text/csv" hidden></label>
+      <span class="pill">Widocznych: <b id="countVis">0</b></span>
+      <span class="pill">Łącznie: <b id="countAll">0</b></span>
+    </div>
+
+    <div class="card" style="padding:0">
+      <div class="scroll">
+        <table>
+          <thead id="thead"><tr>
+            <th>Akcje</th>
+            <th>Marka</th>
+            <th>Model</th>
+            <th>W [W]</th>
+            <th>Sprawność [%]</th>
+            <th>Bifacial</th>
+            <th>Gwar. prod. [l]</th>
+            <th>Gwar. perf. [l]</th>
+            <th class="muted">Cena (ukryta)</th>
+            <th>Uwagi</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="small muted" style="padding:10px 12px">
+        Edytuj w komórkach. Usuń/duplikuj z kolumny „Akcje”. Zmiany zapisują się automatycznie.
+        Skróty: <span class="kbd">/</span> wyszukiwarka • <span class="kbd">Alt+N</span> nowy model.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const INT0=new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+const money = n=> isFinite(+n)? INT0.format(Math.round(+n))+' zł':'—';
+const KS='arkon_pan_v2';
+
+let ROWS=[];
+
+function load(){
+  try{ ROWS=JSON.parse(localStorage.getItem(KS)||'[]'); }catch{ ROWS=[]; }
+}
+function save(){ localStorage.setItem(KS, JSON.stringify(ROWS||[])); }
+
+function uid(){ return 'PV_'+Math.random().toString(36).slice(2)+'_'+Date.now().toString(36); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function toCSV(rows){
+  const cols=['brand','model','watt','eff','bifacial','warr_prod','warr_perf','price','note'];
+  const escCsv=v=>{ let s=(v==null?'':String(v)); if(/[;\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; };
+  const out=[cols.join(';')].concat(rows.map(r=>cols.map(c=>escCsv(r[c])).join(';')));
+  const blob=new Blob([out.join('\\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panele.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function saveJSON(rows){
+  const blob=new Blob([JSON.stringify({panels:rows},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panels.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function render(){
+  const q=($('#q').value||'').toLowerCase();
+  const brand=$('#f_brand').value;
+  const wmin=+$('#f_wmin').value||0, wmax=+$('#f_wmax').value||0;
+  const bif=$('#f_bif').value;
+
+  let rows=(ROWS||[]).slice();
+  if(q) rows=rows.filter(r=> JSON.stringify(r).toLowerCase().includes(q) );
+  if(brand) rows=rows.filter(r=>String(r.brand).toUpperCase()===brand);
+  if(wmin) rows=rows.filter(r=>+r.watt >= wmin);
+  if(wmax) rows=rows.filter(r=>+r.watt <= wmax);
+  if(bif) rows=rows.filter(r=>String(r.bifacial).toUpperCase()===bif);
+
+  // sort brand+model
+  rows.sort((a,b)=> ((a.brand||'')+(a.model||'')).localeCompare((b.brand||'')+(b.model||''),'pl',{sensitivity:'base'}));
+
+  $('#countAll').textContent=(ROWS||[]).length;
+  $('#countVis').textContent=rows.length;
+
+  // brand filter unique
+  const brands=[...new Set((ROWS||[]).map(r=>String(r.brand||'').toUpperCase()))].filter(Boolean).sort();
+  $('#f_brand').innerHTML = '<option value="">Marka (wszystkie)</option>'+brands.map(b=>`<option>${esc(b)}</option>`).join('');
+
+  const tb=$('#tbody'); tb.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>
+        <div class="row">
+          <button class="btn ghost" data-act="dup" data-id="${r.id}">Duplikuj</button>
+          <button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button>
+        </div>
+      </td>
+      <td><input value="${esc(r.brand||'')}" style="min-width:120px"></td>
+      <td><input value="${esc(r.model||'')}" style="min-width:260px"></td>
+      <td><input type="number" step="1" value="${r.watt||''}" class="narrow"></td>
+      <td><input type="number" step="0.1" value="${r.eff||''}" class="narrow"></td>
+      <td>
+        <select>
+          <option ${String(r.bifacial).toUpperCase()==='NIE'?'selected':''}>NIE</option>
+          <option ${String(r.bifacial).toUpperCase()==='TAK'?'selected':''}>TAK</option>
+        </select>
+      </td>
+      <td><input type="number" step="1" value="${r.warr_prod||''}" class="narrow"></td>
+      <td><input type="number" step="1" value="${r.warr_perf||''}" class="narrow"></td>
+      <td class="muted">—</td>
+      <td><input value="${esc(r.note||'')}" style="min-width:220px"></td>
+    `;
+    const inputs=tr.querySelectorAll('input,select');
+    const keys=['brand','model','watt','eff','bifacial','warr_prod','warr_perf',null,'note'];
+    inputs.forEach((el,i)=>{
+      el.addEventListener('input',()=>{ const key=keys[i]; if(!key) return; r[key]= (el.type==='number' ? (+el.value||0) : el.value); save(); });
+      el.addEventListener('change',()=>{ const key=keys[i]; if(!key) return; r[key]= (el.type==='number' ? (+el.value||0) : el.value); save(); });
+    });
+    tb.appendChild(tr);
+  });
+
+  // actions
+  tb.querySelectorAll('[data-act="del"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id; ROWS = (ROWS||[]).filter(x=>x.id!==id); save(); render();
+  }));
+  tb.querySelectorAll('[data-act="dup"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id; const src=(ROWS||[]).find(x=>x.id===id); if(!src) return;
+    const copy=JSON.parse(JSON.stringify(src)); copy.id=uid(); copy.model=(copy.model||'')+' (kopia)';
+    ROWS.unshift(copy); save(); render();
+  }));
+}
+
+function addRow(){
+  const obj={id:uid(),brand:'',model:'',watt:450,eff:21,bifacial:'NIE',warr_prod:12,warr_perf:25,price:0,note:''};
+  ROWS.unshift(obj); save(); render();
+}
+
+function importJSON(obj){
+  // obsłuż format {panels:[...]} lub listę
+  const arr = Array.isArray(obj)? obj : (Array.isArray(obj.panels)? obj.panels : []);
+  if(!arr.length){ alert('Brak danych paneli w JSON. Oczekuję klucza "panels".'); return; }
+  // unifikacja kluczy
+  const mapped = arr.map(x=> ({
+    id: uid(),
+    brand: (x.brand||'').toString().toUpperCase(),
+    model: x.model||'',
+    watt: +x.watt||0,
+    eff: +x.eff||'',
+    bifacial: (x.bifacial||'NIE').toString().toUpperCase() in {'TAK':1,'NIE':1}? (x.bifacial.toString().toUpperCase()) : 'NIE',
+    warr_prod: +x.warr_prod||'',
+    warr_perf: +x.warr_perf||'',
+    price: +x.price||0,
+    note: x.note||''
+  }));
+  ROWS = mapped;
+  save(); render();
+}
+
+function importCSV(text){
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  const hdr = lines.shift().split(/[;,]/).map(h=>h.trim().toLowerCase());
+  const idx = {brand:hdr.indexOf('brand'),model:hdr.indexOf('model'),watt:hdr.indexOf('watt'),price:hdr.indexOf('price'),
+               eff:hdr.indexOf('eff'),bifacial:hdr.indexOf('bifacial'),warr_prod:hdr.indexOf('warr_prod'),warr_perf:hdr.indexOf('warr_perf'),note:hdr.indexOf('note')};
+  const out=[];
+  for(const ln of lines){
+    const parts = ln.split(/[;,]/);
+    const take = k=> (idx[k]>=0? parts[idx[k]].trim() : '');
+    out.push({
+      id: uid(),
+      brand: take('brand').toUpperCase(),
+      model: take('model'),
+      watt: +(take('watt')||0),
+      eff: +(take('eff')||'')||'',
+      bifacial: (take('bifacial')||'NIE').toUpperCase(),
+      warr_prod: +(take('warr_prod')||'')||'',
+      warr_perf: +(take('warr_perf')||'')||'',
+      price: +(take('price')||0),
+      note: take('note')
+    });
+  }
+  ROWS = out; save(); render();
+}
+
+function boot(){
+  load();
+  if(!(ROWS||[]).length){
+    // minimal seed (użytkownik i tak zwykle importuje JSON z cennika)
+    ROWS=[
+      {id:uid(),brand:'JINKO',model:'JKM445N-54HL4R-B Full Black',watt:445,eff:21.5,bifacial:'NIE',warr_prod:15,warr_perf:30,price:240,note:'przykład'},
+      {id:uid(),brand:'TRINA',model:'Vertex S+ 440 FB',watt:440,eff:21.7,bifacial:'NIE',warr_prod:25,warr_perf:30,price:200,note:'przykład'}
+    ];
+    save();
+  }
+  render();
+}
+
+$('#btnAdd').onclick=addRow;
+$('#btnCSV').onclick=()=>toCSV(ROWS);
+$('#btnJSON').onclick=()=>saveJSON(ROWS);
+$('#inJSON').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const txt=await f.text(); importJSON(JSON.parse(txt)); }catch(err){ alert('Błąd importu JSON: '+(err.message||err)); }
+  e.target.value='';
+});
+$('#inCSV').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const txt=await f.text(); importCSV(txt); }catch(err){ alert('Błąd importu CSV: '+(err.message||err)); }
+  e.target.value='';
+});
+
+$('#q').addEventListener('input', render);
+['f_brand','f_bif','f_wmin','f_wmax'].forEach(id=> $('#'+id).addEventListener('input', render));
+
+window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); } });
+window.addEventListener('keydown', e=>{ if(e.altKey && /n/i.test(e.key)) addRow(); });
+
+boot();
+</script>
+</body>
+</html>

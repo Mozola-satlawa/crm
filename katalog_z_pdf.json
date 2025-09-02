@@ -1,0 +1,841 @@
+{
+  "panels": [
+    {
+      "brand": "Q-CELLS",
+      "model": "Q.PEAK DUO M G11S 415W Black frame",
+      "watt": 415,
+      "price": 2178.87
+    },
+    {
+      "brand": "JOLYWOOD",
+      "model": "JW-HD108N-420W Full black / Bifacjal",
+      "watt": 420,
+      "price": 314230.0
+    },
+    {
+      "brand": "ZNSHINE",
+      "model": "ZXM7-UHLDD108 410W BF / Bifacial",
+      "watt": 410,
+      "price": 104.89
+    },
+    {
+      "brand": "Q-CELLS",
+      "model": "Q.PEAK DUO ML G10 410W BF / OUTLET",
+      "watt": 410,
+      "price": 1619.53
+    },
+    {
+      "brand": "Q-CELLS",
+      "model": "Q.PEAK DUO M G11 395W BF / OUTLET",
+      "watt": 395,
+      "price": 1165.35
+    },
+    {
+      "brand": "TRINA",
+      "model": "Vertex S 425W BF / OUTLET",
+      "watt": 425,
+      "price": 1213.49
+    }
+  ],
+  "inverters": [
+    {
+      "brand": "DEYE",
+      "model": "SUN-5K-SG03LP1-EU",
+      "ac_kw": null,
+      "price": 2332846.88
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-6K-SG03LP1-EU",
+      "ac_kw": null,
+      "price": 262877.58
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-8K-SG01LP1-EU",
+      "ac_kw": null,
+      "price": 515655.56
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-10K-SG02LP1-EU-AM3",
+      "ac_kw": null,
+      "price": 706418.36
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-12K-SG02LP1-EU-AM3",
+      "ac_kw": null,
+      "price": 37171.82
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-5K-SG05LP3-EU",
+      "ac_kw": null,
+      "price": 6111.85
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-6K-SG05LP3-EU",
+      "ac_kw": null,
+      "price": 6180.41
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-8K-SG04LP3-EU",
+      "ac_kw": null,
+      "price": 116347.61
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-8K-SG05LP3-EU-SM2",
+      "ac_kw": null,
+      "price": 6417.24
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-10K-SG05LP3-EU-SM2",
+      "ac_kw": null,
+      "price": 6581.96
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-12K-SG04LP3-EU",
+      "ac_kw": null,
+      "price": 47103.76
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-15K-SG05LP3-EU",
+      "ac_kw": null,
+      "price": 7270.93
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-20K-SG05LP3-EU",
+      "ac_kw": null,
+      "price": 9063.08
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-5K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 4796.7
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-6K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 5012.64
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-8K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 4055.22
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-10K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 44380.49
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-12K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 265361.12
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-15K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 5654.47
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-20K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 96470.97
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-25K-SG01HP3-EU-AM2",
+      "ac_kw": null,
+      "price": 8151.02
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-30K-SG01HP3-EU-BM3",
+      "ac_kw": null,
+      "price": 13315.47
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-50K-SG01HP3-EU-BM4",
+      "ac_kw": null,
+      "price": 16200.42
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-80K-SG02HP3-EU-EM6",
+      "ac_kw": null,
+      "price": 522525.76
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-2KTL-L1 / 1-fazowy",
+      "ac_kw": null,
+      "price": 11520.0
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-3KTL-L1 / 1-fazowy",
+      "ac_kw": null,
+      "price": 111678.87
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-4KTL-L1 / 1-fazowy",
+      "ac_kw": null,
+      "price": 2200.0
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-5KTL-L1 / 1-fazowy",
+      "ac_kw": null,
+      "price": 2550.0
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-6KTL-L1 / 1-fazowy",
+      "ac_kw": null,
+      "price": 32919.01
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-5KTL-M1-HC",
+      "ac_kw": null,
+      "price": 262737.31
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-5K-MAP0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 3947.93
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-6KTL-M1-HC",
+      "ac_kw": null,
+      "price": 2913.97
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-8KTL-M1-HC",
+      "ac_kw": null,
+      "price": 3048.7
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-10KTL-M1-HC",
+      "ac_kw": null,
+      "price": 63952.97
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-12K-MB0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 27307.63
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-15KTL-M5",
+      "ac_kw": null,
+      "price": 3059.73
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-15K-MB0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 7393.45
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-17K-MB0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 47596.47
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-20K-MB0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 18891.11
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-25K-MB0 / Hybrydowy",
+      "ac_kw": null,
+      "price": 8893.73
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-50KTL-M3",
+      "ac_kw": null,
+      "price": 8399.66
+    },
+    {
+      "brand": "HUAWEI",
+      "model": "SUN 2000-100KTL-M2 400/480VAC",
+      "ac_kw": null,
+      "price": 16968.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE5K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 31500.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE6K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 221600.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE7K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 411700.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE8K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 221760.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE9K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 401900.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE10.0K - RW0TEBEN4",
+      "ac_kw": null,
+      "price": 602700.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE12.5K - RW0T0BNN4",
+      "ac_kw": null,
+      "price": 153000.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE16.0K - RW0T0BNN4",
+      "ac_kw": null,
+      "price": 13700.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE17.0K - RW0T0BNN4",
+      "ac_kw": null,
+      "price": 114000.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE20.0K - RW00IBNM4",
+      "ac_kw": null,
+      "price": 23827.61
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE25.0K - RW00IBNM4",
+      "ac_kw": null,
+      "price": 294180.59
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE30K - RW00IBNM4",
+      "ac_kw": null,
+      "price": 333800.0
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE33.3K - RW00IBNM4",
+      "ac_kw": null,
+      "price": 64347.86
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE50K - RW00IBNQ4",
+      "ac_kw": null,
+      "price": 181951.41
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE50K - RW00IBPQ4",
+      "ac_kw": null,
+      "price": 42419.74
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE8K - RWB48BFN4",
+      "ac_kw": null,
+      "price": 26585.56
+    },
+    {
+      "brand": "SOLAR",
+      "model": "EDGE SE10K - RWB48BFN4",
+      "ac_kw": null,
+      "price": 76941.8
+    },
+    {
+      "brand": "SOFAR",
+      "model": "4,4 KTLX - G3",
+      "ac_kw": null,
+      "price": 12664.2
+    },
+    {
+      "brand": "SOFAR",
+      "model": "5,5 KTLX - G3",
+      "ac_kw": null,
+      "price": 2783.99
+    },
+    {
+      "brand": "SOFAR",
+      "model": "6,6 KTLX - G3",
+      "ac_kw": null,
+      "price": 22898.55
+    },
+    {
+      "brand": "SOFAR",
+      "model": "8,8 KTLX - G3",
+      "ac_kw": null,
+      "price": 22997.43
+    },
+    {
+      "brand": "SOFAR",
+      "model": "11 KTLX - G3",
+      "ac_kw": null,
+      "price": 33211.27
+    },
+    {
+      "brand": "SOFAR",
+      "model": "12 KTLX - G3",
+      "ac_kw": null,
+      "price": 3196.1
+    },
+    {
+      "brand": "SOFAR",
+      "model": "17 KTLX - G3",
+      "ac_kw": null,
+      "price": 14095.42
+    },
+    {
+      "brand": "SOFAR",
+      "model": "20 KTLX - G3",
+      "ac_kw": null,
+      "price": 4502.56
+    },
+    {
+      "brand": "SOFAR",
+      "model": "22 KTLX - G3",
+      "ac_kw": null,
+      "price": 4694.43
+    },
+    {
+      "brand": "SOFAR",
+      "model": "24 KTLX - G3",
+      "ac_kw": null,
+      "price": 4859.55
+    },
+    {
+      "brand": "SOFAR",
+      "model": "30 KTLX - G3",
+      "ac_kw": null,
+      "price": 5873.35
+    },
+    {
+      "brand": "SOFAR",
+      "model": "50 KTLX - G3",
+      "ac_kw": null,
+      "price": 17678.8
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 5KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 14651.27
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 6KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 25436.33
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 8KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 35638.75
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 10KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 46227.05
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 15KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 37008.27
+    },
+    {
+      "brand": "SOFAR",
+      "model": "HYD 20KTL / 3-fazowy hybrydowy",
+      "ac_kw": null,
+      "price": 47360.07
+    },
+    {
+      "brand": "FOXESS",
+      "model": "F3000 / 1-fazowy",
+      "ac_kw": null,
+      "price": 1301.15
+    },
+    {
+      "brand": "FOXESS",
+      "model": "S3000 / 1-fazowy",
+      "ac_kw": null,
+      "price": 1009.79
+    },
+    {
+      "brand": "FOXESS",
+      "model": "S3300 / 1-fazowy",
+      "ac_kw": null,
+      "price": 1084.2
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T4 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 21942.7
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T5 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 21994.88
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T6 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 12023.84
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T8 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 22047.71
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T10 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 62196.38
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T12 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 22372.29
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T15 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 2438.43
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T17 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 22550.0
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T20 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 32700.0
+    },
+    {
+      "brand": "FOXESS",
+      "model": "T25 - G3 / 3-fazowy",
+      "ac_kw": null,
+      "price": 22982.03
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H1-3.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 3147.78
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H3-5.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 4567.24
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H3-6.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 4600.0
+    },
+    {
+      "brand": "FOXESS",
+      "model": "P3-6.0-SH Hybrydowy",
+      "ac_kw": null,
+      "price": 24827.62
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H3-8.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 4912.62
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H3-10.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 5105.56
+    },
+    {
+      "brand": "FOXESS",
+      "model": "P3-10.0-SH Hybrydowy",
+      "ac_kw": null,
+      "price": 85132.12
+    },
+    {
+      "brand": "FOXESS",
+      "model": "H3-12.0-E Hybrydowy",
+      "ac_kw": null,
+      "price": 35344.11
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW8K-ET PLUS+",
+      "ac_kw": null,
+      "price": 2936.04
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW8KN-ET PLUS+ (16A)",
+      "ac_kw": null,
+      "price": 63014.61
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW10K-ET-20",
+      "ac_kw": null,
+      "price": 14631.0
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW12K-ET-20",
+      "ac_kw": null,
+      "price": 24755.42
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW10K-ET PLUS+",
+      "ac_kw": null,
+      "price": 2935.98
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW10KN-ET PLUS+ (16A)",
+      "ac_kw": null,
+      "price": 43859.67
+    },
+    {
+      "brand": "GROWATT",
+      "model": "SPH 8000TL3 BH UP",
+      "ac_kw": null,
+      "price": 223849.41
+    },
+    {
+      "brand": "GROWATT",
+      "model": "SPH 10000TL3 BH UP",
+      "ac_kw": null,
+      "price": 4800.0
+    },
+    {
+      "brand": "GROWATT",
+      "model": "WIT 10K-HU",
+      "ac_kw": null,
+      "price": 74855.81
+    },
+    {
+      "brand": "GROWATT",
+      "model": "WIT 12K-HU",
+      "ac_kw": null,
+      "price": 105087.04
+    },
+    {
+      "brand": "GROWATT",
+      "model": "WIT 15K-HU",
+      "ac_kw": null,
+      "price": 75318.27
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-Hybrid-5.0-D WiFi + Lan",
+      "ac_kw": null,
+      "price": 24753.23
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-NEO-5K-LV",
+      "ac_kw": null,
+      "price": 5515.46
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-HYB-6.0-G4 Pro WiFi + Lan",
+      "ac_kw": null,
+      "price": 15432.27
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-Hybrid-8.0-D WiFi + Lan",
+      "ac_kw": null,
+      "price": 25331.5
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-HYB-8.0-G4 Pro WiFi + Lan",
+      "ac_kw": null,
+      "price": 25820.29
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-NEO-8K-LV",
+      "ac_kw": null,
+      "price": 5755.27
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-Hybrid-10.0-D WiFi + Lan",
+      "ac_kw": null,
+      "price": 15816.17
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-HYB-10.0-G4 Pro WiFi + Lan",
+      "ac_kw": null,
+      "price": 26305.31
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-NEO-10K-LV",
+      "ac_kw": null,
+      "price": 6234.87
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-HYB-12.0-G4 Pro WiFi + Lan",
+      "ac_kw": null,
+      "price": 26522.63
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-NEO-12K-LV",
+      "ac_kw": null,
+      "price": 36474.67
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-HYB-15.0-G4 Pro WiFi + Lan",
+      "ac_kw": null,
+      "price": 26954.28
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-NEO-15K-LV",
+      "ac_kw": null,
+      "price": 16954.28
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-Hybrid-12.0-D WiFi + Lan",
+      "ac_kw": null,
+      "price": 16106.99
+    },
+    {
+      "brand": "FELICITY",
+      "model": "ESS T-REX-10KLP3G01",
+      "ac_kw": null,
+      "price": 65267.33
+    },
+    {
+      "brand": "SOFAR",
+      "model": "4,4 KTLX - G3 / OUTLET",
+      "ac_kw": null,
+      "price": 12742.56
+    },
+    {
+      "brand": "GOODWE",
+      "model": "GW50K-ET-10 / OUTLET",
+      "ac_kw": null,
+      "price": 112342.0
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-10K-SG04LP3-EU",
+      "ac_kw": null,
+      "price": 6501.6
+    },
+    {
+      "brand": "SOLAX",
+      "model": "X3-AELIO-60K",
+      "ac_kw": null,
+      "price": 123128.4
+    },
+    {
+      "brand": "DEYE",
+      "model": "SUN-M80G4-EU-Q0",
+      "ac_kw": null,
+      "price": 400.0
+    },
+    {
+      "brand": "ENVERTECH",
+      "model": "EVT500R",
+      "ac_kw": null,
+      "price": 98324.04
+    },
+    {
+      "brand": "ENVERTECH",
+      "model": "EVT800B + 5m cable with plug",
+      "ac_kw": null,
+      "price": 186347.19
+    },
+    {
+      "brand": "ENVERTECH",
+      "model": "EVT1000R",
+      "ac_kw": null,
+      "price": 42439.77
+    },
+    {
+      "brand": "ENVERTECH",
+      "model": "EVT2000SE",
+      "ac_kw": null,
+      "price": 60671.23
+    }
+  ],
+  "batteries": []
+}
