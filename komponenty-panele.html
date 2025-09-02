@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARKON — Komponenty: Panele (moduły PV)</title>
+<meta name="description" content="Komponenty panelowe PV w ARKON: Panele oraz Zestawy paneli. Edycja w tabeli, filtry, eksport/import, zapis lokalny.">
+<style>
+  :root{
+    --bg:#f7f8fb; --ink:#1d1919; --muted:#6b7280; --line:#e5e7eb;
+    --card:#ffffff; --card2:#fafafa;
+    --accent:#2563eb; --accent-2:#93c5fd;
+    --ok:#16a34a; --bad:#dc2626; --warn:#d97706;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:18px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px}
+  .muted{color:var(--muted);font-size:13px}
+  .wrap{max-width:1400px;margin:auto;padding:16px}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card.no-pad{padding:0}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .btn{background:#eef2ff;border:1px solid #dbeafe;color:#0f172a;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn:hover{background:#e0e7ff}
+  .btn.ghost{background:#fff;border:1px dashed #c7d2fe}
+  .btn.bad{background:#fee2e2;border-color:#fecaca;color:#991b1b}
+  .btn.ok{background:#dcfce7;border-color:#bbf7d0;color:#065f46}
+  .btn.warn{background:#ffedd5;border-color:#fed7aa;color:#9a3412}
+  input,select,textarea{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;color:#111827;font:inherit}
+  input::placeholder{color:#9ca3af}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{font-size:12px;color:#556;white-space:nowrap;font-weight:600}
+  .scroll{overflow:auto}
+  .subtabs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+  .subtabs button{padding:8px 12px;border-radius:999px;border:1px solid #c7d2fe;background:#f8fafc;color:#0f172a;cursor:pointer}
+  .subtabs button[aria-selected="true"]{background:#e0e7ff;border-color:#93c5fd;box-shadow:0 0 0 2px #eff6ff inset}
+  .pill{display:inline-flex;gap:6px;align-items:center;background:#f8fafc;border:1px dashed #e5e7eb;border-radius:999px;padding:6px 10px;color:#111827;font-size:12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 6px;border-radius:6px;color:#374151}
+  .search{min-width:340px}
+  .narrow{max-width:130px}
+  .small{font-size:12px;color:var(--muted)}
+  .right{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+  .tag{display:inline-block;border:1px solid #c7d2fe;color:#1d4ed8;padding:2px 6px;border-radius:6px;font-size:12px;margin-left:6px;background:#eff6ff}
+  @media print{ .toolbar,.subtabs,.no-print{display:none!important} body{background:#fff} .card{border:0} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Komponenty • Panele (moduły PV) — ARKON</h1>
+    <div class="muted">Panele i zestawy panelowe — edycja w tabeli, szybkie filtry, eksport/import, LocalStorage.</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <!-- Zakładki -->
+    <div class="subtabs" role="tablist" aria-label="Kategorie paneli">
+      <button role="tab" tabindex="0" class="sb" data-k="sets" aria-selected="true">Zestawy panelowe</button>
+      <button role="tab" tabindex="0" class="sb" data-k="modules" aria-selected="false">Panele (moduły)</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input id="q" class="search" placeholder="🔎 Szukaj… (marka, model, opis)">
+      <span id="dynFilters" class="row"></span>
+      <button id="btnAdd" class="btn ok">+ Dodaj pozycję</button>
+      <button id="btnCSV" class="btn ghost">CSV eksport</button>
+      <button id="btnJSON" class="btn ghost">JSON eksport</button>
+      <label class="btn ghost">JSON import <input id="inJSON" type="file" accept="application/json" hidden></label>
+      <span class="pill">Widocznych: <b id="countVis">0</b></span>
+      <span class="pill">Łącznie: <b id="countAll">0</b></span>
+      <span class="pill">Sort: <b id="sortLabel">marka→model</b></span>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card no-pad">
+      <div class="scroll">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="small" style="padding:10px 12px">
+        Edycja w komórkach. Usuń/duplikuj w kolumnie „Akcje”. Zmiany zapisują się automatycznie.
+        Skróty: <span class="kbd">/</span> fokus • <span class="kbd">Alt+N</span> nowa • klik nagłówka = sort.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const INT0 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+const INT1 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:1});
+const INT2 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:2});
+const fmt = (n,dp=0)=> (isFinite(+n)? (dp===0?INT0:dp===1?INT1:INT2).format(+n) : '—');
+const uid = ()=> 'PNL_'+Math.random().toString(36).slice(2)+'_'+Date.now().toString(36);
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c));
+const money = n => isFinite(+n)? INT0.format(Math.round(+n))+' zł' : '—';
+
+const KS = { modules:'arkon_panels_modules_v2', sets:'arkon_panels_sets_v2' };
+
+const state = {
+  tab:'sets',
+  q:'',
+  sort:{key:'brand_model',dir:1},
+  filters:{
+    modules:{tech:'', pMin:'', pMax:'', effMin:'', color:''},
+    sets:{kwMin:'', kwMax:'', roof:''}
+  },
+  data:{ modules:[], sets:[] }
+};
+
+function seedIfEmpty(){
+  if(!(state.data.modules||[]).length){
+    state.data.modules = [
+      {id:uid(),brand:'JINKO',model:'JKM445N-54HL4R-B Full Black',tech:'TopCon N',bifacial:'NIE',watt:445,eff:21.5,color:'black',size:'1762×1134×30',temp:'-0.30',warr_prod:15,warr_perf:30,net_price:239, note:'182mm, half-cut'},
+      {id:uid(),brand:'TRINA',model:'Vertex S+ 440 Full Black',tech:'TopCon N',bifacial:'NIE',watt:440,eff:21.7,color:'black',size:'1762×1134×30',temp:'-0.30',warr_prod:25,warr_perf:30,net_price:205, note:''},
+      {id:uid(),brand:'LONGI',model:'LR7-54HTH-460M',tech:'HPBC',bifacial:'NIE',watt:460,eff:21.9,color:'black',size:'1903×1134×30',temp:'-0.29',warr_prod:15,warr_perf:25,net_price:225, note:''},
+      {id:uid(),brand:'JA SOLAR',model:'JAM60D41-500/LB (bifacial)',tech:'TopCon N',bifacial:'TAK',watt:500,eff:22.0,color:'silver',size:'1903×1134×30',temp:'-0.29',warr_prod:15,warr_perf:30,net_price:249, note:'double-glass'}
+    ];
+  }
+  if(!(state.data.sets||[]).length){
+    state.data.sets = [
+      {id:uid(),title:'2.7 kW • 6× 450–460W (FB)', kw:2.7, roof:'blachodachówka', items:'Panele: 6× 450–460W full black; Montaż: dach skośny (blachodachówka)', base_price:6900, note:'Startowy pakiet panelowy'},
+      {id:uid(),title:'4.0 kW • 9× 440–460W (FB)', kw:4.0, roof:'dachówka',      items:'Panele: 9× 440–460W full black; Montaż: dach skośny (dachówka)', base_price:10200, note:''},
+      {id:uid(),title:'6.0 kW • 13–14× 440–460W',  kw:6.0, roof:'blachodachówka', items:'Panele: 13–14× 440–460W; Montaż: dach skośny (blachodachówka)', base_price:14900, note:'popularny'}
+    ];
+  }
+}
+
+function loadAll(){
+  try{ state.data.modules = JSON.parse(localStorage.getItem(KS.modules)||'[]')||[]; }catch{ state.data.modules=[]; }
+  try{ state.data.sets    = JSON.parse(localStorage.getItem(KS.sets)||'[]')||[]; }catch{ state.data.sets=[]; }
+}
+function saveTab(){
+  localStorage.setItem(KS[state.tab], JSON.stringify(state.data[state.tab]||[]));
+  render();
+}
+
+const COLS = {
+  sets:[
+    {k:'title',lbl:'Nazwa zestawu',w:280},
+    {k:'kw',lbl:'Moc [kW]',num:1},
+    {k:'roof',lbl:'Podłoże',sel:['blachodachówka','dachówka','dach płaski','grunt']},
+    {k:'items',lbl:'Skład',w:420},
+    {k:'base_price',lbl:'Cena bazowa (netto) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:220}
+  ],
+  modules:[
+    {k:'brand',lbl:'Marka'},
+    {k:'model',lbl:'Model',w:240},
+    {k:'tech',lbl:'Technologia',sel:['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna']},
+    {k:'bifacial',lbl:'Bifacial',sel:['NIE','TAK']},
+    {k:'watt',lbl:'Moc [W]',num:0},
+    {k:'eff',lbl:'Sprawność [%]',num:2},
+    {k:'color',lbl:'Kolor',sel:['black','silver']},
+    {k:'size',lbl:'Wymiar [mm]',w:140},
+    {k:'temp',lbl:'Coeff. [%/°C]'},
+    {k:'warr_prod',lbl:'Gwarancja prod. [l]',num:0},
+    {k:'warr_perf',lbl:'Gwarancja perf. [l]',num:0},
+    {k:'net_price',lbl:'Cena (netto) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:200}
+  ]
+};
+
+function renderDynamicFilters(){
+  const box = $('#dynFilters'); box.innerHTML='';
+  if(state.tab==='modules'){
+    box.innerHTML = `
+      <select id="f_tech"><option value="">Technologia</option>${['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna'].map(t=>`<option>${esc(t)}</option>`).join('')}</select>
+      <input id="f_pmin" class="narrow" type="number" placeholder="W min">
+      <input id="f_pmax" class="narrow" type="number" placeholder="W max">
+      <input id="f_eff" class="narrow" type="number" step="0.1" placeholder="Sprawność ≥">
+      <select id="f_color"><option value="">Kolor</option><option>black</option><option>silver</option></select>`;
+    ['f_tech','f_pmin','f_pmax','f_eff','f_color'].forEach(id=>{
+      const el = $('#'+id); el.addEventListener('input',applyFilters); el.addEventListener('change',applyFilters);
+    });
+  }else if(state.tab==='sets'){
+    box.innerHTML = `
+      <input id="f_kwmin" class="narrow" type="number" step="0.1" placeholder="kW min">
+      <input id="f_kwmax" class="narrow" type="number" step="0.1" placeholder="kW max">
+      <select id="f_roof"><option value="">Podłoże</option><option>blachodachówka</option><option>dachówka</option><option>dach płaski</option><option>grunt</option></select>`;
+    ['f_kwmin','f_kwmax','f_roof'].forEach(id=>{
+      const el = $('#'+id); el.addEventListener('input',applyFilters); el.addEventListener('change',applyFilters);
+    });
+  }
+}
+function applyFilters(){
+  if(state.tab==='modules'){
+    state.filters.modules = {
+      tech:$('#f_tech').value, pMin:$('#f_pmin').value, pMax:$('#f_pmax').value,
+      effMin:$('#f_eff').value, color:$('#f_color').value
+    };
+  }else if(state.tab==='sets'){
+    state.filters.sets = {
+      kwMin:$('#f_kwmin').value, kwMax:$('#f_kwmax').value, roof:$('#f_roof').value
+    };
+  }
+  render();
+}
+
+function toggleSort(key){
+  if(state.sort.key===key){ state.sort.dir*=-1; } else { state.sort.key=key; state.sort.dir=1; }
+  render();
+}
+function sortFn(a,b){
+  const k=state.sort.key, d=state.sort.dir;
+  const va = String(a[k]??'').toLowerCase();
+  const vb = String(b[k]??'').toLowerCase();
+  if(!isNaN(+a[k]) && !isNaN(+b[k])) return d*(+a[k]-+b[k]);
+  return d*va.localeCompare(vb,'pl',{sensitivity:'base'});
+}
+
+function renderHead(){
+  const cols = COLS[state.tab];
+  const ths = ['<th>Akcje</th>'].concat(cols.map(c=>`<th>${esc(c.lbl)}</th>`));
+  $('#thead').innerHTML = `<tr>${ths.join('')}</tr>`;
+  Array.from($('#thead').querySelectorAll('th')).forEach((th,i)=>{
+    if(i===0) return;
+    const col = COLS[state.tab][i-1];
+    th.style.cursor='pointer';
+    th.title = 'Kliknij aby sortować';
+    th.addEventListener('click',()=>{ toggleSort(col.k); $('#sortLabel').textContent = col.lbl; });
+  });
+}
+
+function render(){
+  renderHead();
+  renderDynamicFilters();
+
+  const cols = COLS[state.tab];
+  let rows = (state.data[state.tab]||[]).slice();
+
+  const q = ($('#q').value||'').toLowerCase();
+  if(q){ rows = rows.filter(r=> JSON.stringify(r).toLowerCase().includes(q) ); }
+
+  if(state.tab==='modules'){
+    const f=state.filters.modules;
+    if(f.tech) rows=rows.filter(r=>r.tech===f.tech);
+    if(+f.pMin) rows=rows.filter(r=>+r.watt >= +f.pMin);
+    if(+f.pMax) rows=rows.filter(r=>+r.watt <= +f.pMax);
+    if(+f.effMin) rows=rows.filter(r=>+r.eff >= +f.effMin);
+    if(f.color) rows=rows.filter(r=>String(r.color).toLowerCase()===String(f.color).toLowerCase());
+  }else if(state.tab==='sets'){
+    const f=state.filters.sets;
+    if(+f.kwMin) rows=rows.filter(r=>+r.kw >= +f.kwMin);
+    if(+f.kwMax) rows=rows.filter(r=>+r.kw <= +f.kwMax);
+    if(f.roof) rows=rows.filter(r=>String(r.roof)===f.roof);
+  }
+
+  if(state.sort.key==='brand_model'){
+    rows.sort((a,b)=>{
+      const a1=(a.brand||'')+' '+(a.model||''); const b1=(b.brand||'')+' '+(b.model||'');
+      return state.sort.dir * a1.localeCompare(b1,'pl',{sensitivity:'base'});
+    });
+  }else{
+    rows.sort(sortFn);
+  }
+
+  $('#countAll').textContent = (state.data[state.tab]||[]).length;
+  $('#countVis').textContent = rows.length;
+
+  const tb = $('#tbody'); tb.innerHTML='';
+  rows.forEach((r)=>{
+    const tr=document.createElement('tr');
+    const act = document.createElement('td');
+    act.innerHTML = `<div class="row">
+        <button class="btn ghost" data-act="dup" data-id="${r.id}">Duplikuj</button>
+        <button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button>
+      </div>`;
+    tr.appendChild(act);
+
+    cols.forEach(col=>{
+      const td=document.createElement('td');
+      const id = r.id+'__'+col.k;
+      const v  = r[col.k];
+      if(col.sel){
+        td.innerHTML = `<select id="${id}">${col.sel.map(o=>`<option ${o==v?'selected':''}>${o}</option>`).join('')}</select>`;
+      }else if(col.num!=null){
+        td.innerHTML = `<input id="${id}" type="number" class="narrow" step="${col.num===0?1:(col.num===1?0.1:0.01)}" value="${v??''}">`;
+      }else{
+        td.innerHTML = `<input id="${id}" value="${v==null?'':v}" ${col.w?`style="min-width:${col.w}px"`:''}>`;
+      }
+      tr.appendChild(td);
+      const el = td.querySelector('#'+CSS.escape(id));
+      if(el){
+        el.addEventListener('input', ()=> editCell(r.id,col.k,(col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
+        el.addEventListener('change', ()=> editCell(r.id,col.k,(col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
+      }
+    });
+
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll('[data-act="del"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id;
+    state.data[state.tab] = (state.data[state.tab]||[]).filter(x=>x.id!==id);
+    saveTab();
+  }));
+  tb.querySelectorAll('[data-act="dup"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id;
+    const src = (state.data[state.tab]||[]).find(x=>x.id===id);
+    if(!src) return;
+    const copy = JSON.parse(JSON.stringify(src)); copy.id=uid();
+    if(copy.title) copy.title = copy.title + ' (kopia)';
+    state.data[state.tab].unshift(copy);
+    saveTab();
+  }));
+}
+
+function editCell(id,key,val){
+  const arr = state.data[state.tab]||[];
+  const it = arr.find(x=>x.id===id); if(!it) return;
+  it[key]=val;
+  saveTab();
+}
+
+function toCSV(rows, cols){
+  const escCsv = v => { let s=(v==null?'':String(v)); if(/[;\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; };
+  const out = [cols.join(';')].concat(rows.map(r=>cols.map(c=>escCsv(r[c])).join(';')));
+  const blob = new Blob([out.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panels_'+state.tab+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function saveJSON(data){
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panels_'+state.tab+'.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+function readJSON(f){ return f.text().then(t=>JSON.parse(t)); }
+
+$$('.sb').forEach(b=>b.addEventListener('click',()=>{
+  $$('.sb').forEach(x=>x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  state.tab = b.dataset.k;
+  state.sort = {key:'brand_model',dir:1};
+  render();
+}));
+$('#q').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
+window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); } });
+window.addEventListener('keydown', e=>{ if(e.altKey && /n/i.test(e.key)) addRow(); });
+
+$('#btnAdd').addEventListener('click', addRow);
+$('#btnCSV').addEventListener('click', ()=>{ const cols = COLS[state.tab].map(c=>c.k); toCSV(state.data[state.tab]||[], cols); });
+$('#btnJSON').addEventListener('click', ()=> saveJSON(state.data[state.tab]||[]) );
+$('#inJSON').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const arr=await readJSON(f);
+    if(!Array.isArray(arr)) throw new Error('Zły plik JSON (oczekuję tablicy).');
+    state.data[state.tab]=arr;
+    saveTab();
+  }catch(err){ alert('Błąd importu: '+(err.message||err)); }
+  e.target.value='';
+});
+
+function addRow(){
+  const def = (tab)=>{
+    switch(tab){
+      case 'modules': return {id:uid(),brand:'',model:'',tech:'Mono PERC',bifacial:'NIE',watt:450,eff:21.0,color:'black',size:'',temp:'-0.35',warr_prod:12,warr_perf:25,net_price:0,note:''};
+      case 'sets': return {id:uid(),title:'Nowy zestaw paneli',kw:3.0,roof:'blachodachówka',items:'',base_price:0,note:''};
+    }
+  };
+  state.data[state.tab].unshift(def(state.tab));
+  saveTab();
+}
+
+loadAll();
+seedIfEmpty();
+render();
+</script>
+</body>
+</html>
