@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — Komponenty: Fotowoltaika (safe + MASTER JSON)</title>
+<style>
+.arkonpv{--bg:#0a0f1e; --ink:#e8edff; --muted:#aeb8da; --line:#243059; --card:#0f1533; --card2:#121a34; --accent:#4cc9f0; --ok:#2b8a57; --bad:#ff6b6b; --warn:#ffb84d; font:15px/1.5 system-ui,Segoe UI,Roboto,Arial; color:var(--ink);}
+body.arkonpv{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e)}
+.arkonpv header{padding:16px;background:#11183a;border-bottom:1px solid var(--line)}
+.arkonpv header h1{margin:0;font-size:22px}
+.arkonpv .muted{color:var(--muted);font-size:13px}
+.arkonpv .wrap{max-width:1400px;margin:auto;padding:16px}
+.arkonpv .subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.arkonpv .subtabs button{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75;background:#0d1530;color:#cfe1ff;cursor:pointer}
+.arkonpv .subtabs button[aria-selected="true"]{background:#1b2550;border-color:#67a1ff}
+.arkonpv .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.arkonpv .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+.arkonpv .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
+.arkonpv .btn.bad{background:#3a1f2a;border-color:#7b3341}
+.arkonpv .btn.ok{background:#194d34;border-color:var(--ok)}
+.arkonpv input,.arkonpv select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
+.arkonpv input::placeholder{color:#aeb8da99}
+.arkonpv table{width:100%;border-collapse:separate;border-spacing:0}
+.arkonpv th,.arkonpv td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.arkonpv th{font-size:13px;color:var(--muted);white-space:nowrap}
+.arkonpv .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px}
+.arkonpv .scroll{overflow:auto}
+.arkonpv .pill{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff;font-size:13px}
+.arkonpv .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.arkonpv .narrow{max-width:140px}
+</style>
+</head>
+<body class="arkonpv">
+<header>
+  <h1>Komponenty • Fotowoltaika — ARKON <span class="muted">/ MASTER JSON</span></h1>
+  <div class="subtabs" role="tablist" aria-label="Kategorie PV">
+    <button role="tab" class="sb" data-k="sets" aria-selected="true">Zestawy</button>
+    <button role="tab" class="sb" data-k="modules" aria-selected="false">Moduły</button>
+    <button role="tab" class="sb" data-k="inverters" aria-selected="false">Falowniki</button>
+    <button role="tab" class="sb" data-k="batt" aria-selected="false">Magazyny</button>
+    <button role="tab" class="sb" data-k="acc" aria-selected="false">Akcesoria</button>
+  </div>
+  <div class="muted">Edycja w tabeli, filtry, import/eksport (LocalStorage). Dodatkowo: import/eksport <b>jednego</b> MASTER JSON.</div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="toolbar">
+      <input id="q" placeholder="🔎 Szukaj… (marka, model, opis)" style="min-width:360px">
+      <span id="dynFilters" class="row"></span>
+      <button id="btnAdd" class="btn ok">+ Dodaj</button>
+      <button id="btnCSV" class="btn ghost">CSV eksport</button>
+      <button id="btnJSON" class="btn ghost">JSON eksport</button>
+      <label class="btn ghost">JSON import <input id="inJSON" type="file" accept="application/json" hidden></label>
+      <span class="pill">Widocznych: <b id="countVis">0</b></span>
+      <span class="pill">Łącznie: <b id="countAll">0</b></span>
+      <span class="pill">Sort: <b id="sortLabel">marka→model</b></span>
+    </div>
+
+    <div class="toolbar" style="margin-top:0">
+      <label class="btn">MASTER JSON import <input id="inMaster" type="file" accept="application/json" hidden></label>
+      <button id="btnMasterExport" class="btn">MASTER JSON eksport</button>
+      <span class="muted">Format: {"panels":[],"inverters":[],"batteries":[],"accessories":[],"sets":[]}</span>
+    </div>
+
+    <div class="card" style="padding:0">
+      <div class="scroll">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="muted" style="padding:10px 12px">
+        Skróty: <b>/</b> – fokus na szukaniu • <b>Alt+N</b> – nowa pozycja • Klik nagłówka = sort.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const uid=()=> 'PV_'+Math.random().toString(36).slice(2)+'_'+Date.now().toString(36);
+const KS={sets:'arkonpv_sets_v5',modules:'arkonpv_modules_v5',inverters:'arkonpv_inverters_v5',batt:'arkonpv_batt_v5',acc:'arkonpv_acc_v5'};
+const state={ tab:'sets', q:'', sort:{key:'brand_model',dir:1}, filters:{
+  modules:{tech:'', pMin:'', pMax:'', effMin:'', bif:''},
+  inverters:{phase:'', hybrid:'', acMin:'', acMax:'', mppt:''},
+  batt:{capMin:'', capMax:'', chem:''},
+  acc:{brand:'', priceMin:'', priceMax:''},
+  sets:{kwpMin:'', kwpMax:'', phase:'', storage:''}
+}, data:{sets:[],modules:[],inverters:[],batt:[],acc:[]} };
+
+function loadAll(){ Object.keys(state.data).forEach(k=>{ try{ state.data[k]=JSON.parse(localStorage.getItem(KS[k])||'[]'); }catch{ state.data[k]=[]; } }); }
+function saveTab(){ localStorage.setItem(KS[state.tab], JSON.stringify(state.data[state.tab]||[])); render(); }
+function saveAll(){ Object.keys(state.data).forEach(k=>localStorage.setItem(KS[k], JSON.stringify(state.data[k]||[]))); }
+
+function seedIfEmpty(){
+  if(!(state.data.modules||[]).length){ state.data.modules=[{id:uid(),brand:'TRINA',model:'Vertex S+ 440 FB',tech:'TopCon N',bifacial:'NIE',watt:440,eff:21.7,size:'1762x1134x30',temp:'-0.30',warr_prod:25,warr_perf:30,price:200,note:''}]; }
+  if(!(state.data.inverters||[]).length){ state.data.inverters=[{id:uid(),brand:'DEYE',model:'SUN-8K-SG04LP3-EU',phase:'3F',hybrid:'TAK',ac_kw:8,mppt:2,max_v:1000,eff:98.2,price:5200,note:''}]; }
+  if(!(state.data.batt||[]).length){ state.data.batt=[{id:uid(),brand:'HUAWEI',model:'LUNA2000-5',chem:'LFP',cap_kwh:5,stackable:'TAK',v:'HV',dod:100,cycles:10000,warr:10,price:11500,note:''}]; }
+  if(!(state.data.acc||[]).length){ state.data.acc=[{id:uid(),brand:'HUAWEI',cat:'AC',name:'DTSU666-H 3F 250A',spec:'licznik',price:497,note:''}]; }
+  if(!(state.data.sets||[]).length){ state.data.sets=[{id:uid(),title:'6.2 kW • Trina 440 + Deye 8K',kwp:6.2,phase:'3F',storage:'opcjonalnie',items:'Panele: TRINA 440 × 14; Falownik: DEYE 8K; Akcesoria: licznik',price:36900,note:''}]; }
+}
+
+const COLS={
+  sets:[
+    {k:'title',lbl:'Nazwa zestawu',w:280},
+    {k:'kwp',lbl:'Moc [kW]',num:1},
+    {k:'phase',lbl:'Fazy',sel:['1F','3F']},
+    {k:'storage',lbl:'Magazyn',sel:['NIE','opcjonalnie','TAK']},
+    {k:'items',lbl:'Skład',w:420},
+    {k:'price',lbl:'Cena bazowa [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:220}
+  ],
+  modules:[
+    {k:'brand',lbl:'Marka'},
+    {k:'model',lbl:'Model',w:240},
+    {k:'tech',lbl:'Technologia',sel:['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna']},
+    {k:'bifacial',lbl:'Bifacial',sel:['NIE','TAK']},
+    {k:'watt',lbl:'Moc [W]',num:0},
+    {k:'eff',lbl:'Sprawność [%]',num:2},
+    {k:'size',lbl:'Wymiar [mm]',w:150},
+    {k:'temp',lbl:'Coeff. [%/°C]'},
+    {k:'warr_prod',lbl:'Gwarancja prod. [l]',num:0},
+    {k:'warr_perf',lbl:'Gwarancja perf. [l]',num:0},
+    {k:'price',lbl:'Cena (ukryta) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:180}
+  ],
+  inverters:[
+    {k:'brand',lbl:'Marka'},
+    {k:'model',lbl:'Model',w:240},
+    {k:'phase',lbl:'Fazy',sel:['1F','3F']},
+    {k:'hybrid',lbl:'Hybryda',sel:['NIE','TAK']},
+    {k:'ac_kw',lbl:'Moc AC [kW]',num:1},
+    {k:'mppt',lbl:'MPPT',num:0},
+    {k:'max_v',lbl:'V max [V]',num:0},
+    {k:'eff',lbl:'Sprawność [%]',num:1},
+    {k:'price',lbl:'Cena (ukryta) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:200}
+  ],
+  batt:[
+    {k:'brand',lbl:'Marka'},
+    {k:'model',lbl:'Model',w:240},
+    {k:'chem',lbl:'Chemia',sel:['LFP','NMC','inne']},
+    {k:'cap_kwh',lbl:'Pojemność [kWh]',num:1},
+    {k:'stackable',lbl:'Modułowa',sel:['TAK','NIE']},
+    {k:'v',lbl:'Poziom V',sel:['LV','HV']},
+    {k:'dod',lbl:'DoD [%]',num:0},
+    {k:'cycles',lbl:'Cyklów',num:0},
+    {k:'warr',lbl:'Gwar. [l]',num:0},
+    {k:'price',lbl:'Cena (ukryta) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:200}
+  ],
+  acc:[
+    {k:'brand',lbl:'Marka'},
+    {k:'cat',lbl:'Kategoria',sel:['DC','AC','Okablowanie','Złącza','Bezpieczniki','Rozdzielnica','Pomiar','Inne']},
+    {k:'name',lbl:'Nazwa',w:240},
+    {k:'spec',lbl:'Specyfikacja',w:160},
+    {k:'price',lbl:'Cena (ukryta) [zł]',num:0},
+    {k:'note',lbl:'Uwagi',w:220}
+  ]
+};
+
+function renderHead(){
+  const cols=COLS[state.tab];
+  const ths=['<th>Akcje</th>'].concat(cols.map(c=>`<th>${c.lbl}</th>`));
+  $('#thead').innerHTML=`<tr>${ths.join('')}</tr>`;
+  $('#thead').querySelectorAll('th').forEach((th,i)=>{
+    if(i===0)return;
+    const col=cols[i-1];
+    th.style.cursor='pointer';
+    th.addEventListener('click',()=>{ if(state.sort.key===col.k) state.sort.dir*=-1; else state.sort={key:col.k,dir:1}; render(); });
+  });
+}
+
+function render(){
+  renderHead(); renderFilters();
+  let rows=(state.data[state.tab]||[]).slice();
+  const q=($('#q').value||'').toLowerCase(); if(q) rows=rows.filter(r=> JSON.stringify(r).toLowerCase().includes(q) );
+
+  // filters per tab
+  if(state.tab==='modules'){
+    const f=state.filters.modules;
+    if(f.tech) rows=rows.filter(r=>r.tech===f.tech);
+    if(f.bif) rows=rows.filter(r=>String(r.bifacial).toUpperCase()===f.bif.toUpperCase());
+    if(+f.pMin) rows=rows.filter(r=>+r.watt>=+f.pMin);
+    if(+f.pMax) rows=rows.filter(r=>+r.watt<=+f.pMax);
+    if(+f.effMin) rows=rows.filter(r=>+r.eff>=+f.effMin);
+  }else if(state.tab==='inverters'){
+    const f=state.filters.inverters;
+    if(f.phase) rows=rows.filter(r=>r.phase===f.phase);
+    if(f.hybrid) rows=rows.filter(r=>r.hybrid===f.hybrid);
+    if(+f.acMin) rows=rows.filter(r=>+r.ac_kw>=+f.acMin);
+    if(+f.acMax) rows=rows.filter(r=>+r.ac_kw<=+f.acMax);
+    if(+f.mppt) rows=rows.filter(r=>+r.mppt>=+f.mppt);
+  }else if(state.tab==='batt'){
+    const f=state.filters.batt;
+    if(f.chem) rows=rows.filter(r=>r.chem===f.chem);
+    if(+f.capMin) rows=rows.filter(r=>+r.cap_kwh>=+f.capMin);
+    if(+f.capMax) rows=rows.filter(r=>+r.cap_kwh<=+f.capMax);
+  }else if(state.tab==='acc'){
+    const f=state.filters.acc;
+    if(f.brand) rows=rows.filter(r=> String(r.brand||r.cat||'').toUpperCase().includes(f.brand.toUpperCase()));
+    if(+f.priceMin) rows=rows.filter(r=>+r.price>=+f.priceMin);
+    if(+f.priceMax) rows=rows.filter(r=>+r.price<=+f.priceMax);
+  }else if(state.tab==='sets'){
+    const f=state.filters.sets;
+    if(+f.kwpMin) rows=rows.filter(r=>+r.kwp>=+f.kwpMin);
+    if(+f.kwpMax) rows=rows.filter(r=>+r.kwp<=+f.kwpMax);
+    if(f.phase) rows=rows.filter(r=>r.phase===f.phase);
+    if(f.storage) rows=rows.filter(r=>r.storage===f.storage);
+  }
+
+  // sort
+  const k=state.sort.key, d=state.sort.dir;
+  rows.sort((a,b)=>{
+    const va=String(a[k]??'').toLowerCase(), vb=String(b[k]??'').toLowerCase();
+    if(!isNaN(+a[k]) && !isNaN(+b[k])) return d*(+a[k]-+b[k]);
+    return d*va.localeCompare(vb,'pl',{sensitivity:'base'});
+  });
+
+  $('#countAll').textContent=(state.data[state.tab]||[]).length;
+  $('#countVis').textContent=rows.length;
+
+  const tb=$('#tbody'); tb.innerHTML='';
+  const cols=COLS[state.tab];
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    const act=document.createElement('td');
+    act.innerHTML=`<div class="row"><button class="btn ghost" data-act="dup" data-id="${r.id}">Duplikuj</button><button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button></div>`;
+    tr.appendChild(act);
+    cols.forEach(col=>{
+      const td=document.createElement('td'); const id=r.id+'__'+col.k; let v=r[col.k];
+      if(col.sel){ td.innerHTML=`<select id="${id}">${col.sel.map(o=>`<option ${o==v?'selected':''}>${o}</option>`).join('')}</select>`; }
+      else if(col.num!=null){ td.innerHTML=`<input id="${id}" type="number" step="${col.num===0?1:(col.num===1?0.1:0.01)}" value="${v??''}" class="narrow">`; }
+      else{ td.innerHTML=`<input id="${id}" value="${v==null?'':v}" ${col.w?`style="min-width:${col.w}px"`:''}>`; }
+      tr.appendChild(td);
+      const el=td.querySelector('#'+CSS.escape(id));
+      el?.addEventListener('input',()=>{ r[col.k] = (col.num!=null? (el.value===''? '' : +el.value) : el.value); saveTab(); });
+      el?.addEventListener('change',()=>{ r[col.k] = (col.num!=null? (el.value===''? '' : +el.value) : el.value); saveTab(); });
+    });
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll('[data-act="del"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id; state.data[state.tab]=(state.data[state.tab]||[]).filter(x=>x.id!==id); saveTab();
+  }));
+  tb.querySelectorAll('[data-act="dup"]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id; const src=(state.data[state.tab]||[]).find(x=>x.id===id); if(!src) return;
+    const copy=JSON.parse(JSON.stringify(src)); copy.id=uid(); if(copy.title) copy.title+=' (kopia)'; state.data[state.tab].unshift(copy); saveTab();
+  }));
+}
+
+function renderFilters(){
+  const box=$('#dynFilters'); box.innerHTML='';
+  if(state.tab==='modules'){
+    box.innerHTML=`
+    <select id="f_tech"><option value="">Technologia</option><option>Mono PERC</option><option>TopCon N</option><option>HJT</option><option>HPBC</option><option>IBC</option><option>Inna</option></select>
+    <input id="f_pmin" type="number" placeholder="W min" class="narrow">
+    <input id="f_pmax" type="number" placeholder="W max" class="narrow">
+    <input id="f_eff" type="number" placeholder="Sprawność ≥" class="narrow">
+    <select id="f_bif"><option value="">Bifacial?</option><option>TAK</option><option>NIE</option></select>`;
+    ['f_tech','f_pmin','f_pmax','f_eff','f_bif'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
+  }else if(state.tab==='inverters'){
+    box.innerHTML=`
+    <select id="f_phase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
+    <select id="f_hyb"><option value="">Hybryda?</option><option>TAK</option><option>NIE</option></select>
+    <input id="f_acmin" type="number" placeholder="AC kW min" class="narrow">
+    <input id="f_acmax" type="number" placeholder="AC kW max" class="narrow">
+    <input id="f_mppt" type="number" placeholder="MPPT ≥" class="narrow">`;
+    ['f_phase','f_hyb','f_acmin','f_acmax','f_mppt'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
+  }else if(state.tab==='batt'){
+    box.innerHTML=`
+    <select id="f_chem"><option value="">Chemia</option><option>LFP</option><option>NMC</option></select>
+    <input id="f_cmin" type="number" placeholder="kWh min" class="narrow">
+    <input id="f_cmax" type="number" placeholder="kWh max" class="narrow">`;
+    ['f_chem','f_cmin','f_cmax'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
+  }else if(state.tab==='acc'){
+    box.innerHTML=`
+    <input id="f_abrand" placeholder="Marka" class="narrow">
+    <input id="f_apmin" type="number" placeholder="Cena min" class="narrow">
+    <input id="f_apmax" type="number" placeholder="Cena max" class="narrow">`;
+    ['f_abrand','f_apmin','f_apmax'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); });
+  }else if(state.tab==='sets'){
+    box.innerHTML=`
+    <input id="f_kwpmin" type="number" placeholder="kW min" class="narrow">
+    <input id="f_kwpmax" type="number" placeholder="kW max" class="narrow">
+    <select id="f_phase_s"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
+    <select id="f_store"><option value="">Magazyn</option><option>NIE</option><option>opcjonalnie</option><option>TAK</option></select>`;
+    ['f_kwpmin','f_kwpmax','f_phase_s','f_store'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
+  }
+}
+function applyFilters(){
+  if(state.tab==='modules')   state.filters.modules={tech:$('#f_tech').value,pMin:$('#f_pmin').value,pMax:$('#f_pmax').value,effMin:$('#f_eff').value,bif:$('#f_bif').value};
+  if(state.tab==='inverters') state.filters.inverters={phase:$('#f_phase').value,hybrid:$('#f_hyb').value,acMin:$('#f_acmin').value,acMax:$('#f_acmax').value,mppt:$('#f_mppt').value};
+  if(state.tab==='batt')      state.filters.batt={chem:$('#f_chem').value,capMin:$('#f_cmin').value,capMax:$('#f_cmax').value};
+  if(state.tab==='acc')       state.filters.acc={brand:$('#f_abrand').value,priceMin:$('#f_apmin').value,priceMax:$('#f_apmax').value};
+  if(state.tab==='sets')      state.filters.sets={kwpMin:$('#f_kwpmin').value,kwpMax:$('#f_kwpmax').value,phase:$('#f_phase_s').value,storage:$('#f_store').value};
+  render();
+}
+
+function addRow(){
+  const def=tab=>{
+    switch(tab){
+      case 'modules': return {id:uid(),brand:'',model:'',tech:'Mono PERC',bifacial:'NIE',watt:450,eff:21,size:'',temp:'-0.35',warr_prod:12,warr_perf:25,price:0,note:''};
+      case 'inverters':return {id:uid(),brand:'',model:'',phase:'3F',hybrid:'NIE',ac_kw:10,mppt:2,max_v:1000,eff:98,price:0,note:''};
+      case 'batt':    return {id:uid(),brand:'',model:'',chem:'LFP',cap_kwh:5,stackable:'TAK',v:'HV',dod:95,cycles:6000,warr:10,price:0,note:''};
+      case 'acc':     return {id:uid(),brand:'',cat:'Inne',name:'',spec:'',price:0,note:''};
+      case 'sets':    return {id:uid(),title:'Nowy zestaw',kwp:5.0,phase:'3F',storage:'NIE',items:'',price:0,note:''};
+    }
+  };
+  state.data[state.tab].unshift(def(state.tab)); saveTab();
+}
+
+function toCSV(rows,cols){
+  const escCsv=v=>{ let s=(v==null?'':String(v)); if(/[;\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; };
+  const out=[cols.join(';')].concat((rows||[]).map(r=>cols.map(c=>escCsv(r[c])).join(';')));
+  const blob=new Blob([out.join('\\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pv_'+state.tab+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function saveJSON(data){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pv_'+state.tab+'.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+function readJSON(f){ return f.text().then(t=>JSON.parse(t)); }
+
+// MASTER JSON import/export
+document.getElementById('inMaster').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const obj=await readJSON(f);
+    const norm = (a)=> (Array.isArray(a)? a.map(x=>Object.assign({id:uid()},x)) : []);
+    state.data.modules = norm(obj.panels);
+    state.data.inverters = norm(obj.inverters);
+    state.data.batt = norm(obj.batteries);
+    state.data.acc = norm(obj.accessories);
+    state.data.sets = norm(obj.sets);
+    saveAll();
+    render();
+    alert('MASTER JSON załadowany.');
+  }catch(err){ alert('Błąd importu MASTER JSON: '+(err.message||err)); }
+  e.target.value='';
+});
+document.getElementById('btnMasterExport').addEventListener('click', ()=>{
+  const out={
+    panels: (state.data.modules||[]).map(({id, ...x})=>x),
+    inverters: (state.data.inverters||[]).map(({id, ...x})=>x),
+    batteries: (state.data.batt||[]).map(({id, ...x})=>x),
+    accessories: (state.data.acc||[]).map(({id, ...x})=>x),
+    sets: (state.data.sets||[]).map(({id, ...x})=>x)
+  };
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pv_master.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+// binds
+$$('.sb').forEach(b=>b.addEventListener('click',()=>{
+  $$('.sb').forEach(x=>x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  state.tab=b.dataset.k; state.sort={key:'brand_model',dir:1}; render();
+}));
+document.getElementById('btnAdd').addEventListener('click', addRow);
+document.getElementById('btnCSV').addEventListener('click', ()=>{ const cols=(COLS[state.tab]||[]).map(c=>c.k); toCSV(state.data[state.tab]||[], cols); });
+document.getElementById('btnJSON').addEventListener('click', ()=> saveJSON(state.data[state.tab]||[]) );
+document.getElementById('inJSON').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{
+    const arr=await readJSON(f);
+    if(!Array.isArray(arr)) throw new Error('Zły plik JSON (tablica).');
+    state.data[state.tab]=arr.map(x=>Object.assign({id:uid()},x));
+    saveTab();
+  }catch(err){ alert('Błąd importu: '+(err.message||err)); }
+  e.target.value='';
+});
+document.getElementById('q').addEventListener('input', ()=>render());
+window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); document.getElementById('q').focus(); } });
+window.addEventListener('keydown', e=>{ if(e.altKey && /n/i.test(e.key)) addRow(); });
+
+function renderFilters(){ /* wypełniane w render()*/ }
+
+loadAll(); seedIfEmpty(); render();
+})();</script>
+</body>
+</html>

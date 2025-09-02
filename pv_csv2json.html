@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — CSV → MASTER JSON (PV)</title>
+<style>
+  :root{--bg:#0a0f1e;--ink:#e8edff;--line:#243059;--card:#0f1533;--ok:#2b8a57}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:14px;background:#11183a;border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:20px}
+  .wrap{max-width:960px;margin:auto;padding:14px}
+  .card{background:linear-gradient(180deg,#0f1533,#121a34);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input,button{font:inherit}
+  input[type="file"]{padding:8px;background:#0d1530;border:1px solid #28356c;border-radius:10px;color:var(--ink)}
+  button{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  button.ok{background:#194d34;border-color:var(--ok)}
+  .grid{display:grid;gap:10px}
+  @media(min-width:900px){ .cols-2{grid-template-columns:1fr 1fr} }
+  pre{white-space:pre-wrap;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:10px;max-height:300px;overflow:auto}
+  .muted{color:#aeb8da;font-size:13px}
+  .drop{border:2px dashed #3a4ca3;border-radius:12px;padding:18px;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+<header><h1>ARKON — Konwerter CSV → MASTER JSON (PV)</h1></header>
+<div class="wrap grid cols-2">
+  <section class="card">
+    <h2 style="margin:0 0 8px">1) Wczytaj pliki CSV</h2>
+    <div class="grid">
+      <label>Panele (template-panels.csv) <input id="csv_pan" type="file" accept=".csv"></label>
+      <label>Falowniki (template-inwerter.csv) <input id="csv_inv" type="file" accept=".csv"></label>
+      <label>Magazyny (template-battery.csv) <input id="csv_bat" type="file" accept=".csv"></label>
+      <label>Akcesoria (template-accessories.csv) <input id="csv_acc" type="file" accept=".csv"></label>
+      <label>Zestawy (template-sets.csv) <input id="csv_set" type="file" accept=".csv"></label>
+    </div>
+    <div class="drop" id="drop">albo upuść tutaj wszystkie CSV</div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnGo" class="ok">Zbuduj MASTER JSON</button>
+      <button id="btnSave">Zapisz jako pv_master.json</button>
+    </div>
+    <div class="muted">Separator CSV: średnik <b>;</b>. Cytowanie pól dozwolone.</div>
+  </section>
+  <section class="card">
+    <h2 style="margin:0 0 8px">2) Podgląd JSON</h2>
+    <pre id="out">{}</pre>
+  </section>
+</div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const readFile=t=>t.text();
+function parseCSV(text){
+  // prosty parser CSV z separatorem ';' + obsługa cudzysłowów
+  const rows=[]; let i=0, cur='', inQ=false, row=[];
+  while(i<text.length){
+    const ch=text[i];
+    if(inQ){
+      if(ch=='"'){
+        if(text[i+1]=='"'){ cur+='"'; i+=2; continue; }
+        inQ=false; i++; continue;
+      } else { cur+=ch; i++; continue; }
+    }else{
+      if(ch=='"'){ inQ=true; i++; continue; }
+      if(ch==';'){ row.push(cur); cur=''; i++; continue; }
+      if(ch=='\n' || ch=='\r'){
+        if(ch=='\r' && text[i+1]=='\n') i++;
+        row.push(cur); rows.push(row); row=[]; cur=''; i++; continue;
+      }
+      cur+=ch; i++; continue;
+    }
+  }
+  row.push(cur); rows.push(row);
+  // nagłówek + mapy
+  const header = rows.shift().map(h=>h.trim().toLowerCase());
+  return rows.filter(r=>r.some(c=>String(c).trim()!=='')).map(r=>{
+    const o={};
+    header.forEach((h,idx)=>{ o[h]=r[idx]??''; });
+    return o;
+  });
+}
+
+// mapowania domyślne
+function normNum(x){ const s=String(x||'').replace(',','.').replace(/[^\d.\-]/g,''); return s?+s:0; }
+function mapPanels(a){
+  // oczekiwane kolumny: brand, model, watt, price
+  return a.map(r=>({brand:(r.brand||r.marka||'').trim().toUpperCase(), model:(r.model||'').trim(), watt:normNum(r.watt||r['moc [w]']||r.moc), price:normNum(r.price||r.cena)}));
+}
+function mapInverters(a){
+  return a.map(r=>({brand:(r.brand||r.marka||'').trim().toUpperCase(), model:(r.model||'').trim(), ac_kw:normNum(r.ac_kw||r['moc ac [kw]']||r.moc||r['ac']), price:normNum(r.price||r.cena)}));
+}
+function mapBatteries(a){
+  return a.map(r=>({brand:(r.brand||r.marka||'').trim().toUpperCase(), model:(r.model||'').trim(), kwh:normNum(r.kwh||r['pojemność [kwh]']||r.pojemnosc), price:normNum(r.price||r.cena)}));
+}
+function mapAccessories(a){
+  return a.map(r=>({brand:(r.brand||r.marka||'').trim().toUpperCase(), name:(r.name||r.nazwa||'').trim(), spec:(r.spec||r.specyfikacja||''), price:normNum(r.price||r.cena)}));
+}
+function mapSets(a){
+  return a.map(r=>({title:(r.title||r['nazwa zestawu']||'').trim(), kwp:normNum(r.kwp||r['moc [kwp]']||r['moc [kw]']||r.moc), phase:(r.phase||r.fazy||'').trim(), storage:(r.storage||r.magazyn||'').trim(), items:(r.items||r.sklad||r['skład']||'').trim(), price:normNum(r.price||r.cena), note:(r.note||r.uwagi||'').trim()}));
+}
+
+const files={};
+['csv_pan','csv_inv','csv_bat','csv_acc','csv_set'].forEach(id=>{
+  $('#'+id).addEventListener('change', e=>{ if(e.target.files[0]) files[id]=e.target.files[0]; });
+});
+// drag&drop
+const drop=$('#drop');
+drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.style.opacity='.7'; });
+drop.addEventListener('dragleave', e=>{ drop.style.opacity='1'; });
+drop.addEventListener('drop', e=>{
+  e.preventDefault(); drop.style.opacity='1';
+  [...e.dataTransfer.files].forEach(f=>{
+    if(/\.csv$/i.test(f.name)){
+      if(/inwer|inverter/i.test(f.name)) files.csv_inv = f;
+      else if(/bat|magazyn/i.test(f.name)) files.csv_bat = f;
+      else if(/acc|akces/i.test(f.name)) files.csv_acc = f;
+      else if(/set|zestaw/i.test(f.name)) files.csv_set = f;
+      else files.csv_pan = f;
+    }
+  });
+  alert('Dodano pliki CSV. Kliknij „Zbuduj MASTER JSON”.');
+});
+
+async function build(){
+  const out={panels:[],inverters:[],batteries:[],accessories:[],sets:[]};
+  if(files.csv_pan){ out.panels = mapPanels(parseCSV(await readFile(files.csv_pan))); }
+  if(files.csv_inv){ out.inverters = mapInverters(parseCSV(await readFile(files.csv_inv))); }
+  if(files.csv_bat){ out.batteries = mapBatteries(parseCSV(await readFile(files.csv_bat))); }
+  if(files.csv_acc){ out.accessories = mapAccessories(parseCSV(await readFile(files.csv_acc))); }
+  if(files.csv_set){ out.sets = mapSets(parseCSV(await readFile(files.csv_set))); }
+  $('#out').textContent = JSON.stringify(out,null,2);
+  return out;
+}
+$('#btnGo').onclick=build;
+
+$('#btnSave').onclick=async ()=>{
+  const obj = await build();
+  const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pv_master.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+</script>
+</body>
+</html>
