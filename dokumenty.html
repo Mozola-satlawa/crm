@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
@@ -17,6 +16,29 @@
   header{padding:16px;background:#0f0f0f;border-bottom:1px solid var(--line)}
   header h1{margin:0;font-size:22px}
   .small{font-size:12px;color:var(--muted)}
+
+  /* --- GÓRNE MENU --- */
+  .topnav{
+    background:#141414;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    padding:10px 16px;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:6;
+  }
+  .topnav a{
+    color:var(--ink);
+    background:#1b1b1b;
+    border:1px solid var(--line);
+    padding:8px 12px;
+    border-radius:8px;
+    text-decoration:none;
+  }
+  .topnav a:hover{ background:#262626 }
+
   nav{background:#141414;display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
   nav button{color:var(--ink);background:#1b1b1b;border:1px solid var(--line);padding:8px 12px;border-radius:8px;cursor:pointer}
   nav button.active{background:#202020;border-color:#3b3b3b}
@@ -64,6 +86,13 @@
   <h1>Wszystkie pliki i umowy • ARKON CRM</h1>
   <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
 </header>
+
+<!-- NOWE GŁÓWNE MENU -->
+<nav class="topnav" aria-label="Nawigacja globalna">
+  <a href="index.html">← Pulpit</a>
+  <a href="umowa_arkon_szablon.html">Umowa ogólna</a>
+  <a href="editor.html">Umowa modyfikowalna</a>
+</nav>
 
 <nav class="tabs" role="tablist">
   <button id="tabDocs" class="active" type="button">📁 Dokumenty (FILES)</button>
@@ -163,7 +192,7 @@ const icoChar = t => t==='pdf'?'📄' : t==='doc'?'📝' : t==='img'?'🖼️' :
 const clsByType = t => t==='pdf'?'pdf' : t==='doc'?'doc' : t==='img'?'img' : t==='html'?'html' : '';
 
 /* ===== WSPÓLNE UI ===== */
-let activeTab = 'docs'; // 'docs' | 'upload' | 'contracts'
+let activeTab = 'docs';
 let filter = { q:'', type:'', sort:'name.asc' };
 
 $('#tabDocs').onclick = ()=>switchTab('docs');
@@ -191,11 +220,7 @@ const modal = $('#modal'), mFrame = $('#mFrame'), mOpen = $('#mOpen'), mTitle = 
 $('#mClose').onclick = closePreview;
 function openPreview(name, href, type){
   mTitle.textContent = name;
-  if(type==='html'){ // osadzamy html (blob URL lub ścieżka)
-    mFrame.src = href;
-  }else{
-    mFrame.src = href;
-  }
+  mFrame.src = href;
   mOpen.href = href;
   modal.classList.add('open');
 }
@@ -203,38 +228,16 @@ function closePreview(){ mFrame.src='about:blank'; modal.classList.remove('open'
 
 /* ===== DOKUMENTY (FILES) ===== */
 const FILES = [
-  /* KLIENT — ZAŁĄCZNIKI */
   { name:'ANKIETA Audyt Energetyczny .docx', href:'ANKIETA Audyt Energetyczny .docx', desc:'Ankieta do audytu energetycznego (DOCX).', tags:['ogólne','audyt','doc'] },
-  { name:'OŚWIADCZENIE BENEFICJENTA – wizja lokalna (audyt energetyczny).pdf',
-    href:'OSÌ WIADCZENIE BENEFICJENTA O PRZEPROWADZENIU WIZJI LOKALNEJ NIERUCHOMOSÌ CI W CELU WYKONANIA AUDYTU ENERGETYCZNEGO BUDYNKU.pdf',
-    desc:'Oświadczenie beneficjenta o przeprowadzeniu wizji lokalnej (PDF).', tags:['ogólne','oświadczenie','audyt','pdf'] },
-  { name:'Umowa ARKON – ocieplenie 2025.pdf',
-    href:'umowa arkon ocieplenie 2025 (3) (1) (1) (1) (1) (1) (1) (1) (1).pdf',
-    desc:'Wzór umowy ARKON – ocieplenie (2025).', tags:['umowa','ogólne','pdf'] },
-  { name:'Zdjęcie WhatsApp 2025-07-20.jpg',
-    href:'Zdjęcie WhatsApp 2025-07-20 o 19.05.43_2df47b5f.jpg22.jpg',
-    desc:'Zdjęcie z wizji lokalnej.', tags:['wizja','foto'] },
-
-  /* OGÓLNE */
+  { name:'OŚWIADCZENIE BENEFICJENTA – wizja lokalna (audyt energetyczny).pdf', href:'OSÌ WIADCZENIE BENEFICJENTA O PRZEPROWADZENIU WIZJI LOKALNEJ NIERUCHOMOSÌ CI W CELU WYKONANIA AUDYTU ENERGETYCZNEGO BUDYNKU.pdf', desc:'Oświadczenie beneficjenta o przeprowadzeniu wizji lokalnej (PDF).', tags:['ogólne','oświadczenie','audyt','pdf'] },
+  { name:'Umowa ARKON – ocieplenie 2025.pdf', href:'Umowa_ARKON_ocieplenie_2025.pdf', desc:'Wzór umowy ARKON – ocieplenie (2025).', tags:['umowa','ogólne','pdf'] },
+  { name:'Zdjęcie WhatsApp 2025-07-20.jpg', href:'Zdjęcie WhatsApp 2025-07-20 o 19.05.43_2df47b5f.jpg22.jpg', desc:'Zdjęcie z wizji lokalnej.', tags:['wizja','foto'] },
   { name:'UMOWA Z WYKONAWCĄ  arkon.pdf', href:'UMOWA Z WYKONAWCĄ  arkon.pdf', desc:'Wzór umowy z Wykonawcą (PDF).', tags:['umowa','ogólne','prefinansowanie','dofinansowanie'] },
   { name:'PEŁNOMOCNICTWO.docx', href:'PEŁNOMOCNICTWO.docx', desc:'Pełnomocnictwo do reprezentowania w programie/urzędzie.', tags:['pełnomocnictwo','ogólne','prefinansowanie','dofinansowanie'] },
   { name:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx', href:'OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx', desc:'Zgoda współmałżonka.', tags:['oświadczenie','ogólne'] },
   { name:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx', href:'OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx', desc:'Zgoda współwłaściciela.', tags:['oświadczenie','ogólne'] },
   { name:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf', href:'7188a6a8-7977-4e81-8ce6-7410c21c9b25.pdf', desc:'Dokument PDF (identyfikator).', tags:['ogólne','pdf'] },
-  { name:'protokolu_odbioru_prac_wykonawcy.pdf', href:'protokolu_odbioru_prac_wykonawcy.pdf', desc:'Protokół odbioru prac (PDF).', tags:['prefinansowanie','protokół','pdf'] }
-];
-
-function renderDocs(){
-  const tb = $('#tbodyDocs'); tb.innerHTML='';
-  let rows = FILES.slice();
-  rows = applyCommonFilters(rows.map(x=>({
-    type: mimeToType(x.name,''), name:x.name, desc:x.desc||'', tags:x.tags||[], href: x.href
-  })));
-  rows.forEach(r=>{
-    const tr = document.createElement('tr');
-    const tdN = document.createElement('td');
-    tdN.innerHTML = `<div class="name"><div class="ico ${clsByType(r.type)}">${icoChar(r.type)}</div><a href="${encodeURI(r.href)}" target="_blank" rel="noopener">${r.name}</a></div>`;
-    const tdD = document.createElement('td'); tdD.textContent = r.desc||'';
+  { name:'protokolu_odbioru_prac_wykonawcy.pdf', href:'protokolu_odbioru_prac_wykonaw    const tdD = document.createElement('td'); tdD.textContent = r.desc||'';
     const tdT = document.createElement('td'); tdT.textContent = (r.tags||[]).join(', ');
     const tdA = document.createElement('td'); tdA.className='right';
     const btnOpen = document.createElement('a'); btnOpen.className='btn ghost'; btnOpen.textContent='Otwórz'; btnOpen.href=encodeURI(r.href); btnOpen.target='_blank'; btnOpen.rel='noopener';
@@ -321,7 +324,7 @@ function renderContracts(){
       });
     });
   });
-  // map do wspólnego formatu dla filtrów
+  // map do wspólnego formatu
   rows = rows.map(r=>({
     type:'html',
     name: `${r.name} / ${r.date||''}`,
@@ -354,7 +357,6 @@ function renderContracts(){
 
 /* ===== WSPÓLNE: filtrowanie/sort ===== */
 function applyCommonFilters(rows){
-  // wyszukiwanie
   if(filter.q){
     const q = filter.q.toLowerCase();
     rows = rows.filter(r=>{
@@ -363,11 +365,9 @@ function applyCommonFilters(rows){
       return (r.name||'').toLowerCase().includes(q) || desc.includes(q) || tags.includes(q);
     });
   }
-  // typ
   if(filter.type){
     rows = rows.filter(r=>mimeToType(r.name).replace('file','') === filter.type || r.type===filter.type);
   }
-  // sort
   rows.sort((a,b)=>{
     switch(filter.sort){
       case 'name.asc':  return a.name.localeCompare(b.name,'pl',{sensitivity:'base'});
@@ -376,18 +376,16 @@ function applyCommonFilters(rows){
       default: return 0;
     }
   });
-  // licznik
   $('#countVis').textContent = rows.length;
   return rows;
 }
 
-/* ===== eksport CSV (wg aktywnej zakładki) ===== */
+/* ===== eksport CSV ===== */
 function exportCSV(){
   let rows=[];
   if(activeTab==='docs'){
     rows = FILES.map(x=>({name:x.name, desc:x.desc||'', tags:(x.tags||[]).join('|'), href:x.href, type:mimeToType(x.name)}));
   }else if(activeTab==='upload'){
-    // Wymuszone przeładowanie i zrzut (bez podglądów)
     rows = Array.from($('#tbodyUpload').querySelectorAll('tr')).map(tr=>{
       const tds = tr.querySelectorAll('td');
       return { name: tds[0]?.innerText.trim(), desc:'', tags:'', href:'(blob:URL)', type:(tds[1]?.innerText.trim()||'').toLowerCase() };
@@ -413,11 +411,12 @@ function exportCSV(){
 /* ===== init ===== */
 function render(){
   if(activeTab==='docs') renderDocs();
-  if(activeTab==='upload') {/* nic — sekcja renderuje się po loadUpload() */ }
+  if(activeTab==='upload') {}
   if(activeTab==='contracts') renderContracts();
 }
-// auto-start
 render();
 </script>
 </body>
 </html>
+
+
