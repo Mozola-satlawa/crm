@@ -11,7 +11,7 @@
     html,body{margin:0;height:100%}
     body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Arial}
     header{position:sticky;top:0;z-index:10;background:#0e1433;border-bottom:1px solid var(--line);padding:10px 12px}
-    .wrap{max-width:900px;margin:0 auto;padding:16px}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px} /* + szerszy kontener */
     .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     button,.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:8px 12px;cursor:pointer}
     .btn.ghost{background:transparent;border:1px solid var(--accent);color:#cfe0ff}
@@ -24,7 +24,14 @@
     .grid{display:grid;gap:12px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
     /* edytowalna treść */
-    #doc{background:#0f1636;border:1px solid var(--line);border-radius:12px;padding:18px;line-height:1.65;white-space:pre-wrap}
+    #doc{
+      background:#0f1636;border:1px solid var(--line);border-radius:12px;padding:18px;
+      line-height:1.65;white-space:pre-wrap;
+      /* ANTY-URYWANIE / lepsze łamanie */
+      overflow-wrap:anywhere; /* najskuteczniejsze na bardzo długie słowa/ciągi */
+      word-break:break-word;  /* fallback dla starszych silników */
+      hyphens:auto;           /* miękkie dzielenie (jeśli język/UA wspiera) */
+    }
     #doc[contenteditable="true"]{outline:2px dashed #2b3a77}
     .small{font-size:12px;opacity:.85}
     .hl{background:#18235a;border:1px dashed #2b3a77;border-radius:6px;padding:0 3px}
@@ -86,11 +93,11 @@ kod i miejscowość
 poczta   
  
   
- 
+  
  
  
   
- 
+  
  
   
  
@@ -117,8 +124,6 @@ przez: Krystynę Sobaniak zwaną dalej , PW ARKON  REGON: 020258190, NIP: 502003
     2 
          
   
- 
- 
  
  
  
@@ -176,6 +181,7 @@ do zastanej instalacji w pomieszczeniu monta żu urządzenia, a PW ARKON zobowi 
  
  
  
+ 
 moc  jednostki ………… .. 
 Typ inwertera ( 3F – trzy fazowy, 1F – jednofazowy ) - ………………………………………..  
 Nazwa inwertera - ………………………………………….  
@@ -206,7 +212,7 @@ brutto (VAT 8%) .
  
 i) Audyt energetyczny do Programu Czyste Powietrze – TAK   NIE 
 Wynagrodzenie  w kwocie netto …………………..………….… zł  …………………………………………………………..  
-  
+   
  
 § 2 TERMIN WYKONANIA 
 UMOWY  
@@ -228,6 +234,7 @@ Vat 23% za audyt energetyczny wymagany do Programu Czyste Powietrze.
  
  
  
+ 
 formułowania roszczeń ze strony Zamawiającego.  Wówczas  termin  zakończenia  prac  ulega  
 odpowiedniemu  przedłużeniu.  
 3. Data rozpoczęcia  i zakończenia prac będą ustalone indywidualnie  z Zamawiającym 
@@ -243,8 +250,6 @@ Przedmiot/y Umowy zostanie/ą odebrany/e  w miejscu wskazanym  w § 1 ust. 2 Umo
 1. 
 zgodnie  z przedmiotami wymienionymi  w § 1 ust. 2  a-i kwot według rozliczenia  z § 4 pkt.3.  
  
-  
- 
  
  
  
@@ -256,12 +261,11 @@ III  PRÓG
  
   Jednocześnie Strony ustalają, że kwota  w wysokości 
 …………………………………………………….. zostanie przelana bezpośrednio na konto  
-  
+ 
  
  Rozliczenie  całościowe:  
 a) Łączna kwota inwestycji: 
   
- 
   
   
   
@@ -308,8 +312,8 @@ Audyt energetyczny  kwota netto ................................... z ł .......
   
  
  
-II  PRÓG  
  
+II  PRÓG  
  
  
  
@@ -328,7 +332,7 @@ c) Kwota opłacana  w ramach kredytu
   
 d) Kwota opłacana przez Zamawiającego (wkład własny): 
   
-     
+  
  
   
   
@@ -340,7 +344,6 @@ I  PRÓG
  
  
  
- 
  2.        Jednocześnie Strony ustalają, że kwota  w wysokości 
 ……………………………………………………..  zostanie przelana bezpośrednio na konto  
 Zamawiajacego  przez  WFOŚiGW  w ramach  programu  Czyste  Powietrze,  jeśli  
@@ -349,7 +352,6 @@ Zamawiający  spełnia  warunki  tego  programu.
 a) Łączna kwota inwestycji: 
   
 b) Kwota opłacana  w ramach Programu Czyste Powietrze § 4 pkt.2 
-  
   
   
   
@@ -377,6 +379,7 @@ d) Kwota op łacana przez Zamawiaj ącego (wk ład własny):
      
          
   
+ 
  
  
  
@@ -443,7 +446,7 @@ zawarcia niniejszej Umowy Zamawiający wpłaci na rachunek bankowy PW ARKON wska
  
                    
  
- 
+
 Załącznik nr 2  
  
  
@@ -498,7 +501,6 @@ wystąpienia wyżej opisanych  okoliczności.
 1. Potwierdzeniem dostarczenia przedmiotu Umowy będzie protokół przekazania sprzętu  i prac sporządzony  w dwóch jednobrzmiących 
  
 2. 
- 
   
 §3 USTERKI  I NIEPRAWIDŁOWOŚCI  
  
@@ -771,8 +773,8 @@ mailowo biuro@arkoncentrum.pl,PW ARKON  może  odmówić  zadośćuczynienia  ż
       asEl.textContent = autosave ? 'ON' : 'OFF';
     };
 
-    // Find/replace helpers
-    function escapeRegExp(s){ return s.replace(/[.*+?^{{}}()|[\\]\\\\]/g, '\\\\$&'); }
+    // Find/replace helpers — poprawka RegExp, żeby nie ucinał/nie psuł treści
+    function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
     document.getElementById('btnReplace').onclick = ()=>{
       const f = document.getElementById('find').value;
       const r = document.getElementById('repl').value;
