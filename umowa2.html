@@ -17,7 +17,7 @@
   nav a{color:#cfe1ff;text-decoration:none;padding:6px 10px;border:1px solid #2a3a75;border-radius:999px}
   nav a:hover{background:#223160}
   .wrap{max-width:980px;margin:18px auto;padding:0 16px}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;align-items:center;justify-content:space-between}
   .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
   .btn.ok{background:#194d34;border-color:#2b8a57}
@@ -34,13 +34,13 @@
   th{background:#121e49;color:#cfe1ff;text-align:left;font-weight:600}
   tr:nth-child(even) td{background:#0f1a44}
 
-  /* Zapewnienie jednolitych szerokości kolumn we wszystkich tabelach komponentów */
-  table.component{width:100%;table-layout:fixed}
+  /* Komponenty: pionowe tabele z jednolitymi szerokościami */
+  table.component{width:100%;table-layout:fixed;margin-bottom:24px}
   table.component th, table.component td{word-break:break-word}
-  /* Pierwsza kolumna (etykiety) ma stałą szerokość, druga wypełnia resztę */
-  table.component tbody tr th:first-child:not([colspan]){width:28%;}
-  table.component tbody tr td{width:72%;}
+  table.component tbody tr th:first-child:not([colspan]){width:32%;}
+  table.component tbody tr td{width:68%;}
   .dots{font-family:ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+  [contenteditable="true"] .dots{outline-offset:2px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .right{display:flex;gap:8px;justify-content:flex-end}
   .center{text-align:center}
@@ -48,32 +48,29 @@
   .sign{width:44%;text-align:center}
   .box{border:1px dashed #3a4ca3;padding:10px;border-radius:10px;background:#0f1740}
   [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:6px;padding:4px}
-  .kv{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:center}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:4px 8px;color:#aeb8da;font-size:12px}
 
-  /* element do wymuszania podziału stron przy drukowaniu; ukryty na ekranie */
-  .page-break{display:none;height:0;}
-  @media print{
-    .page-break{display:block;page-break-before:always;}
+  /* Stopka do druku z numeracją stron (Chrome/Edge) */
+  .print-footer{
+    position:fixed; left:0; right:0; bottom:0;
+    font-size:12px; color:#777; padding:6px 12px;
+    border-top:1px solid #ddd; background:#fff; display:none;
   }
+  .print-footer .line{display:flex;justify-content:space-between;gap:12px}
+  .print-footer .pnum::after{content:"Strona " counter(page) " / " counter(pages);} /* Chrome/Edge */
 
-  /* Upewnij się, że każda tabela komponentu zajmuje pełną szerokość i posiada odstęp poniżej. */
-  .component{width:100%;margin-bottom:24px;}
-
-  /* wymuszenie podziału stron dla poszczególnych sekcji w wersji do druku */
-  .page-break{display:none;}
-  @media print{
-    .page-break{display:block;page-break-after:always;}
-  }
+  /* Druk: nic nie ukrywamy – wszystkie §/rozdziały zawsze są widoczne */
   @media print{
     nav,.card.toolbar{display:none!important}
     body{background:#fff;color:#000}
     .doc{background:#fff;border:0;padding:0}
     th,td{border-color:#000}
     a{color:#000;text-decoration:none}
-    /* Wersja drukowana: każdy rozdział (h2) i podrozdział (h3) zaczyna się na nowej stronie,
-       aby wygenerować dłuższy dokument (min. 6 stron). */
+    /* Rozdziały zaczynają nową stronę, by uniknąć dużych "dziur" w połowie § */
     h2,h3{page-break-before:always;}
+    table{page-break-inside:auto}
+    tr{page-break-inside:avoid;page-break-after:auto}
+    .print-footer{display:block}
   }
 </style>
 </head>
@@ -86,15 +83,14 @@
 
   <div class="wrap">
     <div class="card toolbar">
-      <div class="row" style="justify-content:space-between">
-        <div class="row">
-          <button class="btn" onclick="window.print()">Drukuj / PDF</button>
-          <button class="btn ok" id="btnToggleEdit">Zablokuj/odblokuj edycję</button>
-          <span class="pill">Podstawianie z Klienci: <b id="mergeState">auto</b></span>
-        </div>
-        <div class="row small">
-          Otworzono: <span id="now"></span> • URL param: <code>?clientId=…</code>
-        </div>
+      <div class="row">
+        <button class="btn" onclick="window.print()">Drukuj / PDF</button>
+        <button class="btn ok" id="btnToggleEdit">Zablokuj/odblokuj edycję</button>
+        <button class="btn ghost" id="btnRecalc">Przelicz sumy</button>
+        <span class="pill">Podstawianie z Klienci: <b id="mergeState">auto</b></span>
+      </div>
+      <div class="row small">
+        Otworzono: <span id="now"></span> • URL param: <code>?clientId=…</code>
       </div>
     </div>
 
@@ -124,54 +120,41 @@
       <h2>§3. Przedmiot umowy – komponenty i parametry</h2>
       <p class="small">Uzupełnij kropki w tabelach. Niepotrzebne wiersze możesz skasować (dokument jest edytowalny).</p>
 
-      <!-- Pompa ciepła -->
+      <!-- 3.1 Pompa ciepła -->
       <h3>3.1. Pompa ciepła</h3>
-      <!-- Zmieniono układ tabeli z szerokiej na pionową, tak aby pola były wypisane jedno pod drugim. -->
       <table aria-label="Pompa ciepła" class="component">
         <tbody>
           <tr><th>Producent / Model</th><td class="dots">.............................................................................</td></tr>
           <tr><th>Moc [kW]</th><td class="dots">..................</td></tr>
-          <tr><th>Jedn. zew./wew.</th><td class="dots">..................................</td></tr>
+          <tr><th>Jedn. zewnętrzna / wewnętrzna</th><td class="dots">..................................</td></tr>
           <tr><th>Bufor / Zawór 3D</th><td class="dots">..................................</td></tr>
           <tr><th>Ilość [szt.]</th><td class="dots">..........</td></tr>
-          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Cena brutto</th><td class="dots">..................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">..................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Cena brutto</th><td class="dots sum-brutto">..................</td></tr>
         </tbody>
       </table>
       <p class="small">Dodatki PC: zasobnik c.w.u. <span class="dots">..................</span> l, naczynie przeponowe <span class="dots">........</span> l, zawory odcinające <span class="dots">........</span>, izolacje <span class="dots">........</span>, uruchomienie serwisowe <span class="dots">........</span>.</p>
 
-      <!-- Podział strony po zakończeniu sekcji 3.1 w wersji do druku -->
-      <div class="page-break"></div>
-
-      <!-- Podział strony przed sekcją 3.2 -->
-      <div class="page-break"></div>
-      <!-- Piec / Kocioł -->
+      <!-- 3.2 Piec / Kocioł -->
       <h3>3.2. Piec / Kocioł</h3>
-      <!-- Układ pionowy zamiast wielu kolumn -->
       <table aria-label="Piec / Kocioł" class="component">
         <tbody>
           <tr><th>Typ (gaz/elek/stałe)</th><td class="dots">........................................</td></tr>
-          <tr><th>Marka / Model</th><td class="dots">............................................................</td></tr>
+        <tr><th>Marka / Model</th><td class="dots">............................................................</td></tr>
           <tr><th>Moc [kW]</th><td class="dots">........</td></tr>
           <tr><th>Klasa / Sprawność</th><td class="dots">....................</td></tr>
           <tr><th>Komplet armatury</th><td class="dots">....................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">..................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">..................</td></tr>
         </tbody>
       </table>
       <p class="small">Dodatki kotłowni: pompa obiegowa <span class="dots">........</span>, pompa cyrkulacyjna <span class="dots">........</span>, zawór mieszający <span class="dots">........</span>, grupa bezpieczeństwa <span class="dots">........</span>, komin/spalinowy <span class="dots">........</span>.</p>
 
-      <!-- Podział strony po zakończeniu sekcji 3.2 w wersji do druku -->
-      <div class="page-break"></div>
-
-      <!-- Podział strony przed sekcją 3.3 -->
-      <div class="page-break"></div>
-      <!-- Fotowoltaika -->
+      <!-- 3.3 Fotowoltaika -->
       <h3>3.3. Fotowoltaika</h3>
-      <!-- Pionowy układ tabeli fotowoltaiki -->
       <table aria-label="Fotowoltaika" class="component">
         <tbody>
           <tr><th>Moduły (producent / model)</th><td class="dots">.............................................................................</td></tr>
@@ -179,23 +162,17 @@
           <tr><th>Moc instalacji [kWp]</th><td class="dots">................</td></tr>
           <tr><th>Inwerter (model / moc)</th><td class="dots">...................................................</td></tr>
           <tr><th>Konstrukcja montażowa</th><td class="dots">..................................</td></tr>
-          <tr><th>Zabezp. AC/DC</th><td class="dots">....................</td></tr>
-          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+          <tr><th>Zabezpieczenia AC/DC</th><td class="dots">....................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">..................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">..................</td></tr>
         </tbody>
       </table>
       <p class="small">Okablowanie DC <span class="dots">........</span> m, AC <span class="dots">........</span> m, uziemienie <span class="dots">........</span>, monitoring <span class="dots">........</span>, typ dachu/pokrycia <span class="dots">..................................</span>.</p>
 
-      <!-- Podział strony po zakończeniu sekcji 3.3 w wersji do druku -->
-      <div class="page-break"></div>
-
-      <!-- Podział strony przed sekcją 3.4 -->
-      <div class="page-break"></div>
-      <!-- Ocieplenie -->
+      <!-- 3.4 Ocieplenie -->
       <h3>3.4. Ocieplenie</h3>
-      <!-- Pionowy układ tabeli ocieplenia; sekcja otrzymuje id do obsługi chowania w wydruku -->
-      <table aria-label="Ocieplenie" class="component" id="ocieplenie-table">
+      <table aria-label="Ocieplenie" class="component">
         <tbody>
           <tr><th>Materiał (styropian/wełna/PUR)</th><td class="dots">.................................................</td></tr>
           <tr><th>Grubość [cm]</th><td class="dots">......</td></tr>
@@ -203,109 +180,92 @@
           <tr><th>Powierzchnia [m²]</th><td class="dots">............</td></tr>
           <tr><th>System/tynk</th><td class="dots">................................</td></tr>
           <tr><th>Obróbki/Parapety</th><td class="dots">................................</td></tr>
-          <tr><th>Cena netto</th><td class="dots">..................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">..................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">..................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">..................</td></tr>
         </tbody>
       </table>
 
-      <!-- Podział strony po zakończeniu sekcji 3.4 w wersji do druku -->
-      <div class="page-break"></div>
-
-      <!-- Podział strony przed sekcją 3.5 -->
-      <div class="page-break"></div>
-      <!-- Stolarka & Dodatkowe elementy -->
+      <!-- 3.5 Stolarka i elementy dodatkowe -->
       <h3>3.5. Stolarka i elementy dodatkowe</h3>
-      <!-- Wersja pionowa: każdy element (grzejnik, rozdzielacz, rury, okna, inne) posiada własny blok w tabeli,
-           a poszczególne parametry są umieszczone jeden pod drugim. -->
       <table aria-label="Stolarka i dodatki" class="component">
-        <!-- Grzejnik / typ -->
         <tbody id="group-grzejnik">
           <tr><th colspan="2">Grzejnik / typ</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
-        <!-- Rozdzielacz / obiegi -->
         <tbody id="group-rozdzielacz">
           <tr><th colspan="2">Rozdzielacz / obiegi</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
-        <!-- Rury / prowadzenie -->
         <tbody id="group-rury">
           <tr><th colspan="2">Rury / prowadzenie</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
-        <!-- Okna / drzwi -->
-        <!-- Rozbudowana sekcja: osobno okna, drzwi, bramy garażowe oraz rekuperacja ścienna -->
         <tbody id="group-okna">
           <tr><th colspan="2">Okna</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
         <tbody id="group-drzwi">
           <tr><th colspan="2">Drzwi</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
         <tbody id="group-garaz">
           <tr><th colspan="2">Bramy garażowe</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
         <tbody id="group-rekuperacja">
           <tr><th colspan="2">Rekuperacja ścienna</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
-        <!-- Klimatyzacja -->
         <tbody id="group-klimatyzacja">
           <tr><th colspan="2">Klimatyzacja</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
-        <!-- Inne (audyt, demontaż, utylizacja) -->
         <tbody id="group-inne">
           <tr><th colspan="2">Inne (audyt, demontaż, utylizacja)</th></tr>
           <tr><th>Parametry</th><td class="dots">......................................................................</td></tr>
           <tr><th>Ilość</th><td class="dots">....</td></tr>
-          <tr><th>Cena netto</th><td class="dots">................</td></tr>
-          <tr><th>VAT</th><td class="dots">....%</td></tr>
-          <tr><th>Brutto</th><td class="dots">................</td></tr>
+          <tr><th>Cena netto</th><td class="dots sum-netto">................</td></tr>
+          <tr><th>VAT</th><td class="dots sum-vat">....%</td></tr>
+          <tr><th>Brutto</th><td class="dots sum-brutto">................</td></tr>
         </tbody>
       </table>
 
-      <!-- Podział strony po zakończeniu sekcji 3.5 w wersji do druku -->
-      <div class="page-break"></div>
-
       <h2>§4. Wynagrodzenie i warunki płatności</h2>
       <ol>
-        <li>Wynagrodzenie łączone za przedmiot umowy (netto): <span class="dots">..........................................................</span> zł; stawka VAT: <span class="dots">....</span>%; wartość brutto: <span class="dots">..........................................................</span> zł.</li>
+        <li>Wynagrodzenie łączone za przedmiot umowy (netto): <b><span id="sumNet">..........................................................</span></b> zł; stawka VAT (średnia ważona): <b><span id="sumVatPct">...</span></b> %; wartość brutto: <b><span id="sumGross">..........................................................</span></b> zł.</li>
         <li>Zaliczka: <span class="dots">................................</span> zł, płatna do dnia: <span class="dots">.........................</span>, na rachunek: <span class="dots">..........................................................</span>.</li>
         <li>Harmonogram płatności (jeśli dotyczy): I etap <span class="dots">........%</span> do dnia <span class="dots">........</span>; II etap <span class="dots">........%</span> do dnia <span class="dots">........</span>; końcowa <span class="dots">........%</span> po odbiorze.</li>
         <li>Jeżeli Zamawiający korzysta z dofinansowania (np. „Czyste Powietrze”), strony uzgadniają, że: <span class="dots">...........................................................................................................................................................................................</span></li>
@@ -393,31 +353,42 @@
     </div>
 
     <p class="small" style="margin-top:10px">
-      Podpowiedź: wypełnij kropki bezpośrednio w tekście. Jeśli otworzysz z <code>klienci.html</code> (przycisk „📄 Umowa 2”), pola <i>Klient</i>/<i>adres</i>/<i>e-mail</i>/<i>telefon</i> uzupełnią się automatycznie z bazy.
+      Podpowiedź: wypełnij kropki bezpośrednio w tekście. Jeśli otworzysz z <code>klienci.html</code> (przycisk „📄 Umowa 2”), pola <i>Klient</i>/<i>adres</i>/<i>e-mail</i>/<i>telefon</i> uzupełnią się automatycznie z bazy.  
+      Użyj przycisku „Przelicz sumy”, aby wypełnić §4 na podstawie tabel z §3.
     </p>
+  </div>
+
+  <!-- Stopka drukowana -->
+  <div class="print-footer" aria-hidden="true">
+    <div class="line">
+      <span>PW ARKON • Umowa</span>
+      <span class="pnum"></span>
+      <span id="printDate"></span>
+    </div>
   </div>
 
 <script>
 (function(){
   // wyświetl czas otwarcia
-  const now = new Date().toLocaleString('pl-PL');
-  document.getElementById('now').textContent = now;
-  
+  const now = new Date();
+  document.getElementById('now').textContent = now.toLocaleString('pl-PL');
+  document.getElementById('printDate').textContent = now.toLocaleDateString('pl-PL');
+
   // przełącznik edycji
   const doc = document.getElementById('doc');
   document.getElementById('btnToggleEdit').addEventListener('click', ()=>{
     const on = doc.getAttribute('contenteditable') === 'true';
     doc.setAttribute('contenteditable', on ? 'false' : 'true');
   });
-  
+
   // prosta funkcja do param z URL
   function params(){ try{ return Object.fromEntries(new URL(location.href).searchParams.entries()); }catch{ return {}; } }
-  
+
   // wczytaj klientów z localStorage
   function loadClients(){
     try{ return JSON.parse(localStorage.getItem('arkon_clients_v2')||'[]'); }catch(e){ return []; }
   }
-  
+
   // wstaw wartość do elementów z data-bind
   function setDot(selector, value){
     document.querySelectorAll('[data-bind="'+selector+'"]').forEach(el=>{
@@ -426,7 +397,7 @@
       }
     });
   }
-  
+
   // wstaw dane jeśli jest clientId
   const p = params();
   if(p.clientId){
@@ -437,7 +408,6 @@
       setDot('client.address', c.address||'');
       setDot('client.email', c.email||'');
       setDot('client.phone', c.phone||'');
-      // parametry umowy w URL (opcjonalne)
       if(p.no)   setDot('contract.no', p.no);
       if(p.date) setDot('contract.date', p.date);
       if(p.city) setDot('city', p.city);
@@ -448,62 +418,98 @@
   }else{
     document.getElementById('mergeState').textContent = 'brak clientId';
   }
-})();
-</script>
 
-<!-- Skrypt ukrywający niewypełnione sekcje (grzejnik oraz ocieplenie) podczas drukowania.  -->
-<script>
-// Upewnij się, że logika wykonywana jest po załadowaniu strony
-window.addEventListener('beforeprint', () => {
-  try {
-    // Funkcja pomocnicza: sprawdza, czy w grupie elementów .dots występują litery/cyfry
-    function isFilled(nodeList) {
-      let filled = false;
-      nodeList.forEach(el => {
-        const txt = (el.textContent || '').trim();
-        if(/[A-Za-z0-9]/.test(txt)) {
-          filled = true;
-        }
-      });
-      return filled;
+  /* ====== SUMOWANIE §3 → §4 ====== */
+  const fmt = new Intl.NumberFormat('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  function parseMoney(s){
+    if(!s) return NaN;
+    // akceptuje: "12 345,67", "12345.67", "12.345,67", "12345"
+    s = String(s).replace(/\s/g,'').replace(/zł|PLN/ig,'');
+    // jeżeli jest przecinek i kropka, ostatni separator to dziesiętny
+    const lastComma = s.lastIndexOf(',');
+    const lastDot   = s.lastIndexOf('.');
+    if(lastComma>lastDot){
+      s = s.replace(/\./g,'').replace(',','.');
+    }else{
+      s = s.replace(/,/g,'');
     }
-    // Ukryj sekcję "Grzejnik" jeśli wszystkie pola są puste (same kropki)
-    const grzejnikRow = document.getElementById('group-grzejnik');
-    if(grzejnikRow) {
-      const dotCells = grzejnikRow.querySelectorAll('.dots');
-      if(!isFilled(dotCells)) {
-        grzejnikRow.dataset.originalDisplay = grzejnikRow.style.display || '';
-        grzejnikRow.style.display = 'none';
+    const n = parseFloat(s);
+    return isFinite(n)? n : NaN;
+  }
+
+  function getText(el){ return (el.textContent||'').trim(); }
+  function setText(el, val){ el.textContent = val; }
+
+  // Dla każdej tabeli "component" spróbuj policzyć netto/vat/brutto
+  function recalc(){
+    const tables = document.querySelectorAll('table.component');
+    let sumNet = 0, sumGross = 0, vatBase = 0, vatAmount = 0;
+
+    tables.forEach(tb=>{
+      // szukaj komórek wg klas pomocniczych
+      const nettoEl  = tb.querySelector('.sum-netto');
+      const vatEl    = tb.querySelector('.sum-vat');
+      const bruttoEl = tb.querySelector('.sum-brutto');
+
+      // jeżeli brak wyznaczonych wierszy w danej tabeli – pomijamy
+      if(!nettoEl && !vatEl && !bruttoEl) return;
+
+      let netto  = nettoEl  ? parseMoney(getText(nettoEl))  : NaN;
+      let vatPct = vatEl    ? parseMoney(getText(vatEl))    : NaN;
+      let brutto = bruttoEl ? parseMoney(getText(bruttoEl)) : NaN;
+
+      // Uzupełnianie braków
+      if(isNaN(brutto) && !isNaN(netto) && !isNaN(vatPct)){
+        brutto = netto * (1 + vatPct/100);
+        if(bruttoEl) setText(bruttoEl, fmt.format(brutto));
       }
-    }
-    // Ukryj całą tabelę ocieplenia, jeśli nie zawiera wypełnionych pól
-    const ocieplenieTable = document.getElementById('ocieplenie-table');
-    if(ocieplenieTable) {
-      const dotCells = ocieplenieTable.querySelectorAll('.dots');
-      if(!isFilled(dotCells)) {
-        ocieplenieTable.dataset.originalDisplay = ocieplenieTable.style.display || '';
-        ocieplenieTable.style.display = 'none';
+      if(isNaN(netto) && !isNaN(brutto) && !isNaN(vatPct) && vatPct!==0){
+        netto = brutto / (1 + vatPct/100);
+        if(nettoEl) setText(nettoEl, fmt.format(netto));
       }
-    }
-  } catch(e) {
-    console.error(e);
+      // Jeśli nadal brakuje VAT% a mamy netto i brutto → wylicz
+      if(isNaN(vatPct) && !isNaN(netto) && !isNaN(brutto) && netto>0){
+        vatPct = (brutto/netto - 1)*100;
+        if(vatEl) setText(vatEl, fmt.format(vatPct));
+      }
+
+      // Akumulacja
+      if(!isNaN(netto))  sumNet   += netto;
+      if(!isNaN(brutto)) sumGross += brutto;
+      if(!isNaN(netto) && !isNaN(brutto)){
+        vatBase   += netto;
+        vatAmount += (brutto - netto);
+      }
+    });
+
+    // Średnia ważona VAT
+    const vatPctWeighted = vatBase>0 ? (vatAmount/vatBase*100) : 0;
+
+    // Wpisz do §4
+    const sumNetEl   = document.getElementById('sumNet');
+    const sumGrossEl = document.getElementById('sumGross');
+    const sumVatPctEl= document.getElementById('sumVatPct');
+
+    if(sumNetEl)    sumNetEl.textContent    = sumNet>0 ? fmt.format(sumNet) : '..........................................................';
+    if(sumGrossEl)  sumGrossEl.textContent  = sumGross>0 ? fmt.format(sumGross) : '..........................................................';
+    if(sumVatPctEl) sumVatPctEl.textContent = isFinite(vatPctWeighted) && vatPctWeighted>0 ? fmt.format(vatPctWeighted) : '...';
   }
-});
-// Po zakończeniu drukowania przywróć oryginalny wygląd ukrytych elementów
-window.addEventListener('afterprint', () => {
-  // Przywróć sekcję grzejnika
-  const grzejnikRow = document.getElementById('group-grzejnik');
-  if(grzejnikRow && grzejnikRow.dataset.originalDisplay !== undefined) {
-    grzejnikRow.style.display = grzejnikRow.dataset.originalDisplay;
-    delete grzejnikRow.dataset.originalDisplay;
-  }
-  // Przywróć tabelę ocieplenia
-  const ocieplenieTable = document.getElementById('ocieplenie-table');
-  if(ocieplenieTable && ocieplenieTable.dataset.originalDisplay !== undefined) {
-    ocieplenieTable.style.display = ocieplenieTable.dataset.originalDisplay;
-    delete ocieplenieTable.dataset.originalDisplay;
-  }
-});
+
+  // Przycisk i auto-przeliczanie po zmianach
+  document.getElementById('btnRecalc').addEventListener('click', recalc);
+
+  // Debounce dla edycji w treści
+  let t;
+  document.getElementById('doc').addEventListener('input', ()=>{
+    clearTimeout(t);
+    t = setTimeout(recalc, 400);
+  });
+
+  // Pierwsze przeliczenie po załadowaniu
+  recalc();
+
+})();
 </script>
 </body>
 </html>
