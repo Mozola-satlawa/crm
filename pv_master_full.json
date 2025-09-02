@@ -1,0 +1,10 @@
+fetch('pv_master_full.json')
+  .then(r=>r.json())
+  .then(data=>{
+    PAN = data.panels || [];
+    INV = data.inverters || [];
+    BAT = data.batteries || [];
+    ACC = data.accessories || [];
+    SETS = data.sets || [];
+    renderCatalog(); fillSelectors(); recalc();
+  });
