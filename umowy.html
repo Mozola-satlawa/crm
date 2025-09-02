@@ -265,12 +265,6 @@ $('#btnSaveClient').addEventListener('click', ()=>{
 
 /* ===== ZAŁĄCZNIKI: predefiniowane pliki + obsługa ===== */
 const defaultFiles = [
-  // ŚCIEŻKI PRZYKŁADOWE — dostosuj w swojej instalacji (np. względne do /upload/)
-  {name:'ANKIETA Audyt Energetyczny .docx', href:'uploads/ANKIETA Audyt Energetyczny .docx', type:'docx'},
-  {name:'OŚWIADCZENIE BENEFICJENTA (wizja lokalna).pdf', href:'uploads/OSWIADCZENIE_BENEFICJENTA_WIZJA_LOKALNA.pdf', type:'pdf'},
-  {name:'Umowa ARKON – ocieplenie 2025.pdf', href:'uploads/umowa_arkon_ocieplenie_2025.pdf', type:'pdf'},
-  {name:'Zdjęcie z wizji.jpg', href:'uploads/Zdjecie_WhatsApp_2025-07-20.jpg', type:'img'}
-];
 
 function iconFor(type){
   if(type==='pdf') return '📄';
@@ -370,3 +364,4 @@ $('#filePicker').addEventListener('change', (e)=>{
 </script>
 </body>
 </html>
+
