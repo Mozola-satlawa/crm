@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — Fotowoltaika • Zestawy (kW)</title>
+<style>
+  body{font-family:sans-serif;background:#f9fafb;color:#111}
+  header{padding:12px;background:#fff;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:space-between}
+  .btn{padding:6px 12px;border:1px solid #ccc;border-radius:6px;text-decoration:none;color:#111;background:#f0f0f0;cursor:pointer}
+  .btn:hover{background:#e2e8f0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Komponenty • Fotowoltaika — ARKON</h1>
+  <a href="pulpit.html" class="btn">⬅️ Pulpit</a>
+</header>
+
+<div style="padding:16px">
+  <h2>Zestaw</h2>
+  <label>Magazyn energii (opcjonalny)</label>
+  <select id="bat">
+    <option value="0">bez magazynu</option>
+    <option value="5">~5 kWh</option>
+    <option value="10">~10 kWh</option>
+    <option value="15">~15 kWh</option>
+  </select>
+
+  <label>Magazyn ciepła (opcjonalny, 3000 zł/szt.)</label>
+  <input type="number" id="heatUnits" value="0" min="0">
+  <select id="heatSize">
+    <option value="20">20–40 l</option>
+    <option value="80">80–120 l</option>
+    <option value="200">200–300 l</option>
+  </select>
+
+  <label>Podłoże</label>
+  <select id="substrate">
+    <option value="roof-metal">Blachodachówka</option>
+    <option value="roof-flat">Dach płaski (+500 zł)</option>
+    <option value="ground">Grunt (+500 zł)</option>
+  </select>
+
+  <label>Dotacja Mój Prąd</label>
+  <select id="grant">
+    <option value="NONE">bez dotacji</option>
+    <option value="PV_HEAT">PV + magazyn ciepła (do 12 000 zł, ≤50%)</option>
+    <option value="PV_EN">PV + magazyn energii (do 23 000 zł, ≤50%)</option>
+    <option value="EN_ONLY">Tylko magazyn energii (do 16 000 zł, ≤50%)</option>
+  </select>
+</div>
+
+<script>
+// uproszczona logika dotacji
+function calcGrant(kind, baseValue){
+  let lim=0;
+  if(kind==="PV_HEAT") lim=12000;
+  if(kind==="PV_EN") lim=23000;
+  if(kind==="EN_ONLY") lim=16000;
+  return Math.min(lim, baseValue*0.5);
+}
+</script>
+</body>
+</html>
