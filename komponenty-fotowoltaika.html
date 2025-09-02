@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
@@ -31,6 +32,8 @@
   th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
   th{font-size:13px;color:var(--muted);white-space:nowrap}
   .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card.no-pad{padding:0}
+  .card-info{padding:10px 12px}
   .subtabs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
   .subtabs button{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75;background:#0d1530;color:#cfe1ff;cursor:pointer}
   .subtabs button[aria-selected="true"]{background:#1b2550;border-color:#67a1ff}
@@ -41,6 +44,15 @@
   .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#101735;border:1px solid #2a3777;padding:2px 6px;border-radius:6px;color:#cfe0ff}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .tag{display:inline-block;border:1px solid #7b3341;color:#ffb4b4;padding:2px 6px;border-radius:6px;font-size:12px;margin-left:6px}
+  .search{min-width:340px}
+  .two-cols{grid-template-columns:1fr 1fr}
+  .full-col{grid-column:1 / -1}
+  .full{width:100%}
+  .mt-10{margin-top:10px}
+  .mt-12{margin-top:12px}
+  .mt-8{margin-top:8px}
+  .w-100{width:100%}
+  .narrow{max-width:120px}
   @media print{ nav,.toolbar,.subtabs,.right,.filters, .no-print{display:none!important} .offer{margin:0} }
   /* Modal (oferta dla klienta) */
   dialog::backdrop{background:rgba(0,0,0,.6)}
@@ -55,27 +67,16 @@
 <body>
 <header>
   <h1>Komponenty • Fotowoltaika — ARKON</h1>
-  <div class="muted">Moduły, falowniki, akcesoria i gotowe zestawy. Edycja w tabeli, filtry, eksport/import. <span class="tag">Oferta: ukryty narzut firmy 8000 zł/instalację + prowizja handlowca (opcjonalna)</span></div>
-</header>
-
-<nav class="no-print">
-  <a href="#" id="noop">Pulpit</a>
-  <a href="#" aria-current="page">Fotowoltaika</a>
-  <a href="#" id="noop2">Inne moduły</a>
-</nav>
-
-<div class="wrap">
-  <div class="card">
     <div class="subtabs no-print" role="tablist" aria-label="Kategorie PV">
-      <button class="sb" data-k="sets" aria-selected="true">Zestawy</button>
-      <button class="sb" data-k="modules">Moduły</button>
-      <button class="sb" data-k="inverters">Falowniki</button>
-      <button class="sb" data-k="acc">Akcesoria</button>
+      <button role="tab" tabindex="0" class="sb" data-k="sets" aria-selected="true">Zestawy</button>
+      <button role="tab" tabindex="0" class="sb" data-k="modules" aria-selected="false">Moduły</button>
+      <button role="tab" tabindex="0" class="sb" data-k="inverters" aria-selected="false">Falowniki</button>
+      <button role="tab" tabindex="0" class="sb" data-k="acc" aria-selected="false">Akcesoria</button>
     </div>
 
     <!-- TOOLBAR -->
     <div class="toolbar no-print">
-      <input id="q" placeholder="🔎 Szukaj… (marka, model, opis)" style="min-width:340px">
+      <input id="q" class="search" placeholder="🔎 Szukaj… (marka, model, opis)">
       <span id="dynFilters" class="row filters"></span>
       <button id="btnAdd" class="btn ok">+ Dodaj pozycję</button>
       <button id="btnCSV" class="btn ghost">CSV eksport</button>
@@ -87,20 +88,19 @@
     </div>
 
     <!-- TABLE -->
-    <div class="card" style="padding:0">
+    <div class="card no-pad">
       <div class="scroll">
         <table>
           <thead id="thead"></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      <div class="small muted no-print" style="padding:10px 12px">
+      <div class="small muted no-print card-info">
         Edytuj w komórkach. Usuń/duplikuj z kolumny „Akcje”. Zmiany zapisują się automatycznie.
         Skróty: <span class="kbd">/</span> fokus na wyszukiwaniu • <span class="kbd">Alt+N</span> nowa pozycja • klik nagłówka = sortowanie.
       </div>
     </div>
-  </div>
-</div>
+</header>
 
 <!-- MODAL: OFERTA DLA KLIENTA -->
 <dialog id="offerModal">
@@ -108,7 +108,7 @@
     <section>
       <h2>Oferta dla klienta</h2>
       <div class="muted">Wybierz modele (z katalogu), ilość modułów i prowizję (opcjonalnie). Narzut firmy jest doliczany automatycznie i niewidoczny w rozbiciu.</div>
-      <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="grid two-cols">
         <div>
           <label>Marka paneli</label>
           <select id="of_brandP"></select>
@@ -125,9 +125,9 @@
           <label>Model inwertera</label>
           <select id="of_modelI"></select>
         </div>
-        <div style="grid-column:1 / -1">
+        <div class="full-col">
           <label>Akcesoria (multi-select, Ctrl/Cmd)</label>
-          <select id="of_acc" multiple size="6" style="width:100%"></select>
+          <select id="of_acc" multiple size="6" class="full"></select>
         </div>
         <div>
           <label>Ilość paneli (szt.)</label>
@@ -138,16 +138,16 @@
           <input id="of_comm" type="number" min="0" step="1" value="0">
         </div>
       </div>
-      <div class="row" style="margin-top:10px">
+      <div class="row mt-10">
         <button class="btn ok" id="of_calc">Przelicz</button>
         <button class="btn ghost" id="of_print">Drukuj / PDF</button>
         <button class="btn bad" id="of_close">Zamknij</button>
       </div>
     </section>
     <section>
-      <table style="width:100%"><thead><tr><th>Pozycja</th><th>Wartość</th></tr></thead><tbody id="of_rows"></tbody></table>
-      <div class="right" style="margin-top:12px"><div class="big" id="of_sum">—</div></div>
-      <div class="muted" style="margin-top:8px">Uwaga: ukryty narzut firmy 8000 zł jest już doliczony w cenie końcowej, nie jest wyszczególniony w tabeli.</div>
+      <table class="w-100"><thead><tr><th>Pozycja</th><th>Wartość</th></tr></thead><tbody id="of_rows"></tbody></table>
+      <div class="right mt-12"><div class="big" id="of_sum">—</div></div>
+      <div class="muted mt-8">Uwaga: ukryty narzut firmy 8000 zł jest już doliczony w cenie końcowej, nie jest wyszczególniony w tabeli.</div>
     </section>
   </div>
 </dialog>
@@ -301,30 +301,30 @@ function renderDynamicFilters(){
   const box = $('#dynFilters'); box.innerHTML='';
   if(state.tab==='modules'){
     box.innerHTML = `
-      <select id="f_tech"><option value="">Technologia (wszystkie)</option>${['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna'].map(t=><option>${t}</option>).join('')}</select>
-      <input id="f_pmin" type="number" placeholder="Moc min [W]" style="width:130px">
-      <input id="f_pmax" type="number" placeholder="Moc max [W]" style="width:130px">
-      <input id="f_eff" type="number" step="0.1" placeholder="Sprawność min [%]" style="width:160px">
+      <select id="f_tech"><option value="">Technologia (wszystkie)</option>${['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna'].map(t=>`<option>${esc(t)}</option>`).join('')}</select>
+      <input id="f_pmin" class="narrow" type="number" placeholder="Moc min [W]">
+      <input id="f_pmax" class="narrow" type="number" placeholder="Moc max [W]">
+      <input id="f_eff" type="number" step="0.1" placeholder="Sprawność min [%]">
       <select id="f_bif"><option value="">Bifacial?</option><option>TAK</option><option>NIE</option></select>`;
     ['f_tech','f_pmin','f_pmax','f_eff','f_bif'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
   }else if(state.tab==='inverters'){
     box.innerHTML = `
       <select id="f_phase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
       <select id="f_hyb"><option value="">Hybryda?</option><option>TAK</option><option>NIE</option></select>
-      <input id="f_acmin" type="number" step="0.1" placeholder="AC kW min" style="width:120px">
-      <input id="f_acmax" type="number" step="0.1" placeholder="AC kW max" style="width:120px">
-      <input id="f_mppt" type="number" placeholder="MPPT ≥" style="width:120px">`;
+      <input id="f_acmin" class="narrow" type="number" step="0.1" placeholder="AC kW min">
+      <input id="f_acmax" class="narrow" type="number" step="0.1" placeholder="AC kW max">
+      <input id="f_mppt" type="number" placeholder="MPPT ≥">`;
     ['f_phase','f_hyb','f_acmin','f_acmax','f_mppt'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
   }else if(state.tab==='acc'){
     box.innerHTML = `
-      <input id="f_abrand" placeholder="Marka (np. HUAWEI)" style="width:180px">
-      <input id="f_apmin" type="number" placeholder="Cena min" style="width:120px">
-      <input id="f_apmax" type="number" placeholder="Cena max" style="width:120px">`;
+      <input id="f_abrand" placeholder="Marka (np. HUAWEI)">
+      <input id="f_apmin" class="narrow" type="number" placeholder="Cena min">
+      <input id="f_apmax" class="narrow" type="number" placeholder="Cena max">`;
     ['f_abrand','f_apmin','f_apmax'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); });
   }else if(state.tab==='sets'){
     box.innerHTML = `
-      <input id="f_kwpmin" type="number" step="0.1" placeholder="kWp min" style="width:120px">
-      <input id="f_kwpmax" type="number" step="0.1" placeholder="kWp max" style="width:120px">
+      <input id="f_kwpmin" class="narrow" type="number" step="0.1" placeholder="kWp min">
+      <input id="f_kwpmax" class="narrow" type="number" step="0.1" placeholder="kWp max">
       <select id="f_phase_s"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
       <select id="f_store"><option value="">Magazyn</option><option>NIE</option><option>opcjonalnie</option><option>TAK</option></select>`;
     ['f_kwpmin','f_kwpmax','f_phase_s','f_store'].forEach(id=>{ $('#'+id).addEventListener('input',applyFilters); $('#'+id).addEventListener('change',applyFilters); });
@@ -359,8 +359,8 @@ function sortFn(a,b){
 /* === render === */
 function renderHead(){
   const cols = COLS[state.tab];
-  const ths = ['<th>Akcje</th>'].concat(cols.map(c=><th>${esc(c.lbl)}</th>));
-  $('#thead').innerHTML = <tr>${ths.join('')}</tr>;
+  const ths = ['<th>Akcje</th>'].concat(cols.map(c=>`<th>${esc(c.lbl)}</th>`));
+  $('#thead').innerHTML = `<tr>${ths.join('')}</tr>`;
   // sort
   Array.from($('#thead').querySelectorAll('th')).forEach((th,i)=>{
     if(i===0) return;
@@ -435,7 +435,7 @@ function render(){
     const act = document.createElement('td');
     act.innerHTML = `
       <div class="row">
-        ${state.tab==='sets'? <button class="btn warn" data-act="offer" data-id="${r.id}">Oferta dla klienta</button>:''}
+        ${state.tab==='sets'? `<button class="btn warn" data-act="offer" data-id="${r.id}">Oferta dla klienta</button>` : ''}
         <button class="btn ghost" data-act="dup" data-id="${r.id}">Duplikuj</button>
         <button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button>
       </div>`;
@@ -446,16 +446,19 @@ function render(){
       let v = r[col.k];
       const id = r.id+''+col.k;
       if(col.sel){
-        td.innerHTML = <select id="${id}">${col.sel.map(o=><option ${o==v?'selected':''}>${esc(o)}</option>).join('')}</select>;
+        td.innerHTML = `<select id="${id}">${col.sel.map(o=>`<option ${o==v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
       }else if(col.num!=null){
-        td.innerHTML = <input id="${id}" type="number" step="${col.num===0?1:(col.num===1?0.1:0.01)}" value="${v??''}" style="max-width:120px">;
+        td.innerHTML = `<input id="${id}" type="number" class="narrow" step="${col.num===0?1:(col.num===1?0.1:0.01)}" value="${v??''}">`;
       }else{
-        td.innerHTML = `<input id="${id}" value="${v==null?'':esc(v)}" ${col.w?style="min-width:${col.w}px":''}>`;
+        td.innerHTML = `<input id="${id}" value="${v==null?'':esc(v)}">`;
       }
       tr.appendChild(td);
       const el = td.querySelector('#'+CSS.escape(id));
-      el.addEventListener('input', ()=> editCell(r.id, col.k, (col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
-      el.addEventListener('change', ()=> editCell(r.id, col.k, (col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
+      if(col.w && el) el.style.minWidth = col.w+'px';
+      if(el){
+        el.addEventListener('input', ()=> editCell(r.id, col.k, (col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
+        el.addEventListener('change', ()=> editCell(r.id, col.k, (col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
+      }
     });
 
     tb.appendChild(tr);
@@ -567,30 +570,46 @@ function openOffer(set){
   // marki (unikalne)
   const brandsP=[...new Set(catalog.panels.map(x=>x.brand))].sort();
   const brandsI=[...new Set(catalog.inverters.map(x=>x.brand))].sort();
-  bP.innerHTML = brandsP.map(b=><option>${b}</option>).join('');
-  bI.innerHTML = brandsI.map(b=><option>${b}</option>).join('');
+  bP.innerHTML = brandsP.map(b=>`<option>${esc(b)}</option>`).join('');
+  bI.innerHTML = brandsI.map(b=>`<option>${esc(b)}</option>`).join('');
   function syncModels(kind){
     if(kind==='P'){
       const models=catalog.panels.filter(x=>x.brand===bP.value);
-      mP.innerHTML=models.map(m=><option value="${m.model}">${m.model} (${money(m.price)})</option>).join('');
+      mP.innerHTML=models.map(m=>`<option value="${esc(m.model)}">${esc(m.model)} (${money(m.price)})</option>`).join('');
     }else{
       const models=catalog.inverters.filter(x=>x.brand===bI.value);
-      mI.innerHTML=models.map(m=><option value="${m.model}">${m.model} (${money(m.price)})</option>).join('');
+      mI.innerHTML=models.map(m=>`<option value="${esc(m.model)}">${esc(m.model)} (${money(m.price)})</option>`).join('');
     }
   }
   bP.onchange=()=>syncModels('P'); bI.onchange=()=>syncModels('I');
   bP.dispatchEvent(new Event('change')); bI.dispatchEvent(new Event('change'));
   // akcesoria
   const accSorted=catalog.acc.slice().sort((a,b)=>(a.brand+a.name).localeCompare(b.brand+b.name,'pl'));
-  A.innerHTML = accSorted.map(a=><option value="${a.brand}||${a.name}">${a.brand} — ${a.name} (${money(a.price)})</option>).join('');
+  A.innerHTML = accSorted.map(a=>`<option value="${esc(a.brand)}||${esc(a.name)}">${esc(a.brand)} — ${esc(a.name)} (${money(a.price)})</option>`).join('');
 
   // spróbuj „prefill” z opisu zestawu
   const items=String(set.items||'');
   const mQty=items.match(/(\d+)\s*[×xX]/); if(mQty) $('#of_qty').value = +mQty[1];
-  const pBrand = ALLOWED.panels.find(b=> new RegExp(\\b${b}\\b,'i').test(items));
-  if(pBrand){ bP.value=pBrand; bP.dispatchEvent(new Event('change')); const m=new RegExp(pBrand+'\\s+([^;]+?)(?:;|Falownik|,|$)','i').exec(items); if(m){ const wanted=m[1].trim(); const hit = catalog.panels.find(x=>x.brand===pBrand && new RegExp(wanted.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(x.model)); if(hit) mP.value=hit.model; } }
-  const iBrand = ALLOWED.inverters.find(b=> new RegExp(\\b${b}\\b,'i').test(items));
-  if(iBrand){ bI.value=iBrand; bI.dispatchEvent(new Event('change')); const m=new RegExp(iBrand+'\\s+([^;]+?)(?:;|Magazyn|,|$)','i').exec(items); if(m){ const wanted=m[1].trim(); const hit = catalog.inverters.find(x=>x.brand===iBrand && new RegExp(wanted.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(x.model)); if(hit) mI.value=hit.model; } }
+  const pBrand = ALLOWED.panels.find(b=> new RegExp('\\b'+b+'\\b','i').test(items));
+  if(pBrand){
+    bP.value=pBrand; bP.dispatchEvent(new Event('change'));
+    const m=new RegExp(pBrand+'\\s+([^;]+?)(?:;|Falownik|,|$)','i').exec(items);
+    if(m){
+      const wanted=m[1].trim();
+      const hit = catalog.panels.find(x=>x.brand===pBrand && new RegExp(wanted.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(x.model));
+      if(hit) mP.value=hit.model;
+    }
+  }
+  const iBrand = ALLOWED.inverters.find(b=> new RegExp('\\b'+b+'\\b','i').test(items));
+  if(iBrand){
+    bI.value=iBrand; bI.dispatchEvent(new Event('change'));
+    const m=new RegExp(iBrand+'\\s+([^;]+?)(?:;|Magazyn|,|$)','i').exec(items);
+    if(m){
+      const wanted=m[1].trim();
+      const hit = catalog.inverters.find(x=>x.brand===iBrand && new RegExp(wanted.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(x.model));
+      if(hit) mI.value=hit.model;
+    }
+  }
   if(/DTSU|DTSD|SDM|licznik/i.test(items)){
     Array.from(A.options).forEach(o=>{ if(/DTSU|DTSD|SDM/i.test(o.textContent)) o.selected=true; });
   }
@@ -614,12 +633,12 @@ function openOffer(set){
     const subtotal = sumPanels + pInv + sumAcc;
     const grand = subtotal + BASE_PROFIT_PLN + comm;
     const rows = [
-      ['Panele', ${bp} • ${mp} × ${qty} = ${money(sumPanels)}],
-      ['Inwerter', ${bi} • ${mi} = ${money(pInv)}],
-      ['Akcesoria', selAcc.length ? selAcc.map(([b,n])=>${b} ${n}).join(', ') + ' = ' + money(sumAcc) : '—'],
+      ['Panele', `${bp} • ${mp} × ${qty} = ${money(sumPanels)}`],
+      ['Inwerter', `${bi} • ${mi} = ${money(pInv)}`],
+      ['Akcesoria', selAcc.length ? selAcc.map(([b,n])=>`${b} ${n}`).join(', ') + ' = ' + money(sumAcc) : '—'],
       ['Prowizja handlowca (opc.)', money(comm)]
     ];
-    $('#of_rows').innerHTML = rows.map(([k,v])=><tr><th>${k}</th><td>${esc(v)}</td></tr>).join('');
+    $('#of_rows').innerHTML = rows.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('');
     $('#of_sum').textContent = money(grand);
   }
   $('#of_calc').onclick = recalc;
