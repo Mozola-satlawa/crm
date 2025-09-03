@@ -1,597 +1,761 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ARKON — Komponenty: Fotowoltaika (katalog + kalkulator + dotacje)</title>
-<meta name="description" content="Katalog PV ładowany z JSON (wspólny), kalkulator ofert: panele, falownik, magazyn energii/ciepła, dodatki, VAT, dotacje Mój Prąd 6.0, wydruk.">
-<style>
-  :root{ --bg:#0a0f1e; --ink:#e8edff; --muted:#aeb8da; --line:#243059; --card:#0f1533; --card2:#121a34; --accent:#4cc9f0; --ok:#2b8a57; --bad:#ff6b6b; --warn:#ffb84d; }
-  *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
-  header{padding:16px 16px 10px;background:#11183a;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-  header h1{margin:0;font-size:22px}
-  nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-  nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
-  nav a:hover{background:#223160}
-  .wrap{max-width:1250px;margin:auto;padding:14px}
-  .card{background:linear-gradient(180deg,#0f1533,#121a34);border:1px solid var(--line);border-radius:14px;padding:14px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .grid{display:grid;gap:12px}
-  @media(min-width:1100px){ .cols-2{grid-template-columns:1.15fr 0.85fr} .cols-3{grid-template-columns:1fr 1fr 1fr} }
-  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
-  textarea{min-height:72px}
-  label{display:block;margin-bottom:6px}
-  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-  .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
-  .btn.ok{background:#194d34;border-color:var(--ok)}
-  .pill{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff;font-size:13px}
-  .muted{color:var(--muted);font-size:13px}
-  .small{font-size:12px;color:#aeb8da}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-  th{font-size:13px;color:#aeb8da;white-space:nowrap}
-  .narrow{max-width:170px}
-  .big{font-size:28px;font-weight:800}
-  .tag{display:inline-block;border:1px solid #2a3777;color:#cfe0ff;padding:2px 6px;border-radius:6px;font-size:12px;margin-left:6px}
-  .full{width:100%}
-  footer{max-width:1250px;margin:16px auto 26px;color:#aeb8da;font-size:12px;padding:0 14px}
-  .foot{border-top:1px solid #243059;padding-top:10px;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
-  .warnbox{border:1px dashed #c48a26;color:#ffde9a;background:#5a3c1222;padding:6px 10px;border-radius:10px;font-size:12px}
-  @media print{ .no-print{display:none!important} body{background:#fff;color:#000} header{background:#fff;border:none} .card{border:none} .muted{color:#333} .foot{border-top:1px solid #000} }
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Komponenty Fotowoltaika</title>
+    <!-- Bootstrap 4 CSS (dla stylowania formularza i tabel) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="komponenty-fotowoltaika.css">
+    <style>
+        /* Ciemne tło strony i karty zgodne z motywem CRM */
+        body { background-color: #2b2b2b; color: #f0f0f0; }
+        .card { background-color: #3a3a3a; color: #ffffff; }
+        .card a { color: #ff5a00; } /* wyróżnienie linków (pomarańczowy) */
+        /* Stylowanie pól formularza na ciemnym tle */
+        .card .form-control, .card .form-control-select {
+            background-color: #555; color: #fff; border: 1px solid #666;
+        }
+        /* Stylowanie tabeli podsumowania (ciemna tabela) */
+        .table-dark th, .table-dark td { border-color: #555; }
+        /* Ustawienia wydruku: ukrycie elementów interaktywnych */
+        .no-print { display: block; }
+        @media print {
+            .no-print { display: none; }
+            body { background-color: #ffffff; color: #000000; }
+            .card { background-color: #ffffff; color: #000; }
+            .table-dark {
+                color: #000;
+                background-color: #fff;
+            }
+            .table-dark th, .table-dark td {
+                color: #000;
+                border-color: #000;
+            }
+        }
+    </style>
 </head>
-<body>
-<header>
-  <div class="row">
-    <h1>Komponenty • Fotowoltaika — ARKON <span class="tag">katalog + kalkulator</span></h1>
-    <nav class="no-print">
-      <a href="index.html">Pulpit</a>
-      <a href="dotacje.html" title="Szczegóły programu i przykłady">Dotacje</a>
-    </nav>
-  </div>
-  <div class="muted">Katalog wczytywany z <code>pv_master_full.json</code> (wspólny dla wszystkich). Kalkulator oferty: panele, falownik (auto-dobór), magazyn energii/ciepła (opcjonalne), dodatki, VAT, dotacje Mój Prąd 6.0, wydruk.</div>
-</header>
-
-<div class="wrap grid cols-2">
-  <!-- LEWA: FORMULARZ -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">1) Zestaw klienta</h2>
-    <div class="grid cols-3">
-      <!-- PANELE -->
-      <div>
-        <label>Marka paneli</label>
-        <select id="p_brand" class="narrow"></select>
-      </div>
-      <div>
-        <label>Model paneli</label>
-        <select id="p_model" class="narrow"></select>
-      </div>
-      <div>
-        <label>Ilość paneli (szt.)</label>
-        <input id="p_qty" type="number" min="1" step="1" value="14" class="narrow">
-      </div>
-
-      <!-- PARAMETRY ZESTAWU -->
-      <div>
-        <label>Moc zestawu (DC) [kW]</label>
-        <input id="dc_kw" class="narrow" disabled>
-      </div>
-      <div>
-        <label>Usytuowanie</label>
-        <select id="orient" class="narrow">
-          <option value="S" selected>Południe</option>
-          <option value="E">Wschód</option>
-          <option value="W">Zachód</option>
-        </select>
-      </div>
-      <div>
-        <label>Wariant</label>
-        <select id="withInv" class="narrow">
-          <option value="YES" selected>z falownikiem</option>
-          <option value="NO">bez falownika</option>
-        </select>
-      </div>
-
-      <!-- INWERTER (auto-dobór) -->
-      <div>
-        <label>Marka falownika</label>
-        <select id="i_brand" class="narrow"></select>
-      </div>
-      <div>
-        <label>Model falownika</label>
-        <select id="i_model" class="narrow"></select>
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn ghost" id="btnSuggestInverter" type="button" title="Dobierz AC ≈ DC">Dobierz falownik</button>
-      </div>
-
-      <!-- MAGAZYNY (opcje) -->
-      <div>
-        <label>Magazyn energii (opcjonalnie)</label>
-        <select id="bat" class="narrow">
-          <option value="0" selected>brak</option>
-          <option value="5">~5 kWh</option>
-          <option value="10">~10 kWh</option>
-          <option value="15">~15 kWh</option>
-        </select>
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button class="btn ghost" id="btnSuggestBattery" type="button">Dobierz magazyn</button>
-      </div>
-      <div>
-        <label>Magazyn ciepła (opcjonalnie)</label>
-        <select id="heatStore" class="narrow">
-          <option value="0" selected>brak</option>
-          <option value="1">standard (x1) • 3000 zł</option>
-          <option value="2">powiększony (x2) • 6000 zł</option>
-          <option value="3">duży (x3) • 9000 zł</option>
-        </select>
-      </div>
-
-      <!-- DODATKI -->
-      <div>
-        <label>Optymalizatory (szt.) × <span id="optimPriceLabel">230</span> zł</label>
-        <input id="optims" type="number" min="0" step="1" value="0" class="narrow">
-      </div>
-      <div>
-        <label>Okablowanie (pierwsze 20 m w cenie)</label>
-        <input id="cable" type="number" min="0" step="1" value="20" class="narrow">
-        <div class="small">powyżej 20 m: 50 zł/m</div>
-      </div>
-      <div>
-        <label>Przekop</label>
-        <select id="trench" class="narrow">
-          <option value="NO" selected>brak</option>
-          <option value="YES">+2000 zł</option>
-        </select>
-      </div>
-
-      <!-- INFRA -->
-      <div>
-        <label>Rozdzielnia AC/DC</label>
-        <select id="board" class="narrow" title="AUTO od 6 kW">
-          <option value="AUTO" selected>AUTO (od 6 kW)</option>
-          <option value="YES">Włącz</option>
-          <option value="NO">Wyłącz</option>
-        </select>
-      </div>
-      <div>
-        <label>Licznik energii 3F</label>
-        <select id="meter" class="narrow">
-          <option value="NONE" selected>brak</option>
-          <option value="GENERIC">3F Modbus</option>
-        </select>
-      </div>
-      <div>
-        <label>Podłoże montażu</label>
-        <select id="substrate" class="narrow">
-          <option value="roof-metal" selected>blachodachówka (0)</option>
-          <option value="roof-flat">dach płaski (+500)</option>
-          <option value="ground">grunt (+500)</option>
-        </select>
-      </div>
-
-      <!-- FINANSE -->
-      <div>
-        <label>Prowizja handlowca (zł)</label>
-        <input id="salesComm" type="number" min="0" step="50" value="0" class="narrow">
-      </div>
-      <div>
-        <label>Typ inwestora</label>
-        <select id="investor" class="narrow">
-          <option value="PRIVATE" selected>Osoba prywatna</option>
-          <option value="COMPANY">Firma</option>
-        </select>
-      </div>
-      <div>
-        <label>Typ lokalu</label>
-        <select id="premise" class="narrow">
-          <option value="HOUSE" selected>Dom jednorodzinny</option>
-          <option value="FLAT">Lokal mieszkalny</option>
-        </select>
-      </div>
-      <div>
-        <label>Powierzchnia [m²]</label>
-        <input id="area" type="number" min="1" step="1" value="120" class="narrow">
-      </div>
-      <div>
-        <label>VAT</label>
-        <div class="row">
-          <span id="vatAutoLabel" class="pill">Auto: 8%</span>
-          <select id="vatOverride" class="narrow" title="Nadpisz, jeśli trzeba">
-            <option value="AUTO" selected>AUTO</option>
-            <option value="0.08">Wymuś 8%</option>
-            <option value="0.23">Wymuś 23%</option>
-          </select>
+<body class="bg-dark text-light">
+<div class="container-fluid">
+    <div class="row equal">
+        <div class="col-md-9 equal-padding">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Dobór komponentów fotowoltaiki</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Sekcja formularza (dane wejściowe) -->
+                    <div class="no-print">
+                        <!-- Wybór paneli i liczby sztuk -->
+                        <div class="form-group">
+                            <label for="panelSelect">Panele PV</label>
+                            <div class="d-flex">
+                                <input type="number" id="panelCount" class="form-control bg-secondary text-light panel-count-input" 
+                                       value="10" min="0" title="Liczba paneli">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">szt.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Falownik -->
+                        <div class="form-group">
+                            <select id="inverterSelect" class="form-control form-control-select bg-secondary text-light mt-1" aria-label="Wybierz falownik" title="Wybierz falownik"></select>
+                        </div>
+                        <!-- Magazyn energii -->
+                        <div class="form-group">
+                            <select id="batterySelect" class="form-control form-control-select bg-secondary text-light mt-1" disabled aria-label="Wybierz magazyn energii" title="Wybierz magazyn energii"></select>
+                        </div>
+                        <!-- Magazyn ciepła -->
+                        <div class="form-group">
+                            <select id="heatSelect" class="form-control form-control-select bg-secondary text-light mt-1" disabled aria-label="Wybierz magazyn ciepła" title="Wybierz magazyn ciepła"></select>
+                        </div>
+                        <hr>
+                        <h5>Opcje dodatkowe</h5>
+                        <!-- Długość przekopu -->
+                        <div class="form-group">
+                            <label for="trenchLength">Przekop (długość wykopu w metrach)</label>
+                            <div class="input-group">
+                                <input type="number" id="trenchLength" class="form-control bg-secondary text-light" value="0" min="0">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">m</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Dodatkowy kabel -->
+                        <div class="form-group">
+                            <label for="cableLength">Dodatkowy kabel DC/AC (metry ponad standard)</label>
+                            <div class="input-group">
+                                <input type="number" id="cableLength" class="form-control bg-secondary text-light" value="0" min="0">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">m</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Optymalizatory -->
+                        <div class="form-group">
+                            <label for="numOptimizers">Optymalizatory mocy</label>
+                            <div class="input-group">
+                                <input type="number" id="numOptimizers" class="form-control bg-secondary text-light" value="0" min="0">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">szt.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Rozdzielnia -->
+                        <div class="form-group">
+                            <label for="numDBoard">Dodatkowa rozdzielnia AC/DC</label>
+                            <div class="input-group">
+                                <input type="number" id="numDBoard" class="form-control bg-secondary text-light" value="0" min="0" max="1">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">szt.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Licznik produkcji -->
+                        <div class="form-group">
+                            <label for="numMeter">Licznik produkcji energii</label>
+                            <div class="input-group">
+                                <input type="number" id="numMeter" class="form-control bg-secondary text-light" value="0" min="0" max="1">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">szt.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <h5>Dane inwestora i VAT</h5>
+                        <!-- Typ inwestora: osoba prywatna vs firma -->
+                        <div class="form-group">
+                            <label for="investorType">Typ inwestora</label>
+                            <select id="investorType" class="form-control form-control-select bg-secondary text-light">
+                                <option value="private">Osoba prywatna</option>
+                                <option value="company">Firma</option>
+                            </select>
+                        </div>
+                        <!-- Pola dla osoby prywatnej: typ budynku i powierzchnia -->
+                        <div id="privateFields">
+                            <div class="form-group">
+                                <label for="buildingType">Typ budynku mieszkalnego</label>
+                                <select id="buildingType" class="form-control form-control-select bg-secondary text-light">
+                                    <option value="house">Dom jednorodzinny</option>
+                                    <option value="apartment">Mieszkanie</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="buildingArea">Powierzchnia budynku (m<sup>2</sup>)</label>
+                                <div class="input-group">
+                                    <input type="number" id="buildingArea" class="form-control bg-secondary text-light" value="100" min="1">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text bg-secondary text-light">m&sup2;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Prowizja handlowca -->
+                        <div class="form-group">
+                            <label for="commissionPercent">Prowizja handlowca (%)</label>
+                            <div class="input-group">
+                                <input type="number" id="commissionPercent" class="form-control bg-secondary text-light" value="0" min="0" max="100" step="0.1">
+                                <div class="input-group-append">
+                                    <span class="input-group-text bg-secondary text-light">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Przyciski akcji -->
+                        <div class="form-group">
+                            <button id="printButton" class="btn btn-primary btn-sm">Drukuj / PDF</button>
+                        </div>
+                        <hr>
+                        <!-- Panel edycji katalogu komponentów -->
+                        <h5>Edytuj katalog komponentów</h5>
+                        <div class="form-group">
+                            <label for="newCategory">Kategoria</label>
+                            <select id="newCategory" class="form-control form-control-select bg-secondary text-light">
+                                <option value="panel">Panel PV</option>
+                                <option value="inverter">Falownik</option>
+                                <option value="battery">Magazyn energii</option>
+                                <option value="heat">Magazyn ciepła</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newBrand">Marka</label>
+                            <input type="text" id="newBrand" class="form-control bg-secondary text-light">
+                        </div>
+                        <div class="form-group">
+                            <label for="newModel">Model</label>
+                            <input type="text" id="newModel" class="form-control bg-secondary text-light">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelSpec" for="newSpec">Moc [W]</label>
+                            <input type="number" id="newSpec" class="form-control bg-secondary text-light" step="0.1" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPrice">Cena netto [zł]</label>
+                            <input type="number" id="newPrice" class="form-control bg-secondary text-light" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <button id="addComponentBtn" class="btn btn-secondary btn-sm">Dodaj komponent</button>
+                            <button id="saveCatalogBtn" class="btn btn-secondary btn-sm">Zapisz zmiany katalogu</button>
+                        </div>
+                    </div>
+                    <!-- Koniec sekcji formularza -->
+                    <!-- Sekcja wyników (podsumowanie) -->
+                    <h5 class="mt-4">Podsumowanie</h5>
+                    <p>Moc zestawu PV: <span id="systemPower">0</span> kWp</p>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped" id="summaryTable">
+                            <thead>
+                                <tr>
+                                    <th>Element</th>
+                                    <th>Ilość</th>
+                                    <th>Cena netto</th>
+                                    <th>Wartość netto</th>
+                                    <th>VAT</th>
+                                    <th>Wartość brutto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="summaryBody">
+                                <!-- wiersze z elementami - generowane skryptem -->
+                            </tbody>
+                            <tfoot id="summaryFooter">
+                                <!-- wiersz sumy - generowany skryptem -->
+                            </tfoot>
+                        </table>
+                    </div>
+                    <p><strong>Dotacja Mój Prąd 6.0:</strong> <span id="subsidyAmount">0</span> zł</p>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <!-- DOTACJE (auto) -->
-      <div class="cols-3" style="grid-column:span 3">
-        <div class="warnbox">
-          <strong>Dotacje „Mój Prąd 6.0” – automatycznie:</strong>
-          PV 6 000 zł (dla zgłoszeń do 31.07.2024) lub 7 000 zł przy PV+magazyn (energii/ciepła), magazyn energii 16 000 zł, magazyn ciepła 5 000 zł, łączny limit 28 000 zł i nie więcej niż 50% kosztów kwalifikowanych. Możesz zaznaczyć poniżej, czy PV spełnia warunek 31.07.2024.
-        </div>
-      </div>
-      <div>
-        <label>PV zgłoszona do 31.07.2024</label>
-        <select id="pvEligible" class="narrow">
-          <option value="YES">tak</option>
-          <option value="NO" selected>nie / nie dotyczy</option>
-        </select>
-      </div>
-      <div>
-        <label>Włącz liczenie dotacji</label>
-        <select id="grantOn" class="narrow">
-          <option value="YES" selected>tak</option>
-          <option value="NO">nie</option>
-        </select>
-      </div>
-
-      <!-- UWAGI + DRUK -->
-      <div class="cols-3" style="grid-column:span 3">
-        <label>Uwagi do oferty (drukowane)</label>
-        <textarea id="notes" placeholder="np. termin, zakres, dodatkowe informacje"></textarea>
-      </div>
     </div>
-
-    <div class="row" style="margin-top:10px">
-      <button class="btn ok" id="calc">Przelicz</button>
-      <button class="btn ghost" id="print">Drukuj / PDF</button>
-      <button class="btn ghost" id="exportMaster">MASTER JSON eksport</button>
-    </div>
-  </section>
-
-  <!-- PRAWA: WYNIKI -->
-  <section class="card">
-    <h2 style="margin:0 0 8px">2) Cena i dotacje</h2>
-    <table>
-      <thead><tr><th>Pozycja</th><th>Wartość</th></tr></thead>
-      <tbody id="rows"></tbody>
-    </table>
-    <div class="grid" style="margin-top:10px">
-      <div class="big" id="sum_main">—</div>
-      <div class="muted" id="sum_aux">—</div>
-    </div>
-  </section>
-
-  <!-- KATALOG (z JSON, bez edycji cen dla klienta) -->
-  <section class="card" style="grid-column:1 / -1">
-    <h2 style="margin:0 0 8px">3) Katalog (ładowany z <code>pv_master_full.json</code>)</h2>
-    <div class="small muted">Ten katalog jest wspólny (serwerowy). Edycję robimy w pliku JSON – poniższy eksport służy do pobrania aktualnej zawartości i podmiany pliku w repo.</div>
-
-    <div class="grid cols-3" style="margin-top:10px">
-      <div>
-        <table>
-          <thead><tr><th>Panele — marka</th><th>Model</th><th>W [W]</th></tr></thead>
-          <tbody id="tblP"></tbody>
-        </table>
-      </div>
-      <div>
-        <table>
-          <thead><tr><th>Falownik — marka</th><th>Model</th><th>AC [kW]</th></tr></thead>
-          <tbody id="tblI"></tbody>
-        </table>
-      </div>
-      <div>
-        <table>
-          <thead><tr><th>Magazyn — marka</th><th>Model</th><th>kWh</th></tr></thead>
-          <tbody id="tblB"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
 </div>
-
-<footer>
-  <div class="foot">
-    <div><strong>ARKON</strong> • ul. … • tel. … • e-mail: …</div>
-    <div>Oferta informacyjna; ceny mogą się zmienić po wizji lokalnej i aktualnych cennikach.</div>
-    <div>Wygenerowano: <span id="genDate"></span> • Wersja: <span id="appVer">3.0</span></div>
-  </div>
-</footer>
-
+<!-- Skrypty JavaScript -->
 <script>
-'use strict';
-
-/* ===== pomocnicze ===== */
-const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-const INT0=new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
-const money=n=>isFinite(+n)?INT0.format(Math.round(+n))+' zł':'—';
-const fmt2=n=>isFinite(+n)?(+n).toFixed(2):'—';
-
-let PAN=[], INV=[], BAT=[], ACC=[], SETS=[]; // z JSON (serwer)
-const SETTINGS = { optimPrice:230 }; // stałe używane w kalkulatorze
-
-/* ===== ładowanie master JSON (serwer) ===== */
-async function loadMaster(){
-  try{
-    const res=await fetch('pv_master_full.json',{cache:'no-store'});
-    if(!res.ok) throw new Error('Brak pv_master_full.json obok strony.');
-    const data=await res.json();
-    PAN = data.panels || [];
-    INV = data.inverters || [];
-    BAT = data.batteries || [];
-    ACC = data.accessories || [];
-    SETS = data.sets || [];
-  }catch(e){
-    console.warn('Nie udało się pobrać pv_master_full.json, ładuję minimalny seed.', e);
-    // awaryjny seed (krótki)
-    PAN=[{brand:'TRINA',model:'Vertex S+ 440 FB',watt:440,price:200},{brand:'JINKO',model:'JKM445N-54HL4R-B Full Black',watt:445,price:240}];
-    INV=[{brand:'DEYE',model:'SUN-8K-SG04LP3-EU',ac_kw:8,price:5200},{brand:'HUAWEI',model:'SUN2000-10KTL-M1',ac_kw:10,price:3953}];
-    BAT=[{brand:'HUAWEI',model:'LUNA2000-5',kwh:5,price:11500},{brand:'FOXESS',model:'ECS 10.4',kwh:10.4,price:21500}];
-    ACC=[{brand:'HUAWEI',name:'DTSU666-H 3F 250A',spec:'licznik',price:497},{brand:'SOLAREDGE',name:'Optymalizator S500',spec:'700W',price:176}];
-    SETS=[];
-  }
-}
-
-/* ===== katalog — rendering podglądowy ===== */
-function renderCatalog(){
-  const tp=$('#tblP'); tp.innerHTML='';
-  PAN.forEach(p=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = <td>${p.brand||''}</td><td>${p.model||''}</td><td>${p.watt||''}</td>;
-    tp.appendChild(tr);
-  });
-  const ti=$('#tblI'); ti.innerHTML='';
-  INV.forEach(i=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = <td>${i.brand||''}</td><td>${i.model||''}</td><td>${i.ac_kw||''}</td>;
-    ti.appendChild(tr);
-  });
-  const tb=$('#tblB'); tb.innerHTML='';
-  BAT.forEach(b=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = <td>${b.brand||''}</td><td>${b.model||''}</td><td>${b.kwh||''}</td>;
-    tb.appendChild(tr);
-  });
-}
-
-/* ===== selektory (panele, falownik) ===== */
-function fillSelectors(){
-  const pb=$('#p_brand'), pm=$('#p_model');
-  const brandsP=[...new Set(PAN.map(x=>x.brand))].sort();
-  pb.innerHTML = brandsP.map(b=><option>${b}</option>).join('');
-  function syncP(){ const list=PAN.filter(x=>x.brand===pb.value); pm.innerHTML=list.map(x=><option>${x.model}</option>).join(''); }
-  pb.onchange=()=>{ syncP(); suggestQtyAndPower(); recalc(); }; syncP();
-  pm.onchange=()=>{ suggestQtyAndPower(); recalc(); };
-
-  const ib=$('#i_brand'), im=$('#i_model');
-  const brandsI=[...new Set(INV.map(x=>x.brand))].sort();
-  ib.innerHTML = brandsI.map(b=><option>${b}</option>).join('');
-  function syncI(){ const list=INV.filter(x=>x.brand===ib.value); im.innerHTML=list.map(x=><option>${x.model}</option>).join(''); }
-  ib.onchange=()=>{ syncI(); recalc(); }; syncI();
-  im.onchange=()=> recalc();
-}
-
-/* ===== narzędzia wyboru ===== */
-function findPanel(brand,model){ return PAN.find(x=>x.brand===brand && x.model===model); }
-function findInverter(brand,model){ return INV.find(x=>x.brand===brand && x.model===model); }
-function suggestInverter(dc){
-  if(!INV.length) return null;
-  let best=null,score=1e9;
-  INV.forEach(i=>{
-    const ratio = i.ac_kw? Math.abs((dc/i.ac_kw)-1):999;
-    const pen = (i.ac_kw>=0.8*dc && i.ac_kw<=1.2*dc)?0:10;
-    const s=ratio+pen;
-    if(s<score){score=s;best=i;}
-  });
-  return best;
-}
-function suggestBattery(dc){
-  const want=Math.round(dc*0.8);
-  if(want<=5) return 5;
-  if(want<=10) return 10;
-  return 15;
-}
-
-/* ===== VAT auto ===== */
-function vatAuto(investor,premise,area){
-  if(investor==='COMPANY') return 0.23;
-  const a=+area||0;
-  if(premise==='HOUSE') return (a<=300?0.08:0.23);
-  if(premise==='FLAT')  return (a<=150?0.08:0.23);
-  return 0.23;
-}
-
-/* ===== ceny jednostkowe z katalogu (ukryte dla klienta) ===== */
-function panelPrice(){ const p=findPanel($('#p_brand').value,$('#p_model').value); return +p?.price||0; }
-function panelPowerW(){ const p=findPanel($('#p_brand').value,$('#p_model').value); return +p?.watt||0; }
-function inverterPrice(){ const i=findInverter($('#i_brand').value,$('#i_model').value); return +i?.price||0; }
-function inverterAC(){ const i=findInverter($('#i_brand').value,$('#i_model').value); return +i?.ac_kw||0; }
-function batteryPriceFor(kwhSel){
-  if(+kwhSel===0) return 0;
-  const hit=BAT.find(b=>Math.round(+b.kwh)==+kwhSel);
-  if(hit) return +hit.price||0;
-  // fallback
-  return (+kwhSel<=5)?12000:(+kwhSel<=10?22000:30000);
-}
-
-/* ===== podpowiedzi ilości/mocy ===== */
-function suggestQtyAndPower(){
-  const pW=panelPowerW(); const qtyEl=$('#p_qty');
-  let qty=Math.max(1,+qtyEl.value||14);
-  const dc=(pW*qty)/1000;
-  const roundedKW=Math.max(2.7, Math.round(dc*2)/2); // do 0.5 kW
-  const targetQty=Math.max(1, Math.round((roundedKW*1000)/pW));
-  qtyEl.value=targetQty;
-  $('#dc_kw').value=(pW*targetQty/1000).toFixed(2);
-}
-
-/* ===== DOTACJE: logika MP 6.0 =====
-   Zasady (wg NFOŚiGW/gov.pl + opracowań branżowych):
-   - PV: 6 000 zł (dla zgłoszeń do 31.07.2024) lub 7 000 zł, jeśli PV łącznie z magazynem (energii lub ciepła).
-   - Magazyn energii: do 16 000 zł.
-   - Magazyn ciepła: do 5 000 zł.
-   - Łącznie do 28 000 zł i nie więcej niż 50% kosztów kwalifikowanych (PV + magazyny).
-*/
-function computeGrant({hasPV, pvEligible6000, withEnergyStore, withHeatStore, eligibleCost}){
-  let pvPart=0, batPart=0, heatPart=0;
-
-  if(hasPV){
-    if(withEnergyStore || withHeatStore){
-      pvPart = 7000; // PV + (magazyn energii/ciepła)
-    }else if(pvEligible6000){
-      pvPart = 6000; // PV samodzielnie dla zgłoszonych do 31.07.2024
+    // Tablice do przechowywania danych komponentów
+    let panels = [], inverters = [], batteries = [], heats = [], additionalItems = [];
+    let addItems = {};  // pomocniczy słownik dla opcji dodatkowych
+    // Flagi do śledzenia czy użytkownik ręcznie wybrał falownik/magazyn (aby nie nadpisywać)
+    let inverterManual = false;
+    let batteryManual = false;
+    // Funkcja ładowania danych z CSV lub localStorage
+    function loadData() {
+        // Najpierw sprawdź localStorage (czy zapisano zmodyfikowany katalog)
+        let stored = localStorage.getItem('componentsData');
+        if(stored) {
+            try {
+                let data = JSON.parse(stored);
+                if(data && data.panels && data.inverters && data.batteries && data.heats && data.additional) {
+                    panels = data.panels;
+                    inverters = data.inverters;
+                    batteries = data.batteries;
+                    heats = data.heats;
+                    additionalItems = data.additional;
+                    console.log("Loaded components from local storage.");
+                    populateSelects();
+                    return;
+                }
+            } catch(e) { console.warn("Local storage parse error:", e); }
+        }
+        // Jeśli brak danych w localStorage, wczytaj z plików CSV
+        Promise.all([
+            fetch('panels.csv').then(res => res.text()),
+            fetch('inverters.csv').then(res => res.text()),
+            fetch('batteries.csv').then(res => res.text()),
+            fetch('heat_storage.csv').then(res => res.text()),
+            fetch('additional.csv').then(res => res.text())
+        ]).then(function([panelsText, invertersText, batteriesText, heatsText, additionalText]) {
+            panels = parseCSV(panelsText, 'panel');
+            inverters = parseCSV(invertersText, 'inverter');
+            batteries = parseCSV(batteriesText, 'battery');
+            heats = parseCSV(heatsText, 'heat');
+            additionalItems = parseCSV(additionalText, 'additional');
+            console.log("Loaded components from CSV files.");
+            populateSelects();
+        }).catch(function(error) {
+            console.error("Error loading CSV files:", error);
+        });
     }
-  }
-  if(withEnergyStore){ batPart = 16000; }
-  if(withHeatStore){  heatPart = 5000;  }
-
-  let sum = pvPart + batPart + heatPart;
-  // limity programu
-  sum = Math.min(sum, 28000);
-  sum = Math.min(sum, Math.round(eligibleCost*0.5)); // 50% kosztów kwalifikowanych
-  return { sum, breakdown:{pvPart,batPart,heatPart} };
-}
-
-/* ===== główne liczenie ===== */
-function recalc(){
-  const qty=Math.max(1, +$('#p_qty').value||1);
-  const pW=panelPowerW();
-  const dc=(pW*qty)/1000;
-  $('#dc_kw').value = fmt2(dc);
-
-  // rozdzielnia auto
-  if($('#board').value==='AUTO'){ $('#board').dataset.auto=(dc>=6?'YES':'NO'); }
-  const boardOn = ($('#board').value==='YES') || ($('#board').value==='AUTO' && $('#board').dataset.auto==='YES');
-
-  // auto dobór falownika
-  if($('#withInv').value==='YES'){
-    const invSel=findInverter($('#i_brand').value,$('#i_model').value);
-    if(!invSel || !invSel.ac_kw || invSel.ac_kw<0.6*dc || invSel.ac_kw>1.6*dc){
-      const sug=suggestInverter(dc);
-      if(sug){
-        $('#i_brand').value=sug.brand;
-        const list=INV.filter(x=>x.brand===sug.brand);
-        $('#i_model').innerHTML=list.map(x=><option>${x.model}</option>).join('');
-        $('#i_model').value=sug.model;
-      }
+    // Parser CSV – konwertuje tekst CSV na obiekty w zależności od kategorii
+    function parseCSV(csvText, type) {
+        let lines = csvText.split(/\\r?\\n/).map(l => l.trim()).filter(l => l);
+        if(lines.length === 0) return [];
+        // Zakładamy, że pierwsza linia to nagłówek
+        lines.shift();  // usuń nagłówek
+        let result = [];
+        lines.forEach(line => {
+            let cols = line.split(/[;,]+/);  // akceptuj CSV rozdzielony przecinkami lub średnikami
+            if(cols.length < 2) return;
+            switch(type) {
+                case 'panel':
+                    // format: Brand, Model, Power(W), Price
+                    if(cols.length >= 4) {
+                        result.push({
+                            brand: cols[0],
+                            model: cols[1],
+                            power: parseFloat(cols[2]) || 0,
+                            price: parseFloat(cols[3]) || 0
+                        });
+                    }
+                    break;
+                case 'inverter':
+                    // format: Brand, Model, Power(kW), Price
+                    if(cols.length >= 4) {
+                        result.push({
+                            brand: cols[0],
+                            model: cols[1],
+                            power: parseFloat(cols[2]) || 0,
+                            price: parseFloat(cols[3]) || 0
+                        });
+                    }
+                    break;
+                case 'battery':
+                    // format: Brand, Model, Capacity(kWh), Price
+                    if(cols.length >= 4) {
+                        result.push({
+                            brand: cols[0],
+                            model: cols[1],
+                            capacity: parseFloat(cols[2]) || 0,
+                            price: parseFloat(cols[3]) || 0
+                        });
+                    }
+                    break;
+                case 'heat':
+                    // format: Brand, Model, Capacity(l), Price
+                    if(cols.length >= 4) {
+                        result.push({
+                            brand: cols[0],
+                            model: cols[1],
+                            capacity: parseFloat(cols[2]) || 0,
+                            price: parseFloat(cols[3]) || 0
+                        });
+                    }
+                    break;
+                case 'additional':
+                    // format: Name, Price, Unit
+                    if(cols.length >= 3) {
+                        result.push({
+                            name: cols[0],
+                            price: parseFloat(cols[1]) || 0,
+                            unit: cols[2]
+                        });
+                    }
+                    break;
+            }
+        });
+        return result;
     }
-  }
-
-  // podpowiedź magazynu energii, ale NIE obowiązkowy
-  if(+$('#bat').value===0){
-    // nie wymuszam, jedynie sugeruję po kliknięciu przycisku
-  }
-
-  // składowe (netto)
-  const sumPanels = panelPrice()*qty;
-  const sumInv = ($('#withInv').value==='YES') ? inverterPrice() : 0;
-  const sumBat = batteryPriceFor($('#bat').value);
-  const heatMult = +$('#heatStore').value||0;
-  const sumHeat = 3000 * heatMult;
-
-  const cable = Math.max(0,+$('#cable').value||0);
-  const over = Math.max(0, cable-20);
-  const sumCable = over*50;
-
-  const trench = ($('#trench').value==='YES')?2000:0;
-
-  const sub=$('#substrate').value;
-  let subFee=0, subLabel='blachodachówka';
-  if(sub==='roof-flat'){subFee=500; subLabel='dach płaski';}
-  if(sub==='ground'){subFee=500; subLabel='grunt';}
-
-  const sumOptims = Math.max(0, +$('#optims').value||0) * (+SETTINGS.optimPrice||230);
-  const sumBoard = boardOn? 820:0;
-  const sumMeter = ($('#meter').value==='GENERIC')?450:0;
-
-  const salesComm = Math.max(0, +$('#salesComm').value||0);
-
-  const subtotal_net =
-    sumPanels + sumInv + sumBat + sumHeat +
-    sumOptims + sumBoard + sumMeter +
-    sumCable + trench + subFee +
-    salesComm;
-
-  // VAT
-  const investor=$('#investor').value, premise=$('#premise').value, area=$('#area').value;
-  let vatAutoRate = vatAuto(investor,premise,area);
-  $('#vatAutoLabel').textContent='Auto: '+Math.round(vatAutoRate*100)+'%';
-  const override=$('#vatOverride').value;
-  const vat = (override==='AUTO')? vatAutoRate : (+override||0.23);
-
-  const vatAmt = subtotal_net * vat;
-  const gross = subtotal_net + vatAmt;
-
-  // DOTACJE (kwalifikowane: PV + magazyny)
-  const hasPV = qty>0;
-  const withEnergyStore = +$('#bat').value>0;
-  const withHeatStore = +$('#heatStore').value>0;
-
-  const eligibleCost = sumPanels + (withEnergyStore?sumBat:0) + (withHeatStore?sumHeat:0); // prosty model kwalifikowanych
-  let grant = { sum:0, breakdown:{pvPart:0,batPart:0,heatPart:0} };
-  if($('#grantOn').value==='YES'){
-    grant = computeGrant({
-      hasPV,
-      pvEligible6000: ($('#pvEligible').value==='YES'),
-      withEnergyStore,
-      withHeatStore,
-      eligibleCost
+    // Inicjalizacja list wyboru na podstawie załadowanych danych
+    function populateSelects() {
+        // Panele PV
+        const panelSelect = document.getElementById('panelSelect');
+        panelSelect.innerHTML = "";
+        panels.forEach((p, index) => {
+            let option = document.createElement('option');
+            option.value = index;
+            option.textContent = p.brand + " " + p.model + " (" + p.power + " W)";
+            panelSelect.appendChild(option);
+        });
+        // Falowniki
+        const inverterSelect = document.getElementById('inverterSelect');
+        inverterSelect.innerHTML = "";
+        inverters.forEach((inv, index) => {
+            let option = document.createElement('option');
+            option.value = index;
+            option.textContent = inv.brand + " " + inv.model + " (" + inv.power + " kW)";
+            inverterSelect.appendChild(option);
+        });
+        // Magazyny energii
+        const batterySelect = document.getElementById('batterySelect');
+        batterySelect.innerHTML = "";
+        batteries.forEach((bat, index) => {
+            let option = document.createElement('option');
+            option.value = index;
+            option.textContent = bat.brand + " " + bat.model + " (" + bat.capacity + " kWh)";
+            batterySelect.appendChild(option);
+        });
+        // Magazyny ciepła
+        const heatSelect = document.getElementById('heatSelect');
+        heatSelect.innerHTML = "";
+        heats.forEach((hs, index) => {
+            let option = document.createElement('option');
+            option.value = index;
+            option.textContent = hs.brand + " " + hs.model + " (" + hs.capacity + " l)";
+            heatSelect.appendChild(option);
+        });
+        // Opcje dodatkowe – budujemy słownik dla szybkiego dostępu po nazwie
+        addItems = {};
+        additionalItems.forEach(item => {
+            let nameLower = item.name.toLowerCase();
+            if(nameLower.includes('przekop') || nameLower.includes('trench')) {
+                addItems.trench = item;
+            } else if(nameLower.includes('kabel') || nameLower.includes('cable')) {
+                addItems.cable = item;
+            } else if(nameLower.includes('rozdziel') || nameLower.includes('board')) {
+                addItems.db = item;
+            } else if(nameLower.includes('optymal') || nameLower.includes('optim')) {
+                addItems.opt = item;
+            } else if(nameLower.includes('licznik') || nameLower.includes('meter')) {
+                addItems.meter = item;
+            }
+        });
+        // Ustaw domyślne indeksy (pierwsze na liście)
+        panelSelect.selectedIndex = 0;
+        inverterSelect.selectedIndex = 0;
+        batterySelect.selectedIndex = 0;
+        heatSelect.selectedIndex = 0;
+        // Oblicz początkowe wartości
+        recalc();
+    }
+    // Funkcja przeliczająca wartości na podstawie bieżących wyborów
+    function recalc() {
+        // Pokaż/ukryj pola dla osoby prywatnej w zależności od typu inwestora
+        const investorType = document.getElementById('investorType').value;
+        const privateFieldsDiv = document.getElementById('privateFields');
+        privateFieldsDiv.style.display = (investorType === 'company') ? 'none' : 'block';
+        // Blokuj/odblokuj listy wyboru falownika i magazynów w zależności od checkboxów
+        const invCheckbox = document.getElementById('includeInverter');
+        const batCheckbox = document.getElementById('includeBattery');
+        const heatCheckbox = document.getElementById('includeHeat');
+        const inverterSelect = document.getElementById('inverterSelect');
+        const batterySelect = document.getElementById('batterySelect');
+        const heatSelect = document.getElementById('heatSelect');
+        inverterSelect.disabled = !invCheckbox.checked;
+        batterySelect.disabled = !batCheckbox.checked;
+        heatSelect.disabled = !heatCheckbox.checked;
+        // Panel – liczba sztuk (jeśli 0 to blokujemy wybór modelu)
+        const panelCountInput = document.getElementById('panelCount');
+        const panelSelect = document.getElementById('panelSelect');
+        let panelCount = parseInt(panelCountInput.value) || 0;
+        if(panelCount <= 0) {
+            panelCount = 0;
+            panelCountInput.value = 0;
+        }
+        panelSelect.disabled = (panelCount === 0);
+        // Aktualizacja wyświetlenia mocy zestawu
+        let systemPowerKW = 0;
+        if(panelCount > 0 && panelSelect.value !== "" && panels[panelSelect.value]) {
+            systemPowerKW = (panels[panelSelect.value].power * panelCount) / 1000.0;
+        }
+        document.getElementById('systemPower').textContent = systemPowerKW.toFixed(2);
+        // Sugestia falownika (jeśli użytkownik nie wybrał ręcznie)
+        if(invCheckbox.checked && !inverterManual) {
+            if(panelCount > 0) {
+                let pvPower = systemPowerKW;  // moc PV w kW
+                // Znajdź najmniejszy falownik o mocy >= pvPower
+                let invIndex = 0;
+                let bestPower = Infinity;
+                inverters.forEach((inv, idx) => {
+                    if(inv.power >= pvPower && inv.power < bestPower) {
+                        bestPower = inv.power;
+                        invIndex = idx;
+                    }
+                });
+                // Jeśli żaden falownik nie był wystarczająco duży – wybierz największy dostępny
+                if(bestPower === Infinity && inverters.length > 0) {
+                    invIndex = inverters.length - 1;
+                }
+                inverterSelect.selectedIndex = invIndex;
+            }
+        }
+        // Sugestia magazynu energii (jeśli włączony i nie wybrano ręcznie, tylko gdy są panele)
+        if(batCheckbox.checked && !batteryManual) {
+            if(panelCount > 0 && batteries.length > 0) {
+                let pvPower = systemPowerKW;
+                let batIndex = 0;
+                let bestCap = Infinity;
+                batteries.forEach((bat, idx) => {
+                    if(bat.capacity >= pvPower && bat.capacity < bestCap) {
+                        bestCap = bat.capacity;
+                        batIndex = idx;
+                    }
+                });
+                if(bestCap === Infinity) {
+                    batIndex = batteries.length - 1;
+                }
+                batterySelect.selectedIndex = batIndex;
+            }
+        }
+        // Oblicz listę pozycji do tabeli
+        let lines = [];
+        // Panele
+        if(panelCount > 0) {
+            let p = panels[panelSelect.value];
+            let netPrice = p.price;
+            let netTotal = netPrice * panelCount;
+            lines.push({
+                name: "Panele PV " + p.brand + " " + p.model,
+                qty: panelCount + " szt.",
+                unitNet: netPrice,
+                net: netTotal
+            });
+        }
+        // Falownik
+        if(invCheckbox.checked) {
+            let inv = inverters[inverterSelect.value];
+            let netPrice = inv.price;
+            lines.push({
+                name: "Falownik " + inv.brand + " " + inv.model,
+                qty: "1 szt.",
+                unitNet: netPrice,
+                net: netPrice
+            });
+        }
+        // Magazyn energii
+        if(batCheckbox.checked) {
+            let bat = batteries[batterySelect.value];
+            let netPrice = bat.price;
+            lines.push({
+                name: "Magazyn energii " + bat.brand + " " + bat.model,
+                qty: "1 szt.",
+                unitNet: netPrice,
+                net: netPrice
+            });
+        }
+        // Magazyn ciepła
+        if(heatCheckbox.checked) {
+            let hs = heats[heatSelect.value];
+            let netPrice = hs.price;
+            lines.push({
+                name: "Magazyn ciepła " + hs.brand + " " + hs.model,
+                qty: "1 szt.",
+                unitNet: netPrice,
+                net: netPrice
+            });
+        }
+        // Przekop
+        const trenchLength = parseFloat(document.getElementById('trenchLength').value) || 0;
+        if(trenchLength > 0 && addItems.trench) {
+            let price = addItems.trench.price;
+            let netTotal = price * trenchLength;
+            lines.push({
+                name: "Przekop",
+                qty: trenchLength + " m",
+                unitNet: price,
+                net: netTotal
+            });
+        }
+        // Dodatkowy kabel
+        const cableLength = parseFloat(document.getElementById('cableLength').value) || 0;
+        if(cableLength > 0 && addItems.cable) {
+            let price = addItems.cable.price;
+            let netTotal = price * cableLength;
+            lines.push({
+                name: "Dodatkowy kabel",
+                qty: cableLength + " m",
+                unitNet: price,
+                net: netTotal
+            });
+        }
+        // Optymalizatory
+        const numOpt = parseInt(document.getElementById('numOptimizers').value) || 0;
+        if(numOpt > 0 && addItems.opt) {
+            let price = addItems.opt.price;
+            let netTotal = price * numOpt;
+            lines.push({
+                name: "Optymalizatory",
+                qty: numOpt + " szt.",
+                unitNet: price,
+                net: netTotal
+            });
+        }
+        // Rozdzielnia
+        const numDB = parseInt(document.getElementById('numDBoard').value) || 0;
+        if(numDB > 0 && addItems.db) {
+            let price = addItems.db.price;
+            let netTotal = price * numDB;
+            lines.push({
+                name: "Rozdzielnia AC/DC",
+                qty: numDB + " szt.",
+                unitNet: price,
+                net: netTotal
+            });
+        }
+        // Licznik
+        const numMet = parseInt(document.getElementById('numMeter').value) || 0;
+        if(numMet > 0 && addItems.meter) {
+            let price = addItems.meter.price;
+            let netTotal = price * numMet;
+            lines.push({
+                name: "Licznik produkcji",
+                qty: numMet + " szt.",
+                unitNet: price,
+                net: netTotal
+            });
+        }
+        // Prowizja handlowca
+        const commissionPercent = parseFloat(document.getElementById('commissionPercent').value) || 0;
+        if(commissionPercent > 0) {
+            let baseNetSum = lines.reduce((sum, line) => sum + line.net, 0);
+            let commissionNet = baseNetSum * (commissionPercent / 100.0);
+            lines.push({
+                name: "Prowizja handlowca (" + commissionPercent + "%)",
+                qty: "",
+                unitNet: "",
+                net: commissionNet
+            });
+        }
+        // Oblicz stawkę VAT (8% czy 23%)
+        let vatRate = 0.23;
+        if(investorType === 'private') {
+            let bType = document.getElementById('buildingType').value;
+            let area = parseFloat(document.getElementById('buildingArea').value) || 0;
+            if((bType === 'house' && area <= 300) || (bType === 'apartment' && area <= 150)) {
+                vatRate = 0.08;
+            } else {
+                vatRate = 0.23;
+            }
+        } else {
+            vatRate = 0.23;
+        }
+        // Generowanie tabeli podsumowania
+        const tbody = document.getElementById('summaryBody');
+        const tfoot = document.getElementById('summaryFooter');
+        tbody.innerHTML = "";
+        let totalNet = 0, totalVat = 0, totalGross = 0;
+        lines.forEach(line => {
+            let netVal = line.net || 0;
+            let vatVal = netVal * vatRate;
+            let grossVal = netVal + vatVal;
+            totalNet += netVal;
+            totalVat += vatVal;
+            totalGross += grossVal;
+            // Utwórz wiersz tabeli
+            let tr = document.createElement('tr');
+            let tdName = document.createElement('td');
+            tdName.textContent = line.name;
+            let tdQty = document.createElement('td');
+            tdQty.textContent = line.qty;
+            let tdUnitNet = document.createElement('td');
+            tdUnitNet.textContent = line.unitNet !== "" ? formatCurrency(line.unitNet) : "";
+            let tdNet = document.createElement('td');
+            tdNet.textContent = formatCurrency(netVal);
+            let tdVat = document.createElement('td');
+            tdVat.textContent = formatCurrency(vatVal);
+            let tdGross = document.createElement('td');
+            tdGross.textContent = formatCurrency(grossVal);
+            tr.appendChild(tdName);
+            tr.appendChild(tdQty);
+            tr.appendChild(tdUnitNet);
+            tr.appendChild(tdNet);
+            tr.appendChild(tdVat);
+            tr.appendChild(tdGross);
+            tbody.appendChild(tr);
+        });
+        // Wiersz sumaryczny (RAZEM)
+        tfoot.innerHTML = "";
+        let ftTr = document.createElement('tr');
+        ftTr.innerHTML = "<th>RAZEM:</th><th></th><th></th>" +
+                         "<th>" + formatCurrency(totalNet) + "</th>" +
+                         "<th>" + formatCurrency(totalVat) + "</th>" +
+                         "<th>" + formatCurrency(totalGross) + "</th>";
+        tfoot.appendChild(ftTr);
+        // Oblicz i wyświetl dotację Mój Prąd
+        let subsidy = 0;
+        let hasPV = (panelCount > 0);
+        let hasBattery = batCheckbox.checked;
+        let hasHeat = heatCheckbox.checked;
+        if(hasPV && hasBattery && hasHeat) {
+            subsidy = 28000;
+        } else if(hasPV && hasBattery) {
+            subsidy = 23000;
+        } else if(hasPV && hasHeat && !hasBattery) {
+            subsidy = 12000;
+        } else if(!hasPV && hasBattery) {
+            // tylko magazyn energii
+            if(hasBattery) {
+                let batCost = batteries[batterySelect.value].price || 0;
+                subsidy = Math.min(0.5 * batCost, 16000);
+            }
+        } else {
+            subsidy = 0;
+        }
+        document.getElementById('subsidyAmount').textContent = formatCurrency(subsidy);
+    }
+    // Formatuj kwotę do 2 miejsc (z separatorem dziesiętnym przecinkowym)
+    function formatCurrency(value) {
+        return (Math.round(value * 100) / 100).toFixed(2).replace('.', ',') + " zł";
+    }
+    // Nasłuchiwanie zdarzeń (zmiana pól formularza)
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData();
+        // Reakcje na zmiany pól:
+        document.getElementById('panelSelect').addEventListener('change', recalc);
+        document.getElementById('panelCount').addEventListener('input', recalc);
+        document.getElementById('includeInverter').addEventListener('change', recalc);
+        document.getElementById('includeBattery').addEventListener('change', recalc);
+        document.getElementById('includeHeat').addEventListener('change', recalc);
+        document.getElementById('inverterSelect').addEventListener('change', function() {
+            inverterManual = true;
+            recalc();
+        });
+        document.getElementById('batterySelect').addEventListener('change', function() {
+            batteryManual = true;
+            recalc();
+        });
+        document.getElementById('heatSelect').addEventListener('change', recalc);
+        document.getElementById('trenchLength').addEventListener('input', recalc);
+        document.getElementById('cableLength').addEventListener('input', recalc);
+        document.getElementById('numOptimizers').addEventListener('input', recalc);
+        document.getElementById('numDBoard').addEventListener('input', recalc);
+        document.getElementById('numMeter').addEventListener('input', recalc);
+        document.getElementById('investorType').addEventListener('change', recalc);
+        document.getElementById('buildingType').addEventListener('change', recalc);
+        document.getElementById('buildingArea').addEventListener('input', recalc);
+        document.getElementById('commissionPercent').addEventListener('input', recalc);
+        // Obsługa przycisku Drukuj
+        document.getElementById('printButton').addEventListener('click', function() {
+            window.print();
+        });
+        // Zmiana kategorii przy dodawaniu komponentu – dostosowanie etykiety pola "specyfikacja"
+        document.getElementById('newCategory').addEventListener('change', function() {
+            const labelSpec = document.getElementById('labelSpec');
+            switch(this.value) {
+                case 'panel': labelSpec.textContent = 'Moc [W]'; break;
+                case 'inverter': labelSpec.textContent = 'Moc [kW]'; break;
+                case 'battery': labelSpec.textContent = 'Pojemność [kWh]'; break;
+                case 'heat': labelSpec.textContent = 'Pojemność [l]'; break;
+            }
+        });
+        // Dodawanie nowego komponentu do katalogu
+        document.getElementById('addComponentBtn').addEventListener('click', function() {
+            const cat = document.getElementById('newCategory').value;
+            const brand = document.getElementById('newBrand').value.trim();
+            const model = document.getElementById('newModel').value.trim();
+            const specVal = parseFloat(document.getElementById('newSpec').value) || 0;
+            const priceVal = parseFloat(document.getElementById('newPrice').value) || 0;
+            if(!brand || !model || priceVal <= 0) {
+                alert("Wypełnij poprawnie wszystkie pola nowego komponentu.");
+                return;
+            }
+            if(cat === 'panel') {
+                panels.push({ brand: brand, model: model, power: specVal, price: priceVal });
+            } else if(cat === 'inverter') {
+                inverters.push({ brand: brand, model: model, power: specVal, price: priceVal });
+            } else if(cat === 'battery') {
+                batteries.push({ brand: brand, model: model, capacity: specVal, price: priceVal });
+            } else if(cat === 'heat') {
+                heats.push({ brand: brand, model: model, capacity: specVal, price: priceVal });
+            }
+            populateSelects();  // odśwież listy z dodanym elementem
+            alert("Dodano komponent: " + brand + " " + model);
+            saveCatalog();
+        });
+        // Zapis bieżącego katalogu do localStorage
+        document.getElementById('saveCatalogBtn').addEventListener('click', function() {
+            saveCatalog();
+            alert("Zapisano zmiany katalogu (lokalnie).");
+        });
     });
-  }
-
-  const grossAfterGrant = Math.max(0, gross - grant.sum);
-
-  // Tabela
-  const rows = [
-    ['Panele', ${$('#p_brand').value} • ${$('#p_model').value} × ${qty} — moc: ${fmt2(dc)} kW],
-    ['Falownik', ($('#withInv').value==='YES') ? ${$('#i_brand').value} • ${$('#i_model').value} (AC ${fmt2(inverterAC())} kW) : 'brak'],
-    ['Magazyn energii', (+$('#bat').value? ${$('#bat').value} kWh : 'brak')],
-    ['Magazyn ciepła', (heatMult? (heatMult===1?'standard (3000 zł)':(heatMult===2?'powiększony (6000 zł)':'duży (9000 zł)')) : 'brak')],
-    ['Optymalizatory', (+$('#optims').value||0)+' × '+(+SETTINGS.optimPrice||230)+' zł'],
-    ['Licznik 3F', ($('#meter').value==='GENERIC')?'tak':'brak'],
-    ['Rozdzielnia AC/DC', boardOn?'tak':'brak'],
-    ['Okablowanie', ${cable} m (nadmiar: ${over} m × 50 zł)],
-    ['Przekop', trench? 'tak (2000 zł)':'brak'],
-    ['Podłoże', subLabel + (subFee? ` (+${subFee} zł)`:'')],
-    ['Prowizja handlowca', money(salesComm)],
-    ['VAT', Math.round(vat*100)+'% (auto wg przepisów; można nadpisać)'],
-    ['Dotacja — Mój Prąd 6.0', ($('#grantOn').value==='YES'
-       ? PV: ${money(grant.breakdown.pvPart)} • Mag. energii: ${money(grant.breakdown.batPart)} • Mag. ciepła: ${money(grant.breakdown.heatPart)} (razem: ${money(grant.sum)})
-       : 'nie liczę (wyłączona)')],
-    ['Uwagi', ($('#notes').value||'—').trim() || '—']
-  ];
-  $('#rows').innerHTML = rows.map(([k,v])=><tr><th>${k}</th><td>${v}</td></tr>).join('');
-
-  $('#sum_main').textContent = 'Do zapłaty (brutto) po dotacji: ' + money(grossAfterGrant);
-  $('#sum_aux').textContent  = Suma brutto: ${money(gross)} • Netto: ${money(subtotal_net)} • VAT: ${money(vatAmt)} • Dotacja: ${money(grant.sum)};
-}
-
-/* ===== zdarzenia ===== */
-$('#calc').onclick=recalc;
-$('#print').onclick=()=>{ recalc(); window.print(); };
-$('#exportMaster').onclick=()=>{
-  const obj = {panels:PAN,inverters:INV,batteries:BAT,accessories:ACC,sets:SETS};
-  const blob = new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pv_master_export.json'; a.click(); URL.revokeObjectURL(a.href);
-};
-
-['p_brand','p_model','p_qty','withInv','i_brand','i_model','bat','heatStore','substrate',
- 'cable','trench','optims','board','meter','investor','premise','area','vatOverride',
- 'salesComm','orient','notes','pvEligible','grantOn'].forEach(id=>{
-  const el=$('#'+id); if(!el) return;
-  el.addEventListener((el.tagName==='INPUT'||el.tagName==='TEXTAREA')?'input':'change', recalc);
-});
-
-$('#btnSuggestInverter').onclick=()=>{ const sug=suggestInverter(+$('#dc_kw').value||0); if(sug){ $('#i_brand').value=sug.brand; const list=INV.filter(x=>x.brand===sug.brand); $('#i_model').innerHTML=list.map(x=><option>${x.model}</option>).join(''); $('#i_model').value=sug.model; recalc(); } };
-$('#btnSuggestBattery').onclick=()=>{ const b=suggestBattery(+$('#dc_kw').value||0); $('#bat').value=String(b); recalc(); };
-
-/* ===== start ===== */
-(async function boot(){
-  await loadMaster();
-  renderCatalog();
-  fillSelectors();
-  const d=new Date(),pad=n=>String(n).padStart(2,'0'); $('#genDate').textContent=${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()};
-  $('#optimPriceLabel').textContent = String(SETTINGS.optimPrice||230);
-  suggestQtyAndPower();
-  recalc();
-})();
+    // Zapis katalogu komponentów do localStorage
+    function saveCatalog() {
+        const data = {
+            panels: panels,
+            inverters: inverters,
+            batteries: batteries,
+            heats: heats,
+            additional: additionalItems
+        };
+        localStorage.setItem('componentsData', JSON.stringify(data));
+    }
 </script>
 </body>
 </html>
