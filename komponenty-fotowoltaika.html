@@ -11,7 +11,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
-  header{padding:14px 16px;background:#11183a;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between}
+  header{padding:14px 16px;background:#11183a;border-bottom:1px solid #2a3a59;display:flex;gap:12px;align-items:center;justify-content:space-between}
   header h1{margin:0;font-size:20px}
   header .actions a{color:#cfe1ff;text-decoration:none;border:1px solid #2a3a75;padding:6px 10px;border-radius:10px}
   header .actions a:hover{background:#223160}
@@ -62,7 +62,6 @@
   .priceLine{display:flex;justify-content:space-between;align-items:baseline;background:#0d1530;border:1px solid #2b3a77;border-radius:12px;padding:10px 12px}
   .priceLine .label{font-size:13px;color:#cfe1ff}
   .priceLine .value{font-size:22px;font-weight:800}
-  .afterSub{font-size:12px;color:#aeb8da;text-align:right;margin-top:-4px}
   .subGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .subCell{background:#0d1530;border:1px dashed #2b3a77;border-radius:10px;padding:8px 10px}
   .subCell .small{font-size:12px;color:#aeb8da}
@@ -103,7 +102,6 @@
           <div>
             <label class="title" for="panelSelect">Panele (firma + model)</label>
             <select id="panelSelect"></select>
-            <!-- Benchmark ukryty bezpiecznie -->
             <div class="muted">Moc panelu: <b id="panelWatt">—</b> W <span id="benchKW" class="badge hidden"></span></div>
           </div>
         </div>
@@ -329,7 +327,6 @@
           <tfoot id="totals"></tfoot>
         </table>
 
-        <!-- Benchmark (ukryty) -->
         <div class="row justify-between hidden">
           <span class="pill">Benchmark</span>
           <span id="benchFinal" class="sum">— zł/kW</span>
@@ -404,7 +401,7 @@ ARKON HeatTank 500;500;3000
     return rows.slice(1).map(line => {
       const col = line.split(delim).map(c => c.replace(/^"|"$/g, '').trim());
       const o = {};
-      head.forEach((h, i) => o[h] = col[i] ?? '');
+      head.forEach((h, i) => { o[h] = col[i] ?? ''; });
       return o;
     });
   }
@@ -514,11 +511,11 @@ ARKON HeatTank 500;500;3000
 
   // Pułap dotacji wg konfiguracji — SZTYWNE: 12/16/23/28 tys. (NETTO)
   function subsidyCap(flags) {
-    if (flags.hasPV && flags.hasBat && flags.hasHeat) return 28000;  // PV + ME + MC
-    if (flags.hasPV && flags.hasBat && !flags.hasHeat) return 23000; // PV + ME
-    if (flags.hasPV && flags.hasHeat && !flags.hasBat) return 12000; // PV + MC
-    if (!flags.hasPV && flags.hasBat) return 16000;                  // tylko ME
-    return 0;                                                         // same panele / brak kwalifikacji
+    if (flags.hasPV && flags.hasBat && flags.hasHeat) return 28000;
+    if (flags.hasPV && flags.hasBat && !flags.hasHeat) return 23000;
+    if (flags.hasPV && flags.hasHeat && !flags.hasBat) return 12000;
+    if (!flags.hasPV && flags.hasBat) return 16000;
+    return 0;
   }
 
   function recalc() {
@@ -538,7 +535,7 @@ ARKON HeatTank 500;500;3000
     const pvKW = panel ? (panel.watt * qtyPanels) / 1000 : 0;
     $('#pvKW').textContent = pvKW.toFixed(2) + ' kW';
 
-    // Bezpieczne ustawienie mocy i ukrytego benchmarku
+    // info o panelu
     const benchKWEl = document.getElementById('benchKW');
     if (panel && panel.watt > 0) {
       if (benchKWEl) benchKWEl.textContent = PLN(panel.price * (1000 / panel.watt));
@@ -553,7 +550,7 @@ ARKON HeatTank 500;500;3000
     const battery = (batVal === 'none') ? null : BATTERIES[+batVal];
     if (!lastManualPick.battery && $('#batterySelect').value !== 'none' && pvKW > 0) autoPickBattery(pvKW);
 
-    // falownik – hybrydowy jeżeli jest bateria
+    // falownik
     const needHybrid = !!battery;
     autoPickInverter(pvKW, needHybrid);
     const inverter = INVERTERS[+$('#inverterSelect').value] || null;
@@ -604,7 +601,7 @@ ARKON HeatTank 500;500;3000
     const discount = dVal > 0 ? (dType === 'percent' ? zloty(netBase * (dVal / 100)) : zloty(dVal)) : 0;
     const netAfterDiscount = Math.max(0, zloty(netBase - discount));
 
-    // prowizja (liczona od: NETTO po rabacie + narzut firmy)
+    // prowizja (od NETTO po rabacie + narzut firmy)
     const commPct = Math.max(0, +$('#commissionPct').value || 0);
     const baseForCommission = zloty(netAfterDiscount + COMPANY_MARGIN);
     const commNet = zloty(baseForCommission * (commPct / 100));
@@ -617,50 +614,40 @@ ARKON HeatTank 500;500;3000
     const vatAmt = zloty(clientNet * vatR);
     const clientGross = zloty(clientNet + vatAmt);
 
-    // ===== DOTACJA (NETTO) =====
+    // ===== DOTACJA — tylko NETTO =====
     const flags = { hasPV: qtyPanels > 0, hasBat: !!battery, hasHeat: (heatVal !== 'none') };
     const cap = subsidyCap(flags);
 
-    // Podstawa kwalifikowana: panele + ME + MC (bez usług/dodatków)
-    // Prowizję zaliczamy TYLKO do paneli i ME proporcjonalnie (MC bez prowizji).
-    const panelLine = lines.find(l => /^Panele:/.test(l.name));
-    const batLine   = lines.find(l => /^Magazyn energii:/.test(l.name));
-    const heatLine  = lines.find(l => /^Magazyn ciepła:/.test(l.name));
+    // Cena kwalifikowana = całe NETTO klienta
+    const eligibleNet = zloty(clientNet);
 
-    const baseEligibleNoComm = zloty((panelLine?.net || 0) + (batLine?.net || 0) + (heatLine?.net || 0));
-
-    const allocBase = zloty((panelLine?.net || 0) + (batLine?.net || 0)); // tylko panele+ME
-    let commToPanels = 0, commToBattery = 0;
-    if (allocBase > 0 && commNet > 0) {
-      commToPanels  = zloty(commNet * ((panelLine?.net || 0) / allocBase));
-      commToBattery = zloty(commNet - commToPanels);
-    }
-    let eligibleNet = zloty(baseEligibleNoComm + commToPanels + commToBattery);
-
-    // wyliczenie dotacji: ≤50% kwalifikowanych, przycięte sztywnym CAP, brak dotacji dla samych paneli
-    let subsidy = 0;
+    // Dotacja NETTO
+    let subsidyNet = 0;
     if ($('#subsidyMode').value === 'apply') {
       if (flags.hasPV && !flags.hasBat && !flags.hasHeat) {
-        subsidy = 0; // same panele – brak dotacji
+        subsidyNet = 0;
       } else {
-        subsidy = Math.min(cap, Math.floor(eligibleNet * 0.5)); // pełne zł, bez „końcówek”
+        subsidyNet = Math.floor(Math.min(cap, eligibleNet * 0.5));
       }
     }
 
-    // Po dotacji: NETTO i BRUTTO (informacyjnie)
-    const netAfterSubsidy = Math.max(0, zloty(clientNet - subsidy));
+    // Po dotacji — NETTO i BRUTTO (BRUTTO liczone od NETTO po dotacji)
+    const netAfterSubsidy   = Math.max(0, zloty(clientNet - subsidyNet));
     const grossAfterSubsidy = zloty(netAfterSubsidy * (1 + vatR));
 
-    // benchmark (NETTO klienta / kW) — pozostaje, ale UI ukryte
+    // benchmark (ukryte w UI)
     const benchFinal = (pvKW > 0) ? zloty(clientNet / pvKW) : 0;
 
-    // ===== render: pozycje =====
-    const tbody = $('#lines'); tbody.innerHTML = '';
-    lines.forEach(l => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = '<td>' + l.name + '</td><td>' + l.qty + '</td><td>' + PLN(l.net) + '</td>';
-      tbody.appendChild(tr);
-    });
+    // ===== render: pozycje (bez paneli i falownika) =====
+    const tbody = $('#lines'); 
+    tbody.innerHTML = '';
+    lines
+      .filter(l => !/^Panele:|^Falownik:/.test(l.name))
+      .forEach(l => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + l.name + '</td><td>' + l.qty + '</td><td>' + PLN(l.net) + '</td>';
+        tbody.appendChild(tr);
+      });
 
     // ===== render: stopka (końcowe ceny) =====
     const tfoot = $('#totals'); tfoot.innerHTML = '';
@@ -679,12 +666,12 @@ ARKON HeatTank 500;500;3000
     tr.innerHTML = '<th class="title">DO ZAPŁATY (po dotacji)</th><th></th><th class="sum">' + PLN(grossAfterSubsidy) + '</th>';
     tfoot.appendChild(tr);
 
-    // ===== render: duże liczby + etykieta pułapu =====
+    // ===== render: duże liczby + etykiety =====
     $('#finalNet').textContent = PLN(clientNet);
     $('#finalGross').textContent = PLN(clientGross);
-    $('#eligibleBase').textContent = PLN(eligibleNet); // kwalifikowana NETTO
-    $('#subsidy').textContent = PLN(subsidy); // dotacja NETTO
-    $('#afterSubsidyNet').textContent = PLN(netAfterSubsidy);
+    $('#eligibleBase').textContent      = PLN(eligibleNet);
+    $('#subsidy').textContent           = PLN(subsidyNet);
+    $('#afterSubsidyNet').textContent   = PLN(netAfterSubsidy);
     $('#afterSubsidyGross').textContent = PLN(grossAfterSubsidy);
 
     const benchFinalEl = document.getElementById('benchFinal');
@@ -857,41 +844,6 @@ ARKON HeatTank 500;500;3000
   $('#subsidyMode').addEventListener('change', recalc);
   $('#discountValue').addEventListener('input', recalc);
   $('#discountType').addEventListener('change', recalc);
-
-  // akcje
-  $('#btnPrint').addEventListener('click', () => window.print());
-  $('#btnReset').addEventListener('click', () => {
-    lastManualPick = { inverter: false, battery: false };
-    const modeEl = document.querySelector('input[name="mode"][value="set"]');
-    if (modeEl) modeEl.checked = true;
-    $('#manualBlock').style.display = 'none';
-    $('#setKW').value = '5.0';
-    $('#panelSelect').selectedIndex = 0;
-    $('#panelCount').value = 10;
-    $('#inverterSelect').selectedIndex = 0;
-    $('#batterySelect').value = 'none';
-    $('#heatSelect').value = 'none';
-    $('#mountType').value = 'pitched';
-    $('#cableExtra').value = 0;
-    $('#pkgMeterBoard').checked = false;
-    $('#pkgOptAuto').checked = false;
-    $('#pkgTrench').checked = false;
-    $('#optManual').checked = false; $('#optQty').value = 0;
-    $('#meterYes').checked = false; $('#boardYes').checked = false;
-    $('#trenchYes').checked = false;
-    $('#transportYes').checked = false;
-    $('#investorType').value = 'private'; $('#area').value = 120;
-    $('#commissionPct').value = 0;
-    $('#commissionAssign').value = 'panels';
-    $('#subsidyMode').value = 'apply';
-    $('#discountValue').value = 0; $('#discountType').value = 'amount';
-    $('#notes').value = '';
-    recalc();
-  });
-  $('#btnSave').addEventListener('click', saveOffer);
-  $('#btnLoad').addEventListener('click', loadOffer);
-  $('#btnExportJSON').addEventListener('click', exportJSON);
-  $('#btnExportCSV').addEventListener('click', exportCSV);
 
   // start
   loadEmbedded();
