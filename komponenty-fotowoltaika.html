@@ -1,761 +1,604 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Komponenty Fotowoltaika</title>
-    <!-- Bootstrap 4 CSS (dla stylowania formularza i tabel) -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="komponenty-fotowoltaika.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Fotowoltaiki PV</title>
+    <!-- Załączamy Bootstrap 4.5 CSS z CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Ciemne tło strony i karty zgodne z motywem CRM */
-        body { background-color: #2b2b2b; color: #f0f0f0; }
-        .card { background-color: #3a3a3a; color: #ffffff; }
-        .card a { color: #ff5a00; } /* wyróżnienie linków (pomarańczowy) */
-        /* Stylowanie pól formularza na ciemnym tle */
-        .card .form-control, .card .form-control-select {
-            background-color: #555; color: #fff; border: 1px solid #666;
-        }
-        /* Stylowanie tabeli podsumowania (ciemna tabela) */
-        .table-dark th, .table-dark td { border-color: #555; }
-        /* Ustawienia wydruku: ukrycie elementów interaktywnych */
-        .no-print { display: block; }
-        @media print {
-            .no-print { display: none; }
-            body { background-color: #ffffff; color: #000000; }
-            .card { background-color: #ffffff; color: #000; }
-            .table-dark {
-                color: #000;
-                background-color: #fff;
-            }
-            .table-dark th, .table-dark td {
-                color: #000;
-                border-color: #000;
-            }
-        }
+    /* Drobne dostosowania stylu (ciemny motyw) */
+    .card.bg-secondary {
+        border-color: #444;
+    }
+    /* Utility classes to replace inline styles */
+    .max-w-200 { max-width: 200px; }
+    .max-w-120 { max-width: 120px; }
+    .max-w-100 { max-width: 100px; }
+    /* Ukryty input plików (przeniesiono inline style do CSS) */
+    #csvFiles { display: none; }
     </style>
 </head>
 <body class="bg-dark text-light">
-<div class="container-fluid">
-    <div class="row equal">
-        <div class="col-md-9 equal-padding">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0">Dobór komponentów fotowoltaiki</h4>
-                </div>
-                <div class="card-body">
-                    <!-- Sekcja formularza (dane wejściowe) -->
-                    <div class="no-print">
-                        <!-- Wybór paneli i liczby sztuk -->
-                        <div class="form-group">
-                            <label for="panelSelect">Panele PV</label>
-                            <div class="d-flex">
-                                <input type="number" id="panelCount" class="form-control bg-secondary text-light panel-count-input" 
-                                       value="10" min="0" title="Liczba paneli">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">szt.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Falownik -->
-                        <div class="form-group">
-                            <select id="inverterSelect" class="form-control form-control-select bg-secondary text-light mt-1" aria-label="Wybierz falownik" title="Wybierz falownik"></select>
-                        </div>
-                        <!-- Magazyn energii -->
-                        <div class="form-group">
-                            <select id="batterySelect" class="form-control form-control-select bg-secondary text-light mt-1" disabled aria-label="Wybierz magazyn energii" title="Wybierz magazyn energii"></select>
-                        </div>
-                        <!-- Magazyn ciepła -->
-                        <div class="form-group">
-                            <select id="heatSelect" class="form-control form-control-select bg-secondary text-light mt-1" disabled aria-label="Wybierz magazyn ciepła" title="Wybierz magazyn ciepła"></select>
-                        </div>
-                        <hr>
-                        <h5>Opcje dodatkowe</h5>
-                        <!-- Długość przekopu -->
-                        <div class="form-group">
-                            <label for="trenchLength">Przekop (długość wykopu w metrach)</label>
-                            <div class="input-group">
-                                <input type="number" id="trenchLength" class="form-control bg-secondary text-light" value="0" min="0">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">m</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Dodatkowy kabel -->
-                        <div class="form-group">
-                            <label for="cableLength">Dodatkowy kabel DC/AC (metry ponad standard)</label>
-                            <div class="input-group">
-                                <input type="number" id="cableLength" class="form-control bg-secondary text-light" value="0" min="0">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">m</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Optymalizatory -->
-                        <div class="form-group">
-                            <label for="numOptimizers">Optymalizatory mocy</label>
-                            <div class="input-group">
-                                <input type="number" id="numOptimizers" class="form-control bg-secondary text-light" value="0" min="0">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">szt.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Rozdzielnia -->
-                        <div class="form-group">
-                            <label for="numDBoard">Dodatkowa rozdzielnia AC/DC</label>
-                            <div class="input-group">
-                                <input type="number" id="numDBoard" class="form-control bg-secondary text-light" value="0" min="0" max="1">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">szt.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Licznik produkcji -->
-                        <div class="form-group">
-                            <label for="numMeter">Licznik produkcji energii</label>
-                            <div class="input-group">
-                                <input type="number" id="numMeter" class="form-control bg-secondary text-light" value="0" min="0" max="1">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">szt.</span>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <h5>Dane inwestora i VAT</h5>
-                        <!-- Typ inwestora: osoba prywatna vs firma -->
-                        <div class="form-group">
-                            <label for="investorType">Typ inwestora</label>
-                            <select id="investorType" class="form-control form-control-select bg-secondary text-light">
-                                <option value="private">Osoba prywatna</option>
-                                <option value="company">Firma</option>
-                            </select>
-                        </div>
-                        <!-- Pola dla osoby prywatnej: typ budynku i powierzchnia -->
-                        <div id="privateFields">
-                            <div class="form-group">
-                                <label for="buildingType">Typ budynku mieszkalnego</label>
-                                <select id="buildingType" class="form-control form-control-select bg-secondary text-light">
-                                    <option value="house">Dom jednorodzinny</option>
-                                    <option value="apartment">Mieszkanie</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="buildingArea">Powierzchnia budynku (m<sup>2</sup>)</label>
-                                <div class="input-group">
-                                    <input type="number" id="buildingArea" class="form-control bg-secondary text-light" value="100" min="1">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text bg-secondary text-light">m&sup2;</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Prowizja handlowca -->
-                        <div class="form-group">
-                            <label for="commissionPercent">Prowizja handlowca (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="commissionPercent" class="form-control bg-secondary text-light" value="0" min="0" max="100" step="0.1">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-secondary text-light">%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <!-- Przyciski akcji -->
-                        <div class="form-group">
-                            <button id="printButton" class="btn btn-primary btn-sm">Drukuj / PDF</button>
-                        </div>
-                        <hr>
-                        <!-- Panel edycji katalogu komponentów -->
-                        <h5>Edytuj katalog komponentów</h5>
-                        <div class="form-group">
-                            <label for="newCategory">Kategoria</label>
-                            <select id="newCategory" class="form-control form-control-select bg-secondary text-light">
-                                <option value="panel">Panel PV</option>
-                                <option value="inverter">Falownik</option>
-                                <option value="battery">Magazyn energii</option>
-                                <option value="heat">Magazyn ciepła</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="newBrand">Marka</label>
-                            <input type="text" id="newBrand" class="form-control bg-secondary text-light">
-                        </div>
-                        <div class="form-group">
-                            <label for="newModel">Model</label>
-                            <input type="text" id="newModel" class="form-control bg-secondary text-light">
-                        </div>
-                        <div class="form-group">
-                            <label id="labelSpec" for="newSpec">Moc [W]</label>
-                            <input type="number" id="newSpec" class="form-control bg-secondary text-light" step="0.1" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="newPrice">Cena netto [zł]</label>
-                            <input type="number" id="newPrice" class="form-control bg-secondary text-light" step="0.01" value="0">
-                        </div>
-                        <div class="form-group">
-                            <button id="addComponentBtn" class="btn btn-secondary btn-sm">Dodaj komponent</button>
-                            <button id="saveCatalogBtn" class="btn btn-secondary btn-sm">Zapisz zmiany katalogu</button>
-                        </div>
-                    </div>
-                    <!-- Koniec sekcji formularza -->
-                    <!-- Sekcja wyników (podsumowanie) -->
-                    <h5 class="mt-4">Podsumowanie</h5>
-                    <p>Moc zestawu PV: <span id="systemPower">0</span> kWp</p>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-striped" id="summaryTable">
-                            <thead>
-                                <tr>
-                                    <th>Element</th>
-                                    <th>Ilość</th>
-                                    <th>Cena netto</th>
-                                    <th>Wartość netto</th>
-                                    <th>VAT</th>
-                                    <th>Wartość brutto</th>
-                                </tr>
-                            </thead>
-                            <tbody id="summaryBody">
-                                <!-- wiersze z elementami - generowane skryptem -->
-                            </tbody>
-                            <tfoot id="summaryFooter">
-                                <!-- wiersz sumy - generowany skryptem -->
-                            </tfoot>
-                        </table>
-                    </div>
-                    <p><strong>Dotacja Mój Prąd 6.0:</strong> <span id="subsidyAmount">0</span> zł</p>
-                </div>
-            </div>
+<div class="container my-4">
+  <!-- Link powrotu -->
+  <a href="index.html" class="btn btn-secondary btn-sm mb-3">&larr; Powrót do pulpitu</a>
+  <h1 class="mb-4">Kalkulator Fotowoltaiki (PV)</h1>
+  <div class="row">
+    <!-- Kolumna główna z formularzem -->
+    <div class="col-md-8">
+      <!-- Wybór paneli -->
+      <div class="form-group">
+        <div class="d-flex">
+          <select id="panelSelect" class="form-control mr-2" title="Wybór paneli" aria-label="Wybór paneli"></select>
+          <label for="panelCount" class="sr-only">Liczba paneli</label>
+          <input type="number" id="panelCount" class="form-control max-w-100" min="0" value="10" title="Liczba paneli" placeholder="10" aria-label="Liczba paneli">
+          <span class="ml-2 align-self-center">szt.</span>
         </div>
+      </div>
+      <!-- Dobór falownika -->
+      <div class="form-group">
+        <label for="inverterSelect">Dobór falownika:</label>
+        <select id="inverterSelect" class="form-control"></select>
+      </div>
+      <!-- Magazyn energii -->
+      <div class="form-group">
+        <label for="batterySelect">Magazyn energii (bateria):</label>
+        <select id="batterySelect" class="form-control">
+          <option value="none">Brak</option>
+        </select>
+      </div>
+      <!-- Magazyn ciepła -->
+      <div class="form-group">
+        <label for="heatSelect">Magazyn ciepła (bufor):</label>
+        <select id="heatSelect" class="form-control">
+          <option value="none">Brak</option>
+        </select>
+      </div>
+      <!-- Rodzaj montażu i odległość -->
+      <div class="form-group">
+        <label for="mountSelect">Rodzaj montażu:</label>
+        <div class="d-flex">
+          <select id="mountSelect" class="form-control mr-3">
+            <option value="pitched">Dach skośny</option>
+            <option value="flat">Dach płaski</option>
+            <option value="ground">Grunt</option>
+          </select>
+          <div>
+            <label for="distanceInput" class="sr-only">Odległość (m)</label>
+            <div class="input-group">
+              <input type="number" id="distanceInput" class="form-control" min="0" value="20">
+              <div class="input-group-append">
+                <span class="input-group-text">m (odległość paneli od falownika)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dodatkowe opcje (checkboxy) -->
+      <div class="form-group">
+        <label>Dodatkowe opcje:</label>
+        <div class="form-check">
+          <input type="checkbox" id="optCheck" class="form-check-input">
+          <label for="optCheck" class="form-check-label">Optymalizatory na panelach</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="meterCheck" class="form-check-input">
+          <label for="meterCheck" class="form-check-label">Licznik produkcji energii</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="boardCheck" class="form-check-input">
+          <label for="boardCheck" class="form-check-label">Dodatkowa rozdzielnia/przyłącze</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="investorSelect">Typ inwestora i VAT:</label>
+        <div class="d-flex">
+          <select id="investorSelect" class="form-control mr-3 max-w-200" title="Typ inwestora">
+            <option value="private">Osoba prywatna</option>
+            <option value="company">Firma (płatnik VAT)</option>
+          </select>
+          <label for="areaInput" class="sr-only">Powierzchnia (m²)</label>
+          <input type="number" id="areaInput" class="form-control mr-3 max-w-120" title="Powierzchnia nieruchomości" placeholder="120" value="120" min="1">
+          <span class="align-self-center mr-3">m&sup2;</span>
+          <label for="commissionInput" class="align-self-center mr-2">Prowizja:</label>
+          <div class="input-group max-w-120">
+            <input type="number" id="commissionInput" class="form-control" value="0" min="0" step="0.1" title="Prowizja w procentach">
+            <div class="input-group-append"><span class="input-group-text">%</span></div>
+          </div>
+          <small class="form-text text-muted">
+            * 8% VAT dla budownictwa mieszkaniowego (dom &le;300 m&sup2;), w przeciwnym razie 23%.
+          </small>
+        </div>
+      </div>
+      <!-- Przyciski akcji -->
+      <div class="form-group mt-4">
+        <button id="loadBtn" class="btn btn-info">Załaduj z CSV</button>
+        <button id="resetBtn" class="btn btn-secondary">Resetuj kalkulator</button>
+        <button class="btn btn-light" onclick="window.print()">Drukuj</button>
+      </div>
+      <!-- Ukryte pole plików do wczytywania CSV -->
+      <input type="file" id="csvFiles" accept=".csv" multiple>
     </div>
+    <!-- Kolumna boczna z podsumowaniem -->
+    <div class="col-md-4">
+      <div class="card bg-secondary text-light p-3">
+        <h5>Podsumowanie:</h5>
+        <table class="table table-borderless table-sm text-light">
+          <tr><td>Moc zestawu PV:</td><td id="pvPowerVal">0 kWp</td></tr>
+          <tr><td>Wartość netto (bez prowizji):</td><td id="netBaseVal">0 zł</td></tr>
+          <tr><td>Prowizja handlowca:</td><td id="commissionVal">0 zł</td></tr>
+          <tr><td>Wartość netto (z prowizją):</td><td id="netTotalVal">0 zł</td></tr>
+          <tr><td>VAT (<span id="vatRateVal">8</span>%):</td><td id="vatVal">0 zł</td></tr>
+          <tr><td><strong>Wartość brutto:</strong></td><td id="grossVal"><strong>0 zł</strong></td></tr>
+          <tr><td>Dotacja Mój Prąd 6.0:</td><td id="subsidyVal">0 zł</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-<!-- Skrypty JavaScript -->
+
 <script>
-    // Tablice do przechowywania danych komponentów
-    let panels = [], inverters = [], batteries = [], heats = [], additionalItems = [];
-    let addItems = {};  // pomocniczy słownik dla opcji dodatkowych
-    // Flagi do śledzenia czy użytkownik ręcznie wybrał falownik/magazyn (aby nie nadpisywać)
-    let inverterManual = false;
-    let batteryManual = false;
-    // Funkcja ładowania danych z CSV lub localStorage
-    function loadData() {
-        // Najpierw sprawdź localStorage (czy zapisano zmodyfikowany katalog)
-        let stored = localStorage.getItem('componentsData');
-        if(stored) {
-            try {
-                let data = JSON.parse(stored);
-                if(data && data.panels && data.inverters && data.batteries && data.heats && data.additional) {
-                    panels = data.panels;
-                    inverters = data.inverters;
-                    batteries = data.batteries;
-                    heats = data.heats;
-                    additionalItems = data.additional;
-                    console.log("Loaded components from local storage.");
-                    populateSelects();
-                    return;
-                }
-            } catch(e) { console.warn("Local storage parse error:", e); }
+// Tablice danych z CSV
+let panelsData = [], invertersData = [], batteriesData = [], heatData = [], extrasData = [];
+// Ceny/dane dodatkowe
+let optimizerPrice = 0, meterPrice = 0, boardPrice = 0, trenchPrice = 0;
+let extraCablePrice = 50; // 50 zł/m powyżej 20 m
+let structureCosts = { pitched: 0, flat: 0, ground: 0 };
+// Funkcja parsująca CSV do obiektów JS
+function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (!lines.length) return [];
+    // Wykrycie delimitera (przecinek lub średnik)
+    const delim = lines[0].includes(';') ? ';' : ',';
+    const header = lines[0].split(delim).map(h => h.trim());
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+        let line = lines[i];
+        if (!line.trim()) continue;
+        // Jeżeli delimiter to przecinek, a liczby używają przecinka dziesiętnego, poprawiamy je przed split
+        if (delim === ',' && /\d,\d{1,2}(?![^"]*")/.test(line)) {
+            line = line.replace(/(\d),(\d{1,2})(?![^"]*")/g, '$1.$2');
         }
-        // Jeśli brak danych w localStorage, wczytaj z plików CSV
-        Promise.all([
-            fetch('panels.csv').then(res => res.text()),
-            fetch('inverters.csv').then(res => res.text()),
-            fetch('batteries.csv').then(res => res.text()),
-            fetch('heat_storage.csv').then(res => res.text()),
-            fetch('additional.csv').then(res => res.text())
-        ]).then(function([panelsText, invertersText, batteriesText, heatsText, additionalText]) {
-            panels = parseCSV(panelsText, 'panel');
-            inverters = parseCSV(invertersText, 'inverter');
-            batteries = parseCSV(batteriesText, 'battery');
-            heats = parseCSV(heatsText, 'heat');
-            additionalItems = parseCSV(additionalText, 'additional');
-            console.log("Loaded components from CSV files.");
-            populateSelects();
-        }).catch(function(error) {
-            console.error("Error loading CSV files:", error);
-        });
-    }
-    // Parser CSV – konwertuje tekst CSV na obiekty w zależności od kategorii
-    function parseCSV(csvText, type) {
-        let lines = csvText.split(/\\r?\\n/).map(l => l.trim()).filter(l => l);
-        if(lines.length === 0) return [];
-        // Zakładamy, że pierwsza linia to nagłówek
-        lines.shift();  // usuń nagłówek
-        let result = [];
-        lines.forEach(line => {
-            let cols = line.split(/[;,]+/);  // akceptuj CSV rozdzielony przecinkami lub średnikami
-            if(cols.length < 2) return;
-            switch(type) {
-                case 'panel':
-                    // format: Brand, Model, Power(W), Price
-                    if(cols.length >= 4) {
-                        result.push({
-                            brand: cols[0],
-                            model: cols[1],
-                            power: parseFloat(cols[2]) || 0,
-                            price: parseFloat(cols[3]) || 0
-                        });
-                    }
-                    break;
-                case 'inverter':
-                    // format: Brand, Model, Power(kW), Price
-                    if(cols.length >= 4) {
-                        result.push({
-                            brand: cols[0],
-                            model: cols[1],
-                            power: parseFloat(cols[2]) || 0,
-                            price: parseFloat(cols[3]) || 0
-                        });
-                    }
-                    break;
-                case 'battery':
-                    // format: Brand, Model, Capacity(kWh), Price
-                    if(cols.length >= 4) {
-                        result.push({
-                            brand: cols[0],
-                            model: cols[1],
-                            capacity: parseFloat(cols[2]) || 0,
-                            price: parseFloat(cols[3]) || 0
-                        });
-                    }
-                    break;
-                case 'heat':
-                    // format: Brand, Model, Capacity(l), Price
-                    if(cols.length >= 4) {
-                        result.push({
-                            brand: cols[0],
-                            model: cols[1],
-                            capacity: parseFloat(cols[2]) || 0,
-                            price: parseFloat(cols[3]) || 0
-                        });
-                    }
-                    break;
-                case 'additional':
-                    // format: Name, Price, Unit
-                    if(cols.length >= 3) {
-                        result.push({
-                            name: cols[0],
-                            price: parseFloat(cols[1]) || 0,
-                            unit: cols[2]
-                        });
-                    }
-                    break;
+        let parts = line.split(delim).map(p => p.trim());
+        // Dopasowanie liczby kolumn do nagłówka
+        if (parts.length !== header.length) {
+            const filtered = [];
+            for (let part of parts) {
+                if (part === 'PLN' || part.toLowerCase() === 'pln' || part === 'zł' || part === '') continue;
+                filtered.push(part);
             }
-        });
-        return result;
-    }
-    // Inicjalizacja list wyboru na podstawie załadowanych danych
-    function populateSelects() {
-        // Panele PV
-        const panelSelect = document.getElementById('panelSelect');
-        panelSelect.innerHTML = "";
-        panels.forEach((p, index) => {
-            let option = document.createElement('option');
-            option.value = index;
-            option.textContent = p.brand + " " + p.model + " (" + p.power + " W)";
-            panelSelect.appendChild(option);
-        });
-        // Falowniki
-        const inverterSelect = document.getElementById('inverterSelect');
-        inverterSelect.innerHTML = "";
-        inverters.forEach((inv, index) => {
-            let option = document.createElement('option');
-            option.value = index;
-            option.textContent = inv.brand + " " + inv.model + " (" + inv.power + " kW)";
-            inverterSelect.appendChild(option);
-        });
-        // Magazyny energii
-        const batterySelect = document.getElementById('batterySelect');
-        batterySelect.innerHTML = "";
-        batteries.forEach((bat, index) => {
-            let option = document.createElement('option');
-            option.value = index;
-            option.textContent = bat.brand + " " + bat.model + " (" + bat.capacity + " kWh)";
-            batterySelect.appendChild(option);
-        });
-        // Magazyny ciepła
-        const heatSelect = document.getElementById('heatSelect');
-        heatSelect.innerHTML = "";
-        heats.forEach((hs, index) => {
-            let option = document.createElement('option');
-            option.value = index;
-            option.textContent = hs.brand + " " + hs.model + " (" + hs.capacity + " l)";
-            heatSelect.appendChild(option);
-        });
-        // Opcje dodatkowe – budujemy słownik dla szybkiego dostępu po nazwie
-        addItems = {};
-        additionalItems.forEach(item => {
-            let nameLower = item.name.toLowerCase();
-            if(nameLower.includes('przekop') || nameLower.includes('trench')) {
-                addItems.trench = item;
-            } else if(nameLower.includes('kabel') || nameLower.includes('cable')) {
-                addItems.cable = item;
-            } else if(nameLower.includes('rozdziel') || nameLower.includes('board')) {
-                addItems.db = item;
-            } else if(nameLower.includes('optymal') || nameLower.includes('optim')) {
-                addItems.opt = item;
-            } else if(nameLower.includes('licznik') || nameLower.includes('meter')) {
-                addItems.meter = item;
+            if (filtered.length === header.length + 1) {
+                filtered.shift(); // usuń ewentualny kod towaru jeśli jest nadmiarowy
             }
-        });
-        // Ustaw domyślne indeksy (pierwsze na liście)
-        panelSelect.selectedIndex = 0;
-        inverterSelect.selectedIndex = 0;
-        batterySelect.selectedIndex = 0;
-        heatSelect.selectedIndex = 0;
-        // Oblicz początkowe wartości
-        recalc();
-    }
-    // Funkcja przeliczająca wartości na podstawie bieżących wyborów
-    function recalc() {
-        // Pokaż/ukryj pola dla osoby prywatnej w zależności od typu inwestora
-        const investorType = document.getElementById('investorType').value;
-        const privateFieldsDiv = document.getElementById('privateFields');
-        privateFieldsDiv.style.display = (investorType === 'company') ? 'none' : 'block';
-        // Blokuj/odblokuj listy wyboru falownika i magazynów w zależności od checkboxów
-        const invCheckbox = document.getElementById('includeInverter');
-        const batCheckbox = document.getElementById('includeBattery');
-        const heatCheckbox = document.getElementById('includeHeat');
-        const inverterSelect = document.getElementById('inverterSelect');
-        const batterySelect = document.getElementById('batterySelect');
-        const heatSelect = document.getElementById('heatSelect');
-        inverterSelect.disabled = !invCheckbox.checked;
-        batterySelect.disabled = !batCheckbox.checked;
-        heatSelect.disabled = !heatCheckbox.checked;
-        // Panel – liczba sztuk (jeśli 0 to blokujemy wybór modelu)
-        const panelCountInput = document.getElementById('panelCount');
-        const panelSelect = document.getElementById('panelSelect');
-        let panelCount = parseInt(panelCountInput.value) || 0;
-        if(panelCount <= 0) {
-            panelCount = 0;
-            panelCountInput.value = 0;
-        }
-        panelSelect.disabled = (panelCount === 0);
-        // Aktualizacja wyświetlenia mocy zestawu
-        let systemPowerKW = 0;
-        if(panelCount > 0 && panelSelect.value !== "" && panels[panelSelect.value]) {
-            systemPowerKW = (panels[panelSelect.value].power * panelCount) / 1000.0;
-        }
-        document.getElementById('systemPower').textContent = systemPowerKW.toFixed(2);
-        // Sugestia falownika (jeśli użytkownik nie wybrał ręcznie)
-        if(invCheckbox.checked && !inverterManual) {
-            if(panelCount > 0) {
-                let pvPower = systemPowerKW;  // moc PV w kW
-                // Znajdź najmniejszy falownik o mocy >= pvPower
-                let invIndex = 0;
-                let bestPower = Infinity;
-                inverters.forEach((inv, idx) => {
-                    if(inv.power >= pvPower && inv.power < bestPower) {
-                        bestPower = inv.power;
-                        invIndex = idx;
-                    }
-                });
-                // Jeśli żaden falownik nie był wystarczająco duży – wybierz największy dostępny
-                if(bestPower === Infinity && inverters.length > 0) {
-                    invIndex = inverters.length - 1;
-                }
-                inverterSelect.selectedIndex = invIndex;
+            while (filtered.length > header.length) {
+                // łączenie nadmiarowych kolumn na końcu
+                filtered[filtered.length-2] += ' ' + filtered[filtered.length-1];
+                filtered.pop();
             }
-        }
-        // Sugestia magazynu energii (jeśli włączony i nie wybrano ręcznie, tylko gdy są panele)
-        if(batCheckbox.checked && !batteryManual) {
-            if(panelCount > 0 && batteries.length > 0) {
-                let pvPower = systemPowerKW;
-                let batIndex = 0;
-                let bestCap = Infinity;
-                batteries.forEach((bat, idx) => {
-                    if(bat.capacity >= pvPower && bat.capacity < bestCap) {
-                        bestCap = bat.capacity;
-                        batIndex = idx;
-                    }
-                });
-                if(bestCap === Infinity) {
-                    batIndex = batteries.length - 1;
-                }
-                batterySelect.selectedIndex = batIndex;
+            while (filtered.length < header.length) {
+                filtered.push('');
             }
+            parts = filtered;
         }
-        // Oblicz listę pozycji do tabeli
-        let lines = [];
-        // Panele
-        if(panelCount > 0) {
-            let p = panels[panelSelect.value];
-            let netPrice = p.price;
-            let netTotal = netPrice * panelCount;
-            lines.push({
-                name: "Panele PV " + p.brand + " " + p.model,
-                qty: panelCount + " szt.",
-                unitNet: netPrice,
-                net: netTotal
-            });
-        }
-        // Falownik
-        if(invCheckbox.checked) {
-            let inv = inverters[inverterSelect.value];
-            let netPrice = inv.price;
-            lines.push({
-                name: "Falownik " + inv.brand + " " + inv.model,
-                qty: "1 szt.",
-                unitNet: netPrice,
-                net: netPrice
-            });
-        }
-        // Magazyn energii
-        if(batCheckbox.checked) {
-            let bat = batteries[batterySelect.value];
-            let netPrice = bat.price;
-            lines.push({
-                name: "Magazyn energii " + bat.brand + " " + bat.model,
-                qty: "1 szt.",
-                unitNet: netPrice,
-                net: netPrice
-            });
-        }
-        // Magazyn ciepła
-        if(heatCheckbox.checked) {
-            let hs = heats[heatSelect.value];
-            let netPrice = hs.price;
-            lines.push({
-                name: "Magazyn ciepła " + hs.brand + " " + hs.model,
-                qty: "1 szt.",
-                unitNet: netPrice,
-                net: netPrice
-            });
-        }
-        // Przekop
-        const trenchLength = parseFloat(document.getElementById('trenchLength').value) || 0;
-        if(trenchLength > 0 && addItems.trench) {
-            let price = addItems.trench.price;
-            let netTotal = price * trenchLength;
-            lines.push({
-                name: "Przekop",
-                qty: trenchLength + " m",
-                unitNet: price,
-                net: netTotal
-            });
-        }
-        // Dodatkowy kabel
-        const cableLength = parseFloat(document.getElementById('cableLength').value) || 0;
-        if(cableLength > 0 && addItems.cable) {
-            let price = addItems.cable.price;
-            let netTotal = price * cableLength;
-            lines.push({
-                name: "Dodatkowy kabel",
-                qty: cableLength + " m",
-                unitNet: price,
-                net: netTotal
-            });
-        }
-        // Optymalizatory
-        const numOpt = parseInt(document.getElementById('numOptimizers').value) || 0;
-        if(numOpt > 0 && addItems.opt) {
-            let price = addItems.opt.price;
-            let netTotal = price * numOpt;
-            lines.push({
-                name: "Optymalizatory",
-                qty: numOpt + " szt.",
-                unitNet: price,
-                net: netTotal
-            });
-        }
-        // Rozdzielnia
-        const numDB = parseInt(document.getElementById('numDBoard').value) || 0;
-        if(numDB > 0 && addItems.db) {
-            let price = addItems.db.price;
-            let netTotal = price * numDB;
-            lines.push({
-                name: "Rozdzielnia AC/DC",
-                qty: numDB + " szt.",
-                unitNet: price,
-                net: netTotal
-            });
-        }
-        // Licznik
-        const numMet = parseInt(document.getElementById('numMeter').value) || 0;
-        if(numMet > 0 && addItems.meter) {
-            let price = addItems.meter.price;
-            let netTotal = price * numMet;
-            lines.push({
-                name: "Licznik produkcji",
-                qty: numMet + " szt.",
-                unitNet: price,
-                net: netTotal
-            });
-        }
-        // Prowizja handlowca
-        const commissionPercent = parseFloat(document.getElementById('commissionPercent').value) || 0;
-        if(commissionPercent > 0) {
-            let baseNetSum = lines.reduce((sum, line) => sum + line.net, 0);
-            let commissionNet = baseNetSum * (commissionPercent / 100.0);
-            lines.push({
-                name: "Prowizja handlowca (" + commissionPercent + "%)",
-                qty: "",
-                unitNet: "",
-                net: commissionNet
-            });
-        }
-        // Oblicz stawkę VAT (8% czy 23%)
-        let vatRate = 0.23;
-        if(investorType === 'private') {
-            let bType = document.getElementById('buildingType').value;
-            let area = parseFloat(document.getElementById('buildingArea').value) || 0;
-            if((bType === 'house' && area <= 300) || (bType === 'apartment' && area <= 150)) {
-                vatRate = 0.08;
+        const obj = {};
+        for (let j = 0; j < header.length; j++) {
+            const key = header[j] ? header[j].trim() : 'Field'+j;
+            let val = j < parts.length ? parts[j] : '';
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1);
+            }
+            // Konwersja wartości numerycznych dla określonych pól
+            const keyLower = key.toLowerCase();
+            if (keyLower.includes('cena') || keyLower.includes('price') || keyLower.includes('cost')) {
+                let num = parseFloat(val.replace(/,/g, '.').replace(/[^0-9.\-]+/g, ''));
+                obj[key] = isNaN(num) ? val : num;
+            } else if (keyLower.includes('moc') || keyLower.includes('power') || keyLower.includes('pojemność') || keyLower.includes('capacity')) {
+                let num = parseFloat(val.replace(/,/g, '.'));
+                obj[key] = isNaN(num) ? val : (Number.isInteger(num) ? Number(num) : num);
             } else {
-                vatRate = 0.23;
+                obj[key] = val;
             }
-        } else {
-            vatRate = 0.23;
         }
-        // Generowanie tabeli podsumowania
-        const tbody = document.getElementById('summaryBody');
-        const tfoot = document.getElementById('summaryFooter');
-        tbody.innerHTML = "";
-        let totalNet = 0, totalVat = 0, totalGross = 0;
-        lines.forEach(line => {
-            let netVal = line.net || 0;
-            let vatVal = netVal * vatRate;
-            let grossVal = netVal + vatVal;
-            totalNet += netVal;
-            totalVat += vatVal;
-            totalGross += grossVal;
-            // Utwórz wiersz tabeli
-            let tr = document.createElement('tr');
-            let tdName = document.createElement('td');
-            tdName.textContent = line.name;
-            let tdQty = document.createElement('td');
-            tdQty.textContent = line.qty;
-            let tdUnitNet = document.createElement('td');
-            tdUnitNet.textContent = line.unitNet !== "" ? formatCurrency(line.unitNet) : "";
-            let tdNet = document.createElement('td');
-            tdNet.textContent = formatCurrency(netVal);
-            let tdVat = document.createElement('td');
-            tdVat.textContent = formatCurrency(vatVal);
-            let tdGross = document.createElement('td');
-            tdGross.textContent = formatCurrency(grossVal);
-            tr.appendChild(tdName);
-            tr.appendChild(tdQty);
-            tr.appendChild(tdUnitNet);
-            tr.appendChild(tdNet);
-            tr.appendChild(tdVat);
-            tr.appendChild(tdGross);
-            tbody.appendChild(tr);
-        });
-        // Wiersz sumaryczny (RAZEM)
-        tfoot.innerHTML = "";
-        let ftTr = document.createElement('tr');
-        ftTr.innerHTML = "<th>RAZEM:</th><th></th><th></th>" +
-                         "<th>" + formatCurrency(totalNet) + "</th>" +
-                         "<th>" + formatCurrency(totalVat) + "</th>" +
-                         "<th>" + formatCurrency(totalGross) + "</th>";
-        tfoot.appendChild(ftTr);
-        // Oblicz i wyświetl dotację Mój Prąd
-        let subsidy = 0;
-        let hasPV = (panelCount > 0);
-        let hasBattery = batCheckbox.checked;
-        let hasHeat = heatCheckbox.checked;
-        if(hasPV && hasBattery && hasHeat) {
-            subsidy = 28000;
-        } else if(hasPV && hasBattery) {
-            subsidy = 23000;
-        } else if(hasPV && hasHeat && !hasBattery) {
-            subsidy = 12000;
-        } else if(!hasPV && hasBattery) {
-            // tylko magazyn energii
-            if(hasBattery) {
-                let batCost = batteries[batterySelect.value].price || 0;
-                subsidy = Math.min(0.5 * batCost, 16000);
+        data.push(obj);
+    }
+    return data;
+}
+// Pomocnicza funkcja pobierająca wartość z obiektu po polskiej lub angielskiej nazwie pola
+function getVal(obj, keys) {
+    for (let k of keys) {
+        if (obj.hasOwnProperty(k)) return obj[k];
+        // Sprawdź bez rozróżniania wielkości liter
+        for (let ok in obj) {
+            if (ok.toLowerCase() === k.toLowerCase()) {
+                return obj[ok];
             }
-        } else {
-            subsidy = 0;
         }
-        document.getElementById('subsidyAmount').textContent = formatCurrency(subsidy);
     }
-    // Formatuj kwotę do 2 miejsc (z separatorem dziesiętnym przecinkowym)
-    function formatCurrency(value) {
-        return (Math.round(value * 100) / 100).toFixed(2).replace('.', ',') + " zł";
+    return undefined;
+}
+// Sprawdzenie, czy dany falownik jest hybrydowy (po nazwie lub typie)
+function isHybridInverter(invObj) {
+    let type = getVal(invObj, ['Typ','Type','Rodzaj']);
+    if (type && typeof type === 'string') {
+        if (type.toLowerCase().includes('hyb')) return true;
     }
-    // Nasłuchiwanie zdarzeń (zmiana pól formularza)
-    document.addEventListener('DOMContentLoaded', function() {
-        loadData();
-        // Reakcje na zmiany pól:
-        document.getElementById('panelSelect').addEventListener('change', recalc);
-        document.getElementById('panelCount').addEventListener('input', recalc);
-        document.getElementById('includeInverter').addEventListener('change', recalc);
-        document.getElementById('includeBattery').addEventListener('change', recalc);
-        document.getElementById('includeHeat').addEventListener('change', recalc);
-        document.getElementById('inverterSelect').addEventListener('change', function() {
-            inverterManual = true;
-            recalc();
-        });
-        document.getElementById('batterySelect').addEventListener('change', function() {
-            batteryManual = true;
-            recalc();
-        });
-        document.getElementById('heatSelect').addEventListener('change', recalc);
-        document.getElementById('trenchLength').addEventListener('input', recalc);
-        document.getElementById('cableLength').addEventListener('input', recalc);
-        document.getElementById('numOptimizers').addEventListener('input', recalc);
-        document.getElementById('numDBoard').addEventListener('input', recalc);
-        document.getElementById('numMeter').addEventListener('input', recalc);
-        document.getElementById('investorType').addEventListener('change', recalc);
-        document.getElementById('buildingType').addEventListener('change', recalc);
-        document.getElementById('buildingArea').addEventListener('input', recalc);
-        document.getElementById('commissionPercent').addEventListener('input', recalc);
-        // Obsługa przycisku Drukuj
-        document.getElementById('printButton').addEventListener('click', function() {
-            window.print();
-        });
-        // Zmiana kategorii przy dodawaniu komponentu – dostosowanie etykiety pola "specyfikacja"
-        document.getElementById('newCategory').addEventListener('change', function() {
-            const labelSpec = document.getElementById('labelSpec');
-            switch(this.value) {
-                case 'panel': labelSpec.textContent = 'Moc [W]'; break;
-                case 'inverter': labelSpec.textContent = 'Moc [kW]'; break;
-                case 'battery': labelSpec.textContent = 'Pojemność [kWh]'; break;
-                case 'heat': labelSpec.textContent = 'Pojemność [l]'; break;
-            }
-        });
-        // Dodawanie nowego komponentu do katalogu
-        document.getElementById('addComponentBtn').addEventListener('click', function() {
-            const cat = document.getElementById('newCategory').value;
-            const brand = document.getElementById('newBrand').value.trim();
-            const model = document.getElementById('newModel').value.trim();
-            const specVal = parseFloat(document.getElementById('newSpec').value) || 0;
-            const priceVal = parseFloat(document.getElementById('newPrice').value) || 0;
-            if(!brand || !model || priceVal <= 0) {
-                alert("Wypełnij poprawnie wszystkie pola nowego komponentu.");
-                return;
-            }
-            if(cat === 'panel') {
-                panels.push({ brand: brand, model: model, power: specVal, price: priceVal });
-            } else if(cat === 'inverter') {
-                inverters.push({ brand: brand, model: model, power: specVal, price: priceVal });
-            } else if(cat === 'battery') {
-                batteries.push({ brand: brand, model: model, capacity: specVal, price: priceVal });
-            } else if(cat === 'heat') {
-                heats.push({ brand: brand, model: model, capacity: specVal, price: priceVal });
-            }
-            populateSelects();  // odśwież listy z dodanym elementem
-            alert("Dodano komponent: " + brand + " " + model);
-            saveCatalog();
-        });
-        // Zapis bieżącego katalogu do localStorage
-        document.getElementById('saveCatalogBtn').addEventListener('click', function() {
-            saveCatalog();
-            alert("Zapisano zmiany katalogu (lokalnie).");
-        });
+    let name = getVal(invObj, ['Nazwa','Name']);
+    if (name && typeof name === 'string') {
+        return name.toLowerCase().includes('hyb');
+    }
+    return false;
+}
+// Wypełnienie list wyboru danymi
+function populateOptions() {
+    // Panele PV
+    const panelSelect = document.getElementById('panelSelect');
+    panelSelect.innerHTML = '';
+    panelsData.forEach((panel, idx) => {
+        const name = getVal(panel, ['Nazwa','Name']) || `Panel ${idx+1}`;
+        const power = getVal(panel, ['Moc','Power']) || 0;
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = name + (power ? ` - ${power} W` : '');
+        panelSelect.appendChild(opt);
     });
-    // Zapis katalogu komponentów do localStorage
-    function saveCatalog() {
-        const data = {
-            panels: panels,
-            inverters: inverters,
-            batteries: batteries,
-            heats: heats,
-            additional: additionalItems
-        };
-        localStorage.setItem('componentsData', JSON.stringify(data));
+    // Falowniki
+    const inverterSelect = document.getElementById('inverterSelect');
+    inverterSelect.innerHTML = '<option value="none">Brak</option>';
+    invertersData.forEach((inv, idx) => {
+        const name = getVal(inv, ['Nazwa','Name']) || `Falownik ${idx+1}`;
+        const power = getVal(inv, ['Moc','Power']) || 0;
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = name + (power ? ` - ${power} kW` : '');
+        if (isHybridInverter(inv)) {
+            opt.textContent += ' (hybrydowy)';
+            opt.dataset.hybrid = '1';
+        } else {
+            opt.dataset.hybrid = '0';
+        }
+        inverterSelect.appendChild(opt);
+    });
+    // Baterie
+    const batterySelect = document.getElementById('batterySelect');
+    // Zachowujemy opcję "Brak", potem dodajemy resztę
+    batteriesData.forEach((bat, idx) => {
+        const name = getVal(bat, ['Nazwa','Name']) || `Bateria ${idx+1}`;
+        const cap = getVal(bat, ['Pojemność','Capacity','kWh','KWh','Moc','Power']);
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = name + (cap ? ` - ${cap} kWh` : '');
+        batterySelect.appendChild(opt);
+    });
+    // Bufory ciepła
+    const heatSelect = document.getElementById('heatSelect');
+    heatData.forEach((heat, idx) => {
+        const name = getVal(heat, ['Nazwa','Name']) || `Magazyn ${idx+1}`;
+        const vol = getVal(heat, ['Pojemność','Capacity','Volume','Objętość','Moc','Power']);
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = name + (vol ? ` - ${vol} l` : '');
+        heatSelect.appendChild(opt);
+    });
+}
+// Przeliczenie wartości podsumowania
+function recalc() {
+    const panelSelect = document.getElementById('panelSelect');
+    const panelCountInput = document.getElementById('panelCount');
+    const inverterSelect = document.getElementById('inverterSelect');
+    const batterySelect = document.getElementById('batterySelect');
+    const heatSelect = document.getElementById('heatSelect');
+    const mountSelect = document.getElementById('mountSelect');
+    const distanceInput = document.getElementById('distanceInput');
+    const optCheck = document.getElementById('optCheck');
+    const meterCheck = document.getElementById('meterCheck');
+    const boardCheck = document.getElementById('boardCheck');
+    const investorSelect = document.getElementById('investorSelect');
+    const areaInput = document.getElementById('areaInput');
+    const commissionInput = document.getElementById('commissionInput');
+    // Odczyt aktualnych wartości
+    const panelIdx = parseInt(panelSelect.value);
+    const panelCount = Math.max(0, parseInt(panelCountInput.value) || 0);
+    const panelPower = (panelIdx >= 0 && panelIdx < panelsData.length) 
+                       ? (getVal(panelsData[panelIdx], ['Moc','Power']) || 0) 
+                       : 0;
+    // Moc zestawu w kW
+    const pvPowerKW = (panelPower * panelCount) / 1000;
+    // Automatyczny dobór falownika
+    let selectedInverterIdx = inverterSelect.value;
+    if (panelCount > 0) {
+        const needHybrid = (batterySelect.value !== 'none');
+        let bestIdx = null;
+        let bestPower = null;
+        invertersData.forEach((inv, idx) => {
+            const invPower = getVal(inv, ['Moc','Power']) || 0;
+            const invHybrid = isHybridInverter(inv);
+            if (needHybrid && !invHybrid) return;
+            if (!needHybrid && invHybrid) return;
+            if (pvPowerKW <= invPower + 1e-3) {  // >= moc paneli
+                if (bestIdx === null || invPower < bestPower) {
+                    bestIdx = idx;
+                    bestPower = invPower;
+                }
+            }
+        });
+        if (bestIdx === null && invertersData.length > 0) {
+            // Jeśli brak falownika o mocy >= PV, wybierz najmocniejszy dostępny
+            bestIdx = 0;
+            bestPower = getVal(invertersData[0], ['Moc','Power']) || 0;
+            for (let idx = 1; idx < invertersData.length; idx++) {
+                const invPower = getVal(invertersData[idx], ['Moc','Power']) || 0;
+                const invHybrid = isHybridInverter(invertersData[idx]);
+                if (needHybrid && !invHybrid) continue;
+                if (!needHybrid && invHybrid) continue;
+                if (invPower > bestPower) {
+                    bestIdx = idx;
+                    bestPower = invPower;
+                }
+            }
+        }
+        if (bestIdx !== null) {
+            selectedInverterIdx = String(bestIdx);
+            inverterSelect.value = selectedInverterIdx;
+        }
+        // Jeśli przypadkowo było ustawione "Brak", a mamy panele, to ustaw automatycznie dobrany
+        if (inverterSelect.value === 'none') {
+            inverterSelect.value = selectedInverterIdx;
+        }
+    } else {
+        // Brak paneli -> brak nowego falownika
+        inverterSelect.value = 'none';
+        selectedInverterIdx = 'none';
     }
+    // Kalkulacja kosztów
+    let netBase = 0;
+    // Koszt paneli
+    if (panelCount > 0 && panelIdx >= 0 && panelIdx < panelsData.length) {
+        const panelPrice = getVal(panelsData[panelIdx], ['Cena','Price']) || 0;
+        netBase += panelPrice * panelCount;
+    }
+    // Koszt falownika
+    if (selectedInverterIdx !== 'none') {
+        const idx = parseInt(selectedInverterIdx);
+        if (!isNaN(idx) && idx >= 0 && idx < invertersData.length) {
+            const invPrice = getVal(invertersData[idx], ['Cena','Price']) || 0;
+            netBase += invPrice;
+        }
+    }
+    // Koszt baterii
+    let hasBattery = false;
+    if (batterySelect.value !== 'none') {
+        const bIdx = parseInt(batterySelect.value);
+        if (!isNaN(bIdx) && bIdx >= 0 && bIdx < batteriesData.length) {
+            const batPrice = getVal(batteriesData[bIdx], ['Cena','Price']) || 0;
+            netBase += batPrice;
+            hasBattery = true;
+        }
+    }
+    // Koszt magazynu ciepła
+    let hasHeat = false;
+    if (heatSelect.value !== 'none') {
+        const hIdx = parseInt(heatSelect.value);
+        if (!isNaN(hIdx) && hIdx >= 0 && hIdx < heatData.length) {
+            const heatPrice = getVal(heatData[hIdx], ['Cena','Price']) || 0;
+            netBase += heatPrice;
+            hasHeat = true;
+        }
+    }
+    // Koszt konstrukcji montażowej
+    const mountType = mountSelect.value;
+    if (mountType && structureCosts[mountType] && panelCount > 0) {
+        netBase += structureCosts[mountType] * panelCount;
+    }
+    // Koszt przekopu (jeśli grunt)
+    if (mountType === 'ground') {
+        netBase += trenchPrice;
+    }
+    // Dodatkowy kabel
+    const distance = parseFloat(distanceInput.value) || 0;
+    if (distance > 20) {
+        netBase += (distance - 20) * extraCablePrice;
+    }
+    // Optymalizatory
+    if (optCheck.checked && panelCount > 0) {
+        netBase += optimizerPrice * panelCount;
+    }
+    // Licznik
+    if (meterCheck.checked) {
+        netBase += meterPrice;
+    }
+    // Rozdzielnia
+    if (boardCheck.checked) {
+        netBase += boardPrice;
+    }
+    // Prowizja
+    const commissionRate = parseFloat(commissionInput.value) || 0;
+    const commissionAmount = netBase * (commissionRate / 100.0);
+    const netWithComm = netBase + commissionAmount;
+    // VAT
+    let vatRate = 23;
+    if (investorSelect.value === 'private') {
+        const area = parseFloat(areaInput.value) || 0;
+        if (area <= 300) {
+            vatRate = 8;
+        } else {
+            vatRate = 23;
+        }
+    }
+    const vatAmount = netWithComm * (vatRate / 100.0);
+    const gross = netWithComm + vatAmount;
+    // Dotacja Mój Prąd 6.0
+    let subsidy = 0;
+    if (panelCount > 0 || hasBattery || hasHeat) {
+        if (panelCount > 0) {
+            if (hasBattery && hasHeat) {
+                subsidy = 7000 + 16000 + 5000;
+            } else if (hasBattery) {
+                subsidy = 7000 + 16000;
+            } else if (hasHeat) {
+                subsidy = 7000 + 5000;
+            } else {
+                subsidy = 0; // PV bez magazynu (po 1.08.2024 brak dotacji)
+            }
+        } else {
+            if (hasBattery && hasHeat) {
+                subsidy = 16000 + 5000;
+            } else if (hasBattery) {
+                subsidy = 16000;
+            } else if (hasHeat) {
+                subsidy = 5000;
+            }
+        }
+        const maxByCost = 0.5 * netBase;
+        if (subsidy > maxByCost) {
+            subsidy = maxByCost;
+        }
+        subsidy = Math.floor(subsidy);
+    }
+    // Wyświetlenie wyników
+    document.getElementById('pvPowerVal').textContent = pvPowerKW.toLocaleString('pl-PL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' kWp';
+    document.getElementById('netBaseVal').textContent = netBase.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+    document.getElementById('commissionVal').textContent = commissionAmount.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+    document.getElementById('netTotalVal').textContent = netWithComm.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+    document.getElementById('vatRateVal').textContent = vatRate;
+    document.getElementById('vatVal').textContent = vatAmount.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+    document.getElementById('grossVal').textContent = gross.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+    document.getElementById('subsidyVal').textContent = subsidy.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+}
+// Nasłuchiwanie zmian na polach formularza
+document.getElementById('panelSelect').addEventListener('change', recalc);
+document.getElementById('panelCount').addEventListener('input', recalc);
+document.getElementById('inverterSelect').addEventListener('change', recalc);
+document.getElementById('batterySelect').addEventListener('change', recalc);
+document.getElementById('heatSelect').addEventListener('change', recalc);
+document.getElementById('mountSelect').addEventListener('change', recalc);
+document.getElementById('distanceInput').addEventListener('input', recalc);
+document.getElementById('optCheck').addEventListener('change', recalc);
+document.getElementById('meterCheck').addEventListener('change', recalc);
+document.getElementById('boardCheck').addEventListener('change', recalc);
+document.getElementById('investorSelect').addEventListener('change', recalc);
+document.getElementById('areaInput').addEventListener('input', recalc);
+document.getElementById('commissionInput').addEventListener('input', recalc);
+// Funkcja wczytująca wszystkie CSV przez fetch
+async function loadAllCSVs() {
+    try {
+        const panelRes    = await fetch('panele.csv');
+        const inverterRes = await fetch('inwertery.csv');
+        const batteryRes  = await fetch('baterie.csv');
+        const heatRes     = await fetch('magazyny_ciepla.csv');
+        const extrasRes   = await fetch('dodatki.csv');
+        if (!panelRes.ok) throw new Error('CSV not found');
+        const panelText    = await panelRes.text();
+        const inverterText = await inverterRes.text();
+        const batteryText  = await batteryRes.text();
+        const heatText     = await heatRes.text();
+        const extrasText   = await extrasRes.text();
+        panelsData    = parseCSV(panelText);
+        invertersData = parseCSV(inverterText);
+        batteriesData = parseCSV(batteryText);
+        heatData      = parseCSV(heatText);
+        extrasData    = parseCSV(extrasText);
+        processExtrasData();
+        populateOptions();
+        recalc();
+    } catch (err) {
+        console.warn('Automatyczne wczytanie CSV nie powiodło się:', err);
+        alert('Nie udało się załadować danych CSV. Proszę użyć przycisku "Załaduj z CSV" i wybrać pliki ręcznie.');
+    }
+}
+// Przetworzenie danych z pliku "dodatki"
+function processExtrasData() {
+    optimizerPrice = meterPrice = boardPrice = trenchPrice = 0;
+    structureCosts.pitched = structureCosts.flat = structureCosts.ground = 0;
+    extraCablePrice = 50;
+    extrasData.forEach(item => {
+        const name = (getVal(item, ['Nazwa','Name']) || '').toLowerCase();
+        const price = getVal(item, ['Cena','Price']) || 0;
+        if (name.includes('optym')) {
+            optimizerPrice = price;
+        } else if (name.includes('licznik')) {
+            meterPrice = price;
+        } else if (name.includes('rozdziel')) {
+            boardPrice = price;
+        } else if (name.includes('przekop')) {
+            trenchPrice = price;
+        } else if (name.includes('kabel') || name.includes('odległość') || name.includes('odleglosc')) {
+            extraCablePrice = price;
+        } else if (name.includes('skoś') || name.includes('skos')) {
+            structureCosts.pitched = price;
+        } else if (name.includes('płask') || name.includes('plask')) {
+            structureCosts.flat = price;
+        } else if (name.includes('grunt')) {
+            structureCosts.ground = price;
+        }
+    });
+    // Jeśli brak cen konstrukcji w CSV, pozostają domyślnie 0 (można ustawić default)
+    // if (!structureCosts.pitched) structureCosts.pitched = 0;
+    // if (!structureCosts.flat) structureCosts.flat = 0;
+    // if (!structureCosts.ground) structureCosts.ground = 0;
+}
+// Obsługa ręcznego wyboru plików CSV
+document.getElementById('csvFiles').addEventListener('change', event => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const fileMap = { panele: null, inwertery: null, baterie: null, magazyny: null, dodatki: null };
+    for (let f of files) {
+        const fname = f.name.toLowerCase();
+        if (fname.includes('panel')) fileMap.panele = f;
+        else if (fname.includes('inwer')) fileMap.inwertery = f;
+        else if (fname.includes('bater')) fileMap.baterie = f;
+        else if (fname.includes('ciep') || fname.includes('heat')) fileMap.magazyny = f;
+        else if (fname.includes('dodat') || fname.includes('extra')) fileMap.dodatki = f;
+    }
+    const readerPromises = [];
+    for (let key in fileMap) {
+        if (fileMap[key]) {
+            readerPromises.push(new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(reader.error);
+                reader.onload = () => resolve({ key: key, text: reader.result });
+                reader.readAsText(fileMap[key]);
+            }));
+        }
+    }
+    Promise.all(readerPromises).then(results => {
+        results.forEach(({key, text}) => {
+            const data = parseCSV(text);
+            if (key === 'panele') panelsData = data;
+            if (key === 'inwertery') invertersData = data;
+            if (key === 'baterie') batteriesData = data;
+            if (key === 'magazyny') heatData = data;
+            if (key === 'dodatki') extrasData = data;
+        });
+        processExtrasData();
+        populateOptions();
+        recalc();
+    }).catch(err => {
+        alert('Błąd podczas wczytywania plików CSV: ' + err);
+    });
+});
+// Podpięcie akcji przycisków
+document.getElementById('loadBtn').addEventListener('click', () => {
+    document.getElementById('csvFiles').click();
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('panelSelect').selectedIndex = 0;
+    document.getElementById('panelCount').value = 10;
+    document.getElementById('batterySelect').value = 'none';
+    document.getElementById('heatSelect').value = 'none';
+    document.getElementById('mountSelect').value = 'pitched';
+    document.getElementById('distanceInput').value = 20;
+    document.getElementById('optCheck').checked = false;
+    document.getElementById('meterCheck').checked = false;
+    document.getElementById('boardCheck').checked = false;
+    document.getElementById('investorSelect').value = 'private';
+    document.getElementById('areaInput').value = 120;
+    document.getElementById('commissionInput').value = 0;
+    recalc();
+});
+window.addEventListener('load', () => {
+    loadAllCSVs();
+});
 </script>
 </body>
 </html>
