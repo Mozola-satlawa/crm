@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
@@ -32,16 +33,12 @@
   table{width:100%;border-collapse:separate;border-spacing:0}
   th,td{padding:9px;border-bottom:1px solid #243059;text-align:left;vertical-align:top}
   thead th{font-size:12px;color:#aeb8da}
-  .right{display:flex;justify-content:flex-end}
   .pill{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff;font-size:12px}
-  .group{display:grid;gap:10px;grid-template-columns:1fr 1fr}
-  .group > div{min-width:230px}
   .stack{display:grid;gap:10px}
   .sum{font-size:18px;font-weight:700}
   .title{font-weight:700;color:#dce6ff}
-  .subtle{opacity:.9}
   .split{display:grid;gap:10px;grid-template-columns:1fr 1fr}
-  @media(max-width:780px){ .group,.split{grid-template-columns:1fr} }
+  @media(max-width:780px){ .split{grid-template-columns:1fr} }
   .badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #2a3a75;background:#0d1530;color:#cfe1ff;font-size:12px}
   .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid #2a3a75;background:#0d1530;border-radius:999px;padding:4px 8px;font-size:12px}
   .chip .dot{width:8px;height:8px;border-radius:50%}
@@ -50,8 +47,6 @@
   .label-small{font-size:11px;color:#aeb8da;margin-left:6px}
   .sticky{position:sticky;top:12px}
   .no-print{display:block}
-
-  /* utility classes moved from inline styles */
   .gap-6{gap:6px}
   .gap-8{gap:8px}
   .max-w-140{max-width:140px}
@@ -63,7 +58,12 @@
   .max-w-320{max-width:320px}
   .justify-between{justify-content:space-between}
   .hidden{display:none}
-
+  /* DUŻE CENY */
+  .priceBlock{display:grid;gap:6px;margin:8px 0 12px}
+  .priceLine{display:flex;justify-content:space-between;align-items:baseline;background:#0d1530;border:1px solid #2b3a77;border-radius:12px;padding:10px 12px}
+  .priceLine .label{font-size:13px;color:#cfe1ff}
+  .priceLine .value{font-size:22px;font-weight:800}
+  .afterSub{font-size:12px;color:#aeb8da;text-align:right;margin-top:-4px}
   @media print{ .no-print{display:none!important} body{background:#fff;color:#000} .card{background:#fff;color:#000;border-color:#000} th,td{border-color:#000} a{text-decoration:none;color:#000} }
 </style>
 </head>
@@ -78,11 +78,12 @@
   </div>
 </header>
 
-  <div class="wrap">
-    <div class="grid cols-2">
-      <div class="card">
-        <label class="row gap-6"><input type="radio" name="mode" value="set" checked> zestaw (kW)</label>
-        <label class="row gap-6"><input type="radio" name="mode" value="manual"> ręcznie (szt.)</label>
+<div class="wrap">
+  <div class="grid cols-2">
+    <!-- LEWA -->
+    <div class="card">
+      <label class="row gap-6"><input type="radio" name="mode" value="set" checked> zestaw (kW)</label>
+      <label class="row gap-6"><input type="radio" name="mode" value="manual"> ręcznie (szt.)</label>
       <div class="hr"></div>
 
       <div class="stack">
@@ -90,30 +91,30 @@
         <div class="split">
           <div>
             <label class="title" for="setKW">Zestaw — moc (kW)</label>
-            <select id="setKW" title="Wybierz moc zestawu (kW)">
+            <select id="setKW">
               <option>2.7</option><option>3.6</option><option>4.5</option><option selected>5.0</option>
               <option>6.0</option><option>7.2</option><option>9.0</option><option>10.0</option>
             </select>
-            <div class="help muted">W trybie „zestaw” liczba paneli liczy się automatycznie z mocy panelu.</div>
+            <div class="muted">W trybie „zestaw” liczba paneli liczy się automatycznie z mocy panelu.</div>
           </div>
           <div>
             <label class="title" for="panelSelect">Panele (firma + model)</label>
-            <select id="panelSelect" title="Wybierz model paneli"></select>
-            <div class="help muted">Moc panelu: <b id="panelWatt">—</b> W • Benchmark: <span id="benchKW" class="badge">— zł/kW</span></div>
+            <select id="panelSelect"></select>
+            <div class="muted">Moc panelu: <b id="panelWatt">—</b> W • Benchmark: <span id="benchKW" class="badge">— zł/kW</span></div>
           </div>
         </div>
 
         <div id="manualBlock" class="hidden">
           <label class="title" for="panelCount">Liczba paneli (szt.)</label>
-          <input id="panelCount" type="number" min="0" step="1" value="10" title="Liczba paneli">
-          <div class="help muted">Tryb „ręcznie” liczy moc zestawu z paneli.</div>
+          <input id="panelCount" type="number" min="0" step="1" value="10">
+          <div class="muted">Tryb „ręcznie” liczy moc zestawu z paneli.</div>
         </div>
 
         <!-- Falownik / Bateria -->
         <div class="split">
           <div>
             <label class="title" for="inverterSelect">Falownik</label>
-            <select id="inverterSelect" title="Wybierz falownik"></select>
+            <select id="inverterSelect"></select>
             <div class="row">
               <span id="ratioBadge" class="chip"><span class="dot"></span><span id="ratioText">DC/AC —</span></span>
               <span class="label-small">docelowo ~0.9–1.1</span>
@@ -121,23 +122,23 @@
           </div>
           <div>
             <label class="title" for="batterySelect">Magazyn energii (opcjonalnie)</label>
-            <select id="batterySelect" title="Wybierz magazyn energii"><option value="none">Brak</option></select>
-            <div class="help muted">Auto-sugestia: pojemność ≥ moc PV (kW). Wybór baterii wymusi falownik hybrydowy.</div>
+            <select id="batterySelect"><option value="none">Brak</option></select>
+            <div class="muted">Auto-sugestia: pojemność ≥ moc PV (kW). Wybór baterii wymusi falownik hybrydowy.</div>
           </div>
         </div>
 
         <!-- Magazyn ciepła -->
         <div>
           <label class="title" for="heatSelect">Magazyn ciepła (opcjonalnie)</label>
-          <select id="heatSelect" title="Wybierz magazyn ciepła"><option value="none">Brak</option></select>
-          <div class="help muted">Ryczałt 3000 zł/szt. — wybierz pojemność.</div>
+          <select id="heatSelect"><option value="none">Brak</option></select>
+          <div class="muted">Ryczałt 3000 zł/szt. — wybierz pojemność.</div>
         </div>
 
         <!-- Montaż / kabel -->
         <div class="split">
           <div>
             <label class="title" for="mountType">Montaż</label>
-            <select id="mountType" title="Typ montażu">
+            <select id="mountType">
               <option value="pitched" selected>Dach skośny (0 zł)</option>
               <option value="flat">Dach płaski (+500 zł)</option>
               <option value="ground">Grunt (+500 zł + przekop)</option>
@@ -146,48 +147,48 @@
           <div>
             <label class="title" for="cableExtra">Dodatkowy kabel ponad 20 m</label>
             <div class="row">
-              <input id="cableExtra" class="max-w-140" type="number" min="0" step="1" value="0" title="Dodatkowy kabel ponad 20 m">
-              <span class="muted subtle">50 zł / m</span>
+              <input id="cableExtra" class="max-w-140" type="number" min="0" step="1" value="0">
+              <span class="muted">50 zł / m</span>
             </div>
           </div>
         </div>
 
         <!-- Pakiety / dodatki -->
         <div class="row">
-          <label class="row gap-8"><input type="checkbox" id="transportYes" title="Transport i logistyka"> transport i logistyka (450 zł)</label>
+          <label class="row gap-8"><input type="checkbox" id="transportYes"> transport i logistyka (450 zł)</label>
         </div>
 
         <div class="split">
           <div>
             <label class="title">Pakiety akcesoriów</label>
             <div class="stack">
-              <label class="row gap-8"><input type="checkbox" id="pkgMeterBoard" title="Pakiet: licznik + rozdzielnia"> licznik + rozdzielnia</label>
-              <label class="row gap-8"><input type="checkbox" id="pkgOptAuto" title="Optymalizatory: auto"> optymalizatory (auto: = liczba paneli)</label>
-              <label class="row gap-8"><input type="checkbox" id="pkgTrench" title="Przekop (pakiet)"> przekop (ryczałt +2000 zł)</label>
+              <label class="row gap-8"><input type="checkbox" id="pkgMeterBoard"> licznik + rozdzielnia</label>
+              <label class="row gap-8"><input type="checkbox" id="pkgOptAuto"> optymalizatory (auto: = liczba paneli)</label>
+              <label class="row gap-8"><input type="checkbox" id="pkgTrench"> przekop (ryczałt +2000 zł)</label>
             </div>
           </div>
           <div>
             <label class="title">Ustawienia ręczne</label>
             <div class="stack">
               <div class="row gap-8">
-                <label class="row gap-6"><input type="checkbox" id="optManual" title="Optymalizatory ręcznie"> optymalizatory ręcznie</label>
-                <input id="optQty" class="max-w-120" type="number" min="0" step="1" value="0" title="Ilość optymalizatorów (szt.)">
-                <span class="muted subtle">@ 230 zł/szt.</span>
+                <label class="row gap-6"><input type="checkbox" id="optManual"> optymalizatory ręcznie</label>
+                <input id="optQty" class="max-w-120" type="number" min="0" step="1" value="0" title="Ilość optymalizatorów" aria-label="Ilość optymalizatorów">
+                <span class="muted">@ 230 zł/szt.</span>
               </div>
               <div class="row gap-8">
-                <label class="row gap-6"><input type="checkbox" id="meterYes" title="Licznik"> licznik (410 zł)</label>
-                <label class="row gap-6"><input type="checkbox" id="boardYes" title="Rozdzielnia"> rozdzielnia (820 zł)</label>
+                <label class="row gap-6"><input type="checkbox" id="meterYes"> licznik (410 zł)</label>
+                <label class="row gap-6"><input type="checkbox" id="boardYes"> rozdzielnia (820 zł)</label>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Przekop (osobno, bo auto-sugestia przy gruncie) -->
+        <!-- Przekop -->
         <div>
           <label class="title" for="trenchYes">Przekop (ryczałt)</label>
           <div class="row">
-            <input id="trenchYes" type="checkbox" title="Przekop (ryczałt)">
-            <span class="muted subtle">+2000 zł • przy „Grunt” włączamy automatycznie (możesz odznaczyć).</span>
+            <input id="trenchYes" type="checkbox">
+            <span class="muted">+2000 zł • przy „Grunt” włączamy automatycznie (możesz odznaczyć).</span>
           </div>
         </div>
 
@@ -198,23 +199,23 @@
           <div>
             <label class="title">Inwestor & VAT</label>
             <div class="row">
-              <select id="investorType" class="max-w-180" title="Typ inwestora">
+              <select id="investorType" class="max-w-180" title="Typ inwestora" aria-label="Typ inwestora">
                 <option value="private" selected>Osoba prywatna</option>
                 <option value="company">Firma</option>
               </select>
               <div class="row gap-6">
-                <label for="area" class="muted subtle">Pow. domu</label>
-                <input id="area" class="max-w-100" type="number" min="1" value="120" title="Powierzchnia domu/mieszkania (m2)">
-                <span class="muted subtle">m²</span>
+                <label for="area" class="muted">Pow. domu</label>
+                <input id="area" class="max-w-100" type="number" min="1" value="120">
+                <span class="muted">m²</span>
               </div>
             </div>
-            <div class="help muted">Dom ≤300 m² / mieszkanie ≤150 m² → 8% VAT; firma → 23%.</div>
+            <div class="muted">Dom ≤300 m² / mieszkanie ≤150 m² → 8% VAT; firma → 23%.</div>
           </div>
           <div>
             <label class="title">Rabat</label>
             <div class="row">
-              <input id="discountValue" class="max-w-120" type="number" min="0" step="1" value="0" title="Wartość rabatu" placeholder="rabat">
-              <select id="discountType" class="max-w-90" title="Typ rabatu">
+              <input id="discountValue" class="max-w-120" type="number" min="0" step="1" value="0" placeholder="rabat">
+              <select id="discountType" class="max-w-90" title="Typ rabatu" aria-label="Typ rabatu">
                 <option value="amount">zł</option>
                 <option value="percent">%</option>
               </select>
@@ -226,33 +227,33 @@
           <div>
             <label class="title">Prowizja handlowca</label>
             <div class="row">
-              <input id="commissionPct" class="max-w-120" type="number" min="0" step="0.1" value="0" title="Procent prowizji">
-              <span class="muted subtle">%</span>
+              <input id="commissionPct" class="max-w-120" type="number" min="0" step="0.1" value="0" title="Prowizja handlowca (%)" aria-label="Prowizja handlowca">
+              <span class="muted">%</span>
             </div>
-            <div class="help muted">Liczona od netto po rabacie (z doliczonym ukrytym narzutem firmy w podstawie prowizji).</div>
+            <div class="muted">Liczona od NETTO po rabacie + ukryty narzut firmy.</div>
           </div>
           <div>
             <label class="title">Dotacja „Mój Prąd”</label>
             <div class="row">
-              <select id="subsidyMode" class="max-w-200" title="Tryb dotacji">
+              <select id="subsidyMode" class="max-w-200" title="Tryb dotacji" aria-label="Tryb dotacji">
                 <option value="apply" selected>Zastosuj (auto)</option>
                 <option value="ignore">Nie stosuj</option>
               </select>
-              <span class="muted subtle">limit ≤50% kosztów kwalifikowanych</span>
+              <span class="muted">limit ≤50% kosztów kwalifikowanych (NETTO)</span>
             </div>
           </div>
         </div>
 
         <div>
           <label class="title" for="notes">Uwagi do oferty</label>
-          <textarea id="notes" placeholder="Warunki montażu, termin, uwagi techniczne…" title="Uwagi do oferty"></textarea>
+          <textarea id="notes" placeholder="Warunki montażu, termin, uwagi techniczne…"></textarea>
         </div>
 
         <div class="hr"></div>
 
         <!-- Zapis / eksport -->
         <div class="row no-print">
-          <input id="offerName" class="max-w-320" placeholder="Nazwa oferty (np. Kowalski 5kW)" title="Nazwa oferty">
+          <input id="offerName" class="max-w-320" placeholder="Nazwa oferty (np. Kowalski 5kW)">
           <button id="btnSave" class="btn ok">Zapisz</button>
           <button id="btnLoad" class="btn ghost">Wczytaj</button>
           <button id="btnExportJSON" class="btn ghost">Eksport JSON</button>
@@ -271,6 +272,22 @@
           <span id="pvKW" class="sum">0.00 kW</span>
         </div>
 
+        <!-- DUŻE CENY -->
+        <div class="priceBlock">
+          <div class="priceLine">
+            <span class="label">Cena NETTO (klient)</span>
+            <span id="finalNet" class="value">0,00 zł</span>
+          </div>
+          <div class="priceLine">
+            <span class="label">Cena BRUTTO (klient)</span>
+            <span id="finalGross" class="value">0,00 zł</span>
+          </div>
+          <div id="afterSubsidy" class="afterSub">
+            Po dotacji (informacyjnie): <b id="afterSubsidyVal">0,00 zł</b>
+            • Dotacja (NETTO): <b id="subsidy">0,00 zł</b>
+          </div>
+        </div>
+
         <table>
           <thead>
             <tr><th>Pozycja</th><th>Ilość</th><th>Netto</th></tr>
@@ -278,11 +295,6 @@
           <tbody id="lines"></tbody>
           <tfoot id="totals"></tfoot>
         </table>
-
-        <div class="row justify-between">
-          <span class="pill">Dotacja „Mój Prąd”</span>
-          <span id="subsidy" class="sum">0 zł</span>
-        </div>
 
         <div class="row justify-between">
           <span class="pill">Benchmark</span>
@@ -293,7 +305,7 @@
   </div>
 </div>
 
-<!-- ===== Wbudowane CSV (edytujesz w tym pliku) ===== -->
+<!-- ===== Wbudowane CSV ===== -->
 <script type="text/csv" id="csv_panels">
 name;power (W);price
 JINKO JKM445N-54HL4R-B Full Black;445;240
@@ -327,14 +339,14 @@ ARKON HeatTank 500;500;3000
 <script>
 (() => {
   // ===== Stawki i ukryty narzut firmy =====
-  const COMPANY_MARGIN = 8000; // ukryty, doliczany do sumy (nie jako pozycja)
+  const COMPANY_MARGIN = 8000; // ukryty, doliczany do NETTO klienta (nie jako pozycja)
   const COST_OPT = 230;
   const COST_METER = 410;
   const COST_BOARD = 820;
   const COST_TRENCH = 2000;
-  const COST_CABLE = 50;     // zł/m ponad 20 m
-  const MOUNT_FLAT = 500;    // płaski
-  const MOUNT_GROUND = 500;  // grunt
+  const COST_CABLE = 50;
+  const MOUNT_FLAT = 500;
+  const MOUNT_GROUND = 500;
   const COST_TRANSPORT = 450;
 
   // ===== Dane (z CSV wbudowanych) =====
@@ -361,28 +373,23 @@ ARKON HeatTank 500;500;3000
   }
 
   function loadEmbedded(){
-    // Panels
     const P = parseInlineCSV('csv_panels')||[];
     PANELS = P.map(x=>({ name:x['name'], watt:+(x['power (w)']||x['power']||0), price:+x['price']||0 }))
               .filter(x=>x.name && x.watt>0);
 
-    // Inverters
     const I = parseInlineCSV('csv_inverters')||[];
     INVERTERS = I.map(x=>{
-      const name = x['name'];
-      const kw   = +(x['power (kw)']||x['power']||0);
+      const name = x['name']; const kw = +(x['power (kw)']||x['power']||0);
       const price= +(x['price']||0);
-      const t    = String(x['type']||name||'').toLowerCase();
+      const t = String(x['type']||name||'').toLowerCase();
       const hybrid = /hyb/.test(t) || /hybrid/.test(t);
       return {name, kw, price, hybrid};
     }).filter(x=>x.name && x.kw>0);
 
-    // Batteries
     const B = parseInlineCSV('csv_batteries')||[];
     BATTERIES = B.map(x=>({name:x['name'], kwh:+(x['capacity (kwh)']||x['kwh']||0), price:+x['price']||0}))
                  .filter(x=>x.name && x.kwh>0);
 
-    // Heats
     const H = parseInlineCSV('csv_heat')||[];
     HEATS = H.map(x=>({name:x['name'], l:+(x['capacity (l)']||x['l']||0), price:+x['price']||3000}))
              .filter(x=>x.name && x.l>0);
@@ -390,43 +397,23 @@ ARKON HeatTank 500;500;3000
 
   function populateAll(){
     const selP=$('#panelSelect'); selP.innerHTML='';
-    PANELS.forEach((p,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent = `${p.name} (${p.watt} W)`;
-      selP.appendChild(o);
-    });
+    PANELS.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent = `${p.name} (${p.watt} W)`; selP.appendChild(o); });
     $('#panelWatt').textContent = PANELS[0]?PANELS[0].watt:'—';
 
     const selI=$('#inverterSelect'); selI.innerHTML='';
-    INVERTERS.forEach((x,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent = `${x.name} (${x.kw} kW${x.hybrid?' • hyb.':''})`;
-      selI.appendChild(o);
-    });
+    INVERTERS.forEach((x,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent = `${x.name} (${x.kw} kW${x.hybrid ? ' • hyb.' : ''})`; selI.appendChild(o); });
 
     const selB=$('#batterySelect'); selB.innerHTML='<option value="none">Brak</option>';
-    BATTERIES.forEach((b,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent = `${b.name} (${b.kwh} kWh)`;
-      selB.appendChild(o);
-    });
+    BATTERIES.forEach((b,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent = `${b.name} (${b.kwh} kWh)`; selB.appendChild(o); });
 
     const selH=$('#heatSelect'); selH.innerHTML='<option value="none">Brak</option>';
-    HEATS.forEach((h,i)=>{
-      const o=document.createElement('option');
-      o.value=i;
-      o.textContent = `${h.name} (${h.l} l)`;
-      selH.appendChild(o);
-    });
+    HEATS.forEach((h,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent = `${h.name} (${h.l} l)`; selH.appendChild(o); });
   }
 
   function vatRate(){
     if ($('#investorType').value==='company') return 0.23;
     const area = Math.max(0, +$('#area').value||0);
-    return (area<=300)?0.08:0.23; // prosta reguła dla domu (dla mieszkania analogicznie)
+    return (area<=300)?0.08:0.23;
   }
 
   function autoPickInverter(pvKW, needHybrid){
@@ -438,7 +425,6 @@ ARKON HeatTank 500;500;3000
       if (inv.kw>=pvKW && inv.kw<bestKW){best=i; bestKW=inv.kw;}
     });
     if (best<0){
-      // fallback: największy zgodnego typu
       let mx=-1, mxKW=-1;
       INVERTERS.forEach((inv,i)=>{
         if (needHybrid && !inv.hybrid) return;
@@ -452,7 +438,6 @@ ARKON HeatTank 500;500;3000
 
   function autoPickBattery(pvKW){
     if (lastManualPick.battery) return;
-    // najmniejsza pojemność ≥ pvKW
     let best=-1, bestK=Infinity;
     BATTERIES.forEach((b,i)=>{ if(b.kwh>=pvKW && b.kwh<bestK){best=i; bestK=b.kwh;} });
     if (best<0 && BATTERIES.length) best = BATTERIES.length-1;
@@ -464,26 +449,28 @@ ARKON HeatTank 500;500;3000
     const dotEl = $('#ratioBadge .dot');
     if (!acKW){ textEl.textContent='DC/AC —'; dotEl.className='dot'; return; }
     const r = (dcKW/acKW);
-    let cls='warn';
-    if (r>=0.8 && r<=1.2) cls='ok';
-    if (r<0.6 || r>1.4) cls='bad';
+    let cls='warn'; if (r>=0.8 && r<=1.2) cls='ok'; if (r<0.6 || r>1.4) cls='bad';
     textEl.textContent = `DC/AC ${r.toFixed(2)}`;
-    dotEl.className = `dot ${cls}`;
+    dotEl.className = 'dot ' + cls;
   }
 
-  function subsidyCalc(lines, hasPV, hasBat, hasHeat){
-    // kwalifikowane = sumaryczne netto linii (bez prowizji; wartości ujemne rabatu nie podbijają puli)
-    const eligible = lines.reduce((a,l)=>a+Math.max(0,l.net),0);
+  // Dotacja — tylko NETTO i tylko pozycje kwalifikowane + prowizja przypisana do paneli
+  function calcSubsidyWithCommissionBoost(lines, flags, panelCommissionBoost){
+    // wybór pułapu dotacji wg zestawu
     let cap = 0;
-    if (hasPV){
-      if (hasBat && !hasHeat) cap = 23000;
-      else if (hasHeat && !hasBat) cap = 12000;
-      else if (hasBat && hasHeat) cap = 23000; // przyjmujemy wyższą ścieżkę
-    } else {
-      if (hasBat) cap = 16000;
-      else cap = 0;
-    }
-    return Math.min(cap, eligible*0.5);
+    if (flags.hasPV && flags.hasBat && !flags.hasHeat) cap = 23000;
+    else if (flags.hasPV && flags.hasHeat && !flags.hasBat) cap = 12000;       // np. PV + bufor
+    else if (!flags.hasPV && flags.hasBat) cap = 16000;                         // sam magazyn energii
+    else if (flags.hasPV && flags.hasBat && flags.hasHeat) cap = 23000;         // preferujemy wyższy
+    else cap = 0;
+
+    // NETTO kwalifikowane: panele + (opcjonalnie) magazyn energii + (opcjonalnie) magazyn ciepła
+    const eligibleNet = lines
+      .filter(l => /^Panele:|^Magazyn energii:|^Magazyn ciepła:/.test(l.name))
+      .reduce((a,l)=>a+Math.max(0,l.net),0) + panelCommissionBoost;
+
+    // limit 50% + twardy pułap
+    return Math.min(cap, eligibleNet * 0.5);
   }
 
   function recalc(){
@@ -503,121 +490,102 @@ ARKON HeatTank 500;500;3000
     const pvKW = panel ? (panel.watt*qtyPanels)/1000 : 0;
     $('#pvKW').textContent = pvKW.toFixed(2)+' kW';
 
-    // benchmark panel/kW (tylko same panele)
+    // benchmark (same panele)
     if (panel && panel.watt>0){
       const pricePerKW = (panel.price * (1000/panel.watt));
       $('#benchKW').textContent = PLN(pricePerKW);
       $('#panelWatt').textContent = panel.watt;
-    }else{
-      $('#benchKW').textContent = '— zł/kW';
-      $('#panelWatt').textContent = '—';
-    }
+    } else { $('#benchKW').textContent='— zł/kW'; $('#panelWatt').textContent='—'; }
 
     // bateria/auto
     const batVal = $('#batterySelect').value;
     const battery = (batVal==='none')?null:BATTERIES[+batVal];
-    if (!lastManualPick.battery && $('#batterySelect').value!=='none' && pvKW>0) {
-      autoPickBattery(pvKW);
-    }
+    if (!lastManualPick.battery && $('#batterySelect').value!=='none' && pvKW>0) autoPickBattery(pvKW);
 
-    // falownik — hybrydowy jeśli jest bateria
+    // falownik – hybrydowy jeżeli jest bateria
     const needHybrid = !!battery;
     autoPickInverter(pvKW, needHybrid);
     const inverter = INVERTERS[+$('#inverterSelect').value]||null;
     dcAcBadge(pvKW, inverter?inverter.kw:0);
 
-    // montaż
+    // montaż i pakiety
     const mount = $('#mountType').value;
+    if (mount==='ground' && !$('#trenchYes').checked) $('#trenchYes').checked = true;
 
-    // pakiety
     const pkgMeterBoard = $('#pkgMeterBoard').checked;
     const pkgOptAuto    = $('#pkgOptAuto').checked;
 
-    // ręczne
     const optManual = $('#optManual').checked;
     const optQty    = Math.max(0, +$('#optQty').value||0);
     const meterYes  = $('#meterYes').checked || pkgMeterBoard;
     const boardYes  = $('#boardYes').checked || pkgMeterBoard;
 
-    // auto przekop przy gruncie ↔ checkbox pakietu przekopu
-    if (mount==='ground' && !$('#trenchYes').checked) $('#trenchYes').checked = true;
-
-    // linie (bez prowizji i bez ukrytego narzutu)
+    // ===== budowa pozycji NETTO (bez prowizji i narzutu firmy) =====
     const lines=[];
-
-    if (panel && qtyPanels>0) lines.push({name:`Panele: ${panel.name}`, qty:`${qtyPanels} szt.`, net: zloty(panel.price*qtyPanels)});
-
-    if (inverter && pvKW>0) lines.push({name:`Falownik: ${inverter.name}`, qty:'1 szt.', net: zloty(inverter.price)});
-
-    if (battery) lines.push({name:`Magazyn energii: ${battery.name}`, qty:'1 szt.', net: zloty(battery.price)});
+    if (panel && qtyPanels>0) lines.push({name: 'Panele: ' + panel.name, qty: qtyPanels + ' szt.', net: zloty(panel.price*qtyPanels)});
+    if (inverter && pvKW>0)   lines.push({name: 'Falownik: ' + inverter.name, qty:'1 szt.', net: zloty(inverter.price)});
+    if (battery)              lines.push({name: 'Magazyn energii: ' + battery.name, qty:'1 szt.', net: zloty(battery.price)});
 
     const heatVal = $('#heatSelect').value;
-    if (heatVal!=='none'){
-      const ht = HEATS[+heatVal];
-      if (ht) lines.push({name:`Magazyn ciepła: ${ht.name}`, qty:'1 szt.', net: zloty(ht.price)});
-    }
+    if (heatVal!=='none'){ const ht = HEATS[+heatVal]; if (ht) lines.push({name: 'Magazyn ciepła: ' + ht.name, qty:'1 szt.', net: zloty(ht.price)}); }
 
     if (mount==='flat'  && qtyPanels>0) lines.push({name:'Montaż: dach płaski (dopłata)', qty:'1 kpl.', net:zloty(MOUNT_FLAT)});
     if (mount==='ground'&& qtyPanels>0) lines.push({name:'Montaż: grunt (dopłata)',       qty:'1 kpl.', net:zloty(MOUNT_GROUND)});
-
     if ($('#trenchYes').checked) lines.push({name:'Przekop instalacyjny (ryczałt)', qty:'1 kpl.', net:zloty(COST_TRENCH)});
 
     const cableExtra = Math.max(0, +$('#cableExtra').value||0);
-    if (cableExtra>0) lines.push({name:'Dodatkowy kabel (ponad 20 m)', qty:`${cableExtra} m`, net:zloty(cableExtra*COST_CABLE)});
+    if (cableExtra>0) lines.push({name:'Dodatkowy kabel (ponad 20 m)', qty: cableExtra + ' m', net:zloty(cableExtra*COST_CABLE)});
 
-    // optymalizatory – pakiet auto lub ręcznie
-    if (pkgOptAuto && qtyPanels>0) lines.push({name:'Optymalizatory mocy (auto)', qty:`${qtyPanels} szt.`, net:zloty(qtyPanels*COST_OPT)});
-    if (optManual && optQty>0)      lines.push({name:'Optymalizatory mocy (ręcznie)', qty:`${optQty} szt.`, net:zloty(optQty*COST_OPT)});
+    if (pkgOptAuto && qtyPanels>0) lines.push({name:'Optymalizatory mocy (auto)', qty: qtyPanels + ' szt.', net:zloty(qtyPanels*COST_OPT)});
+    if (optManual && optQty>0)     lines.push({name:'Optymalizatory mocy (ręcznie)', qty: optQty + ' szt.', net:zloty(optQty*COST_OPT)});
 
     if (meterYes) lines.push({name:'Licznik produkcji 3F', qty:'1 szt.', net:zloty(COST_METER)});
     if (boardYes) lines.push({name:'Rozdzielnia AC/DC',    qty:'1 szt.', net:zloty(COST_BOARD)});
 
-    if ($('#transportYes').checked){
-      lines.push({name:'Transport i logistyka', qty:'1 kpl.', net:zloty(COST_TRANSPORT)});
-    }
+    if ($('#transportYes').checked) lines.push({name:'Transport i logistyka', qty:'1 kpl.', net:zloty(COST_TRANSPORT)});
 
-    // sumy netto (pozycje)
+    // sumy bazowe NETTO
     const netBase = lines.reduce((a,l)=>a+l.net,0);
 
     // rabat
-    let discount = 0;
     const dVal = Math.max(0, +$('#discountValue').value||0);
     const dType= $('#discountType').value;
-    if (dVal>0){
-      discount = (dType==='percent') ? zloty(netBase * (dVal/100)) : zloty(dVal);
-    }
+    const discount = dVal>0 ? (dType==='percent' ? zloty(netBase*(dVal/100)) : zloty(dVal)) : 0;
     const netAfterDiscount = Math.max(0, zloty(netBase - discount));
 
-    // prowizja — od kwoty po rabacie + ukryty narzut firmy
+    // prowizja (liczona od: NETTO po rabacie + narzut firmy)
     const commPct = Math.max(0, +$('#commissionPct').value||0);
-    const commNet = zloty((netAfterDiscount + COMPANY_MARGIN) * (commPct/100));
-    const netWithComm = zloty(netAfterDiscount + commNet);
+    const baseForCommission = zloty(netAfterDiscount + COMPANY_MARGIN);
+    const commNet = zloty(baseForCommission * (commPct/100));
 
-    // VAT
+    // NETTO klienta = po rabacie + narzut + prowizja
+    const clientNet = zloty(netAfterDiscount + COMPANY_MARGIN + commNet);
+
+    // VAT / BRUTTO
     const vatR = vatRate();
-    const vatAmt = zloty(netWithComm * vatR);
-    const gross = zloty(netWithComm + vatAmt);
+    const vatAmt = zloty(clientNet * vatR);
+    const clientGross = zloty(clientNet + vatAmt);
 
-    // ukryty narzut firmy – tylko w sumie
-    const marginVat = zloty(COMPANY_MARGIN * vatR);
-    const totalNetWithMargin = zloty(netWithComm + COMPANY_MARGIN);
-    const totalVatWithMargin = zloty(vatAmt + marginVat);
-    const totalGrossWithMargin = zloty(totalNetWithMargin + totalVatWithMargin);
-
-    // dotacja
+    // ===== DOTACJA (NETTO) – prowizję przypisujemy do „Paneli” dla celów kwalifikowanych =====
     let subsidy = 0;
-    const hasPV = qtyPanels>0;
-    const hasBat = !!battery;
-    const hasHeat = (heatVal!=='none');
+    const flags = { hasPV: qtyPanels>0, hasBat: !!battery, hasHeat: (heatVal!=='none') };
+
+    // ile „paneli” w liniach?
+    const panelLine = lines.find(l => /^Panele:/.test(l.name));
+    const panelCommissionBoost = panelLine ? commNet : 0; // całą prowizję dokładamy do paneli (tylko dla kalkulacji dotacji)
+
     if ($('#subsidyMode').value==='apply'){
-      subsidy = Math.floor( subsidyCalc(lines, hasPV, hasBat, hasHeat) );
+      subsidy = Math.floor( calcSubsidyWithCommissionBoost(lines, flags, panelCommissionBoost) );
     }
-    const grossAfterSubsidy = Math.max(0, zloty(totalGrossWithMargin - subsidy));
 
-    // benchmark finalny zł/kW (netto z narzutem, bez VAT i dotacji)
-    const benchFinal = (pvKW>0) ? zloty(totalNetWithMargin / pvKW) : 0;
+    // Po dotacji (informacyjnie): odejmujemy dotację od NETTO, a następnie doliczamy VAT do pozostałej części
+    const netAfterSubsidy = Math.max(0, zloty(clientNet - subsidy));
+    const grossAfterSubsidy = zloty(netAfterSubsidy * (1 + vatR));
 
-    // render linii
+    // benchmark (NETTO klienta / kW)
+    const benchFinal = (pvKW>0) ? zloty(clientNet / pvKW) : 0;
+
+    // ===== render: pozycje =====
     const tbody=$('#lines'); tbody.innerHTML='';
     lines.forEach(l=>{
       const tr=document.createElement('tr');
@@ -625,7 +593,7 @@ ARKON HeatTank 500;500;3000
       tbody.appendChild(tr);
     });
 
-    // stopka sum
+    // ===== render: stopka (tylko końcowe ceny) =====
     const tfoot=$('#totals'); tfoot.innerHTML='';
     function add(label,val,bold=false){
       const tr=document.createElement('tr');
@@ -633,25 +601,24 @@ ARKON HeatTank 500;500;3000
       tfoot.appendChild(tr);
     }
     add('RAZEM netto (pozycje)', netBase);
-    if (discount>0) add(`Rabat (${dType==='percent'? dVal+'%':'kwotowy'})`, zloty(-discount));
+    if (discount>0) add(`Rabat (${dType==='percent'? dVal+'%':'kwotowy'})`, -discount);
     if (commNet>0)  add(`Prowizja handlowca (${commPct.toFixed(1)}%)`, commNet);
-    add('RAZEM netto (po rabacie i prowizji)', netWithComm, true);
+    add('RAZEM netto (klient)', clientNet, true);
     add(`VAT ${Math.round(vatR*100)}%`, vatAmt);
-    add('RAZEM brutto (bez narzutu firmy)', gross);
-    // narzutu nie pokazujemy jako pozycji — tylko doliczony w sumach końcowych:
-    add('RAZEM netto (z narzutem firmy)', totalNetWithMargin);
-    add('RAZEM VAT (z narzutem firmy)', totalVatWithMargin);
-    add('RAZEM brutto', totalGrossWithMargin, true);
+    add('RAZEM brutto (klient)', clientGross, true);
     const tr=document.createElement('tr');
     tr.innerHTML = `<th class="title">DO ZAPŁATY (po dotacji)</th><th></th><th class="sum">${PLN(grossAfterSubsidy)}</th>`;
     tfoot.appendChild(tr);
 
-    // prawy panel: dotacja + benchmark
-    $('#subsidy').textContent = PLN(subsidy);
+    // ===== render: duże liczby =====
+    $('#finalNet').textContent   = PLN(clientNet);
+    $('#finalGross').textContent = PLN(clientGross);
+    $('#subsidy').textContent    = PLN(subsidy);              // dotacja NETTO
+    $('#afterSubsidyVal').textContent = PLN(grossAfterSubsidy);
     $('#benchFinal').textContent = (pvKW>0 ? PLN(benchFinal).replace(' zł','')+' /kW' : '— zł/kW');
   }
 
-  // ===== Zapis/odczyt/eksport =====
+  // ===== snapshot / zapisy =====
   function snapshot(){
     return {
       mode: document.querySelector('input[name="mode"]:checked').value,
@@ -680,35 +647,37 @@ ARKON HeatTank 500;500;3000
       notes: $('#notes').value
     };
   }
-  function restore(state){
-    if (!state) return;
-    document.querySelector(`input[name="mode"][value="${state.mode||'set'}"]`).checked = true;
-    $('#manualBlock').style.display = (state.mode==='manual')?'block':'none';
-    $('#setKW').value = state.setKW||'5.0';
-    $('#panelSelect').value = String(state.panel||0);
-    $('#panelCount').value = state.panelCount||0;
-    $('#inverterSelect').value = String(state.inverter||0);
-    $('#batterySelect').value = state.battery || 'none';
-    $('#heatSelect').value = state.heat || 'none';
-    $('#mountType').value = state.mount || 'pitched';
-    $('#cableExtra').value = state.cableExtra||0;
-    $('#pkgMeterBoard').checked = !!state.pkgMeterBoard;
-    $('#pkgOptAuto').checked = !!state.pkgOptAuto;
-    $('#optManual').checked = !!state.optManual;
-    $('#optQty').value = state.optQty||0;
-    $('#meterYes').checked = !!state.meterYes;
-    $('#boardYes').checked = !!state.boardYes;
-    $('#trenchYes').checked = !!state.trenchYes;
-    $('#transportYes').checked = !!state.transportYes;
-    $('#investorType').value = state.investorType||'private';
-    $('#area').value = state.area||120;
-    $('#commissionPct').value = state.commissionPct||0;
-    $('#subsidyMode').value = state.subsidyMode||'apply';
-    $('#discountValue').value = state.discountValue||0;
-    $('#discountType').value = state.discountType||'amount';
-    $('#notes').value = state.notes||'';
-    recalc();
-  }
+    function restore(state){
+      if (!state) return;
+      const mode = state.mode || 'set';
+      const modeEl = document.querySelector('input[name="mode"][value="'+mode+'"]');
+      if (modeEl) modeEl.checked = true;
+      $('#manualBlock').style.display = (state.mode==='manual')?'block':'none';
+      $('#setKW').value = state.setKW||'5.0';
+      $('#panelSelect').value = String(state.panel||0);
+      $('#panelCount').value = state.panelCount||0;
+      $('#inverterSelect').value = String(state.inverter||0);
+      $('#batterySelect').value = state.battery || 'none';
+      $('#heatSelect').value = state.heat || 'none';
+      $('#mountType').value = state.mount || 'pitched';
+      $('#cableExtra').value = state.cableExtra||0;
+      $('#pkgMeterBoard').checked = !!state.pkgMeterBoard;
+      $('#pkgOptAuto').checked = !!state.pkgOptAuto;
+      $('#optManual').checked = !!state.optManual;
+      $('#optQty').value = state.optQty||0;
+      $('#meterYes').checked = !!state.meterYes;
+      $('#boardYes').checked = !!state.boardYes;
+      $('#trenchYes').checked = !!state.trenchYes;
+      $('#transportYes').checked = !!state.transportYes;
+      $('#investorType').value = state.investorType||'private';
+      $('#area').value = state.area||120;
+      $('#commissionPct').value = state.commissionPct||0;
+      $('#subsidyMode').value = state.subsidyMode||'apply';
+      $('#discountValue').value = state.discountValue||0;
+      $('#discountType').value = state.discountType||'amount';
+      $('#notes').value = state.notes||'';
+      recalc();
+    }
   function saveOffer(){
     const name = ($('#offerName').value||'').trim();
     if (!name){ alert('Podaj nazwę oferty.'); return; }
@@ -767,137 +736,76 @@ ARKON HeatTank 500;500;3000
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'.csv'; a.click(); URL.revokeObjectURL(a.href);
   }
 
-  // ===== Presety =====
+  // Presety (opcjonalnie – podłącz jeśli masz przyciski presetów)
   function bindPresets(){
-    document.getElementById('preset5').addEventListener('click', ()=>{
-      document.querySelector('input[name="mode"][value="set"]').checked = true;
-      document.getElementById('manualBlock').style.display='none';
-      document.getElementById('setKW').value='5.0';
-      document.getElementById('panelSelect').selectedIndex=0;   // pierwszy model paneli
-      document.getElementById('batterySelect').value='none';
-      document.getElementById('heatSelect').value='none';
-      document.getElementById('pkgMeterBoard').checked=true;
-      document.getElementById('pkgOptAuto').checked=false;
-      document.getElementById('boardYes').checked=true;
-      document.getElementById('meterYes').checked=true;
-      document.getElementById('mountType').value='pitched';
-      document.getElementById('cableExtra').value=0;
-      document.getElementById('commissionPct').value=0;
-      document.getElementById('subsidyMode').value='apply';
-      document.getElementById('transportYes').checked=true;
-      recalc();
+    ['preset5','preset6b','preset10full'].forEach(id=>{
+      const el=document.getElementById(id); if(!el) return;
     });
-    document.getElementById('preset6b').addEventListener('click', ()=>{
-      document.querySelector('input[name="mode"][value="set"]').checked = true;
-      document.getElementById('manualBlock').style.display='none';
-      document.getElementById('setKW').value='6.0';
-      document.getElementById('panelSelect').selectedIndex=0;
-      const firstBattery = document.querySelector('#batterySelect option[value]:not([value="none"])');
-      if (firstBattery) firstBattery.selected = true;
-      document.getElementById('pkgMeterBoard').checked=true;
-      document.getElementById('pkgOptAuto').checked=true; // do każdego panelu
-      document.getElementById('mountType').value='pitched';
-      document.getElementById('transportYes').checked=true;
-      recalc();
-    });
-    document.getElementById('preset10full').addEventListener('click', ()=>{
-      document.querySelector('input[name="mode"][value="set"]').checked = true;
-      document.getElementById('manualBlock').style.display='none';
-      document.getElementById('setKW').value='10.0';
-      document.getElementById('panelSelect').selectedIndex=2; // LONGI 460
-      const lastInverter = document.getElementById('inverterSelect').options.length-1;
-      if (lastInverter>=0) document.getElementById('inverterSelect').selectedIndex = lastInverter;
-      const lastBattery = document.getElementById('batterySelect').options.length-1;
-      if (lastBattery>=1) document.getElementById('batterySelect').selectedIndex = lastBattery; // nie "Brak"
-      document.getElementById('pkgMeterBoard').checked=true;
-      document.getElementById('pkgOptAuto').checked=true;
-      document.getElementById('mountType').value='flat'; // pokaż dopłatę 500 zł
-      document.getElementById('trenchYes').checked=false;
-      document.getElementById('transportYes').checked=true;
-      recalc();
-    });
-  }
-
-  // ===== Bindy UI =====
-  function bind(){
-    // tryb
-    document.querySelectorAll('input[name="mode"]').forEach(r=>{
-      r.addEventListener('change', ()=>{
-        const manual = (r.value==='manual' && r.checked);
-        $('#manualBlock').style.display = manual ? 'block':'none';
-        recalc();
-      });
-    });
-
-    // panele
-    $('#panelSelect').addEventListener('change', ()=>{ lastManualPick.inverter=false; lastManualPick.battery=false; recalc(); });
-    $('#panelCount').addEventListener('input', recalc);
-    $('#setKW').addEventListener('change', recalc);
-
-    // inwerter/bateria/bufor
-    $('#inverterSelect').addEventListener('change', ()=>{ lastManualPick.inverter=true; recalc(); });
-    $('#batterySelect').addEventListener('change', ()=>{ lastManualPick.battery=true; recalc(); });
-    $('#heatSelect').addEventListener('change', recalc);
-
-    // montaż/dodatki
-    $('#mountType').addEventListener('change', recalc);
-    $('#cableExtra').addEventListener('input', recalc);
-    $('#pkgMeterBoard').addEventListener('change', recalc);
-    $('#pkgOptAuto').addEventListener('change', recalc);
-    $('#pkgTrench').addEventListener('change', ()=>{ $('#trenchYes').checked = $('#pkgTrench').checked; recalc(); });
-    $('#optManual').addEventListener('change', recalc);
-    $('#optQty').addEventListener('input', recalc);
-    $('#meterYes').addEventListener('change', recalc);
-    $('#boardYes').addEventListener('change', recalc);
-    $('#trenchYes').addEventListener('change', recalc);
-    $('#transportYes').addEventListener('change', recalc);
-
-    // VAT/rabat/prowizja/dotacja
-    $('#investorType').addEventListener('change', recalc);
-    $('#area').addEventListener('input', recalc);
-    $('#commissionPct').addEventListener('input', recalc);
-    $('#subsidyMode').addEventListener('change', recalc);
-    $('#discountValue').addEventListener('input', recalc);
-    $('#discountType').addEventListener('change', recalc);
-
-    // akcje
-    $('#btnPrint').addEventListener('click', ()=>window.print());
-    $('#btnReset').addEventListener('click', ()=>{
-      lastManualPick={inverter:false,battery:false};
-      document.querySelector('input[name="mode"][value="set"]').checked = true;
-      $('#manualBlock').style.display='none';
-      $('#setKW').value='5.0';
-      $('#panelSelect').selectedIndex=0;
-      $('#panelCount').value=10;
-      $('#inverterSelect').selectedIndex=0;
-      $('#batterySelect').value='none';
-      $('#heatSelect').value='none';
-      $('#mountType').value='pitched';
-      $('#cableExtra').value=0;
-      $('#pkgMeterBoard').checked=false;
-      $('#pkgOptAuto').checked=false;
-      $('#pkgTrench').checked=false;
-      $('#optManual').checked=false; $('#optQty').value=0;
-      $('#meterYes').checked=false; $('#boardYes').checked=false;
-      $('#trenchYes').checked=false;
-      $('#transportYes').checked=false;
-      $('#investorType').value='private'; $('#area').value=120;
-      $('#commissionPct').value=0;
-      $('#subsidyMode').value='apply';
-      $('#discountValue').value=0; $('#discountType').value='amount';
-      $('#notes').value='';
-      recalc();
-    });
-    $('#btnSave').addEventListener('click', saveOffer);
-    $('#btnLoad').addEventListener('click', loadOffer);
-    $('#btnExportJSON').addEventListener('click', exportJSON);
-    $('#btnExportCSV').addEventListener('click', exportCSV);
   }
 
   // start
   loadEmbedded();
   populateAll();
-  bind();
+  // bind UI
+  document.querySelectorAll('input[name="mode"]').forEach(r=>{
+    r.addEventListener('change', ()=>{ $('#manualBlock').style.display = (r.value==='manual' && r.checked)?'block':'none'; recalc(); });
+  });
+  $('#panelSelect').addEventListener('change', ()=>{ lastManualPick.inverter=false; lastManualPick.battery=false; recalc(); });
+  $('#panelCount').addEventListener('input', recalc);
+  $('#setKW').addEventListener('change', recalc);
+  $('#inverterSelect').addEventListener('change', ()=>{ lastManualPick.inverter=true; recalc(); });
+  $('#batterySelect').addEventListener('change', ()=>{ lastManualPick.battery=true; recalc(); });
+  $('#heatSelect').addEventListener('change', recalc);
+  $('#mountType').addEventListener('change', recalc);
+  $('#cableExtra').addEventListener('input', recalc);
+  $('#pkgMeterBoard').addEventListener('change', recalc);
+  $('#pkgOptAuto').addEventListener('change', recalc);
+  $('#pkgTrench').addEventListener('change', ()=>{ $('#trenchYes').checked = $('#pkgTrench').checked; recalc(); });
+  $('#optManual').addEventListener('change', recalc);
+  $('#optQty').addEventListener('input', recalc);
+  $('#meterYes').addEventListener('change', recalc);
+  $('#boardYes').addEventListener('change', recalc);
+  $('#trenchYes').addEventListener('change', recalc);
+  $('#transportYes').addEventListener('change', recalc);
+  $('#investorType').addEventListener('change', recalc);
+  $('#area').addEventListener('input', recalc);
+  $('#commissionPct').addEventListener('input', recalc);
+  $('#subsidyMode').addEventListener('change', recalc);
+  $('#discountValue').addEventListener('input', recalc);
+  $('#discountType').addEventListener('change', recalc);
+  // akcje
+  $('#btnPrint').addEventListener('click', ()=>window.print());
+  $('#btnReset').addEventListener('click', ()=>{
+    lastManualPick={inverter:false,battery:false};
+    document.querySelector('input[name="mode"][value="set"]').checked = true;
+    $('#manualBlock').style.display='none';
+    $('#setKW').value='5.0';
+    $('#panelSelect').selectedIndex=0;
+    $('#panelCount').value=10;
+    $('#inverterSelect').selectedIndex=0;
+    $('#batterySelect').value='none';
+    $('#heatSelect').value='none';
+    $('#mountType').value='pitched';
+    $('#cableExtra').value=0;
+    $('#pkgMeterBoard').checked=false;
+    $('#pkgOptAuto').checked=false;
+    $('#pkgTrench').checked=false;
+    $('#optManual').checked=false; $('#optQty').value=0;
+    $('#meterYes').checked=false; $('#boardYes').checked=false;
+    $('#trenchYes').checked=false;
+    $('#transportYes').checked=false;
+    $('#investorType').value='private'; $('#area').value=120;
+    $('#commissionPct').value=0;
+    $('#subsidyMode').value='apply';
+    $('#discountValue').value=0; $('#discountType').value='amount';
+    $('#notes').value='';
+    recalc();
+  });
+  $('#btnSave').addEventListener('click', saveOffer);
+  $('#btnLoad').addEventListener('click', loadOffer);
+  $('#btnExportJSON').addEventListener('click', exportJSON);
+  $('#btnExportCSV').addEventListener('click', exportCSV);
+
   bindPresets();
   recalc();
 })();
