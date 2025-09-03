@@ -2,378 +2,905 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ARKON — Komponenty: Panele (moduły PV)</title>
-<meta name="description" content="Komponenty panelowe PV w ARKON: Panele oraz Zestawy paneli. Edycja w tabeli, filtry, eksport/import, zapis lokalny.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — Komponenty: Fotowoltaika (Kalkulator — all-in-one)</title>
 <style>
   :root{
-    --bg:#f7f8fb; --ink:#1d1919; --muted:#6b7280; --line:#e5e7eb;
-    --card:#ffffff; --card2:#fafafa;
-    --accent:#2563eb; --accent-2:#93c5fd;
-    --ok:#16a34a; --bad:#dc2626; --warn:#d97706;
+    --bg:#0a0f1e; --ink:#e8edff; --muted:#aeb8da; --line:#243059; --card:#0f1533; --card2:#121a34;
+    --accent:#4cc9f0; --ok:#2b8a57; --bad:#ff6b6b; --warn:#ffb84d;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
-  header{padding:18px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-  header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px}
-  .muted{color:var(--muted);font-size:13px}
-  .wrap{max-width:1400px;margin:auto;padding:16px}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:14px 16px;background:#11183a;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;justify-content:space-between}
+  header h1{margin:0;font-size:20px}
+  header .actions a{color:#cfe1ff;text-decoration:none;border:1px solid #2a3a75;padding:6px 10px;border-radius:10px}
+  header .actions a:hover{background:#223160}
+  .wrap{max-width:1350px;margin:auto;padding:16px}
   .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;padding:14px}
-  .card.no-pad{padding:0}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
-  .btn{background:#eef2ff;border:1px solid #dbeafe;color:#0f172a;border-radius:10px;padding:8px 12px;cursor:pointer}
-  .btn:hover{background:#e0e7ff}
-  .btn.ghost{background:#fff;border:1px dashed #c7d2fe}
-  .btn.bad{background:#fee2e2;border-color:#fecaca;color:#991b1b}
-  .btn.ok{background:#dcfce7;border-color:#bbf7d0;color:#065f46}
-  .btn.warn{background:#ffedd5;border-color:#fed7aa;color:#9a3412}
-  input,select,textarea{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;color:#111827;font:inherit}
-  input::placeholder{color:#9ca3af}
+  .grid{display:grid;gap:14px}
+  @media(min-width:1100px){ .cols-2{grid-template-columns:1.25fr 0.75fr} }
+  label{display:block;margin:6px 0 6px 2px;font-size:13px;color:#cfe1ff}
+  select,input,textarea{width:100%;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:9px 10px;color:var(--ink);font:inherit}
+  textarea{min-height:70px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted);font-size:12px}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
+  .btn.warn{background:#5a3c12;border-color:#c48a26}
+  .btn.ok{background:#194d34;border-color:var(--ok)}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
   table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-  th{font-size:12px;color:#556;white-space:nowrap;font-weight:600}
-  .scroll{overflow:auto}
-  .subtabs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
-  .subtabs button{padding:8px 12px;border-radius:999px;border:1px solid #c7d2fe;background:#f8fafc;color:#0f172a;cursor:pointer}
-  .subtabs button[aria-selected="true"]{background:#e0e7ff;border-color:#93c5fd;box-shadow:0 0 0 2px #eff6ff inset}
-  .pill{display:inline-flex;gap:6px;align-items:center;background:#f8fafc;border:1px dashed #e5e7eb;border-radius:999px;padding:6px 10px;color:#111827;font-size:12px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#f3f4f6;border:1px solid #e5e7eb;padding:2px 6px;border-radius:6px;color:#374151}
-  .search{min-width:340px}
-  .narrow{max-width:130px}
-  .small{font-size:12px;color:var(--muted)}
-  .right{display:flex;gap:8px;justify-content:flex-end;align-items:center}
-  .tag{display:inline-block;border:1px solid #c7d2fe;color:#1d4ed8;padding:2px 6px;border-radius:6px;font-size:12px;margin-left:6px;background:#eff6ff}
-  @media print{ .toolbar,.subtabs,.no-print{display:none!important} body{background:#fff} .card{border:0} }
+  th,td{padding:9px;border-bottom:1px solid #243059;text-align:left;vertical-align:top}
+  thead th{font-size:12px;color:#aeb8da}
+  .right{display:flex;justify-content:flex-end}
+  .pill{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff;font-size:12px}
+  .group{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+  .group > div{min-width:230px}
+  .stack{display:grid;gap:10px}
+  .sum{font-size:18px;font-weight:700}
+  .title{font-weight:700;color:#dce6ff}
+  .subtle{opacity:.9}
+  .split{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+  @media(max-width:780px){ .group,.split{grid-template-columns:1fr} }
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #2a3a75;background:#0d1530;color:#cfe1ff;font-size:12px}
+  .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid #2a3a75;background:#0d1530;border-radius:999px;padding:4px 8px;font-size:12px}
+  .chip .dot{width:8px;height:8px;border-radius:50%}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+  .hr{height:1px;background:#243059;margin:8px 0}
+  .label-small{font-size:11px;color:#aeb8da;margin-left:6px}
+  .sticky{position:sticky;top:12px}
+  .no-print{display:block}
+
+  /* utility classes moved from inline styles */
+  .gap-6{gap:6px}
+  .gap-8{gap:8px}
+  .max-w-140{max-width:140px}
+  .max-w-120{max-width:120px}
+  .max-w-100{max-width:100px}
+  .max-w-90{max-width:90px}
+  .max-w-180{max-width:180px}
+  .max-w-200{max-width:200px}
+  .max-w-320{max-width:320px}
+  .justify-between{justify-content:space-between}
+  .hidden{display:none}
+
+  @media print{ .no-print{display:none!important} body{background:#fff;color:#000} .card{background:#fff;color:#000;border-color:#000} th,td{border-color:#000} a{text-decoration:none;color:#000} }
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <h1>Komponenty • Panele (moduły PV) — ARKON</h1>
-    <div class="muted">Panele i zestawy panelowe — edycja w tabeli, szybkie filtry, eksport/import, LocalStorage.</div>
+  <div>
+    <h1>Komponenty • Fotowoltaika — ARKON</h1>
+    <div class="muted">Wycena zestawu PV w 1–2 kliknięciach. Auto-dobór, pakiety, dotacje, VAT, wydruk i zapis oferty.</div>
+  </div>
+  <div class="actions no-print">
+    <a href="index.html">⟵ Pulpit</a>
   </div>
 </header>
 
-<div class="wrap">
-  <div class="card">
-    <!-- Zakładki -->
-    <div class="subtabs" role="tablist" aria-label="Kategorie paneli">
-      <button role="tab" tabindex="0" class="sb" data-k="sets" aria-selected="true">Zestawy panelowe</button>
-      <button role="tab" tabindex="0" class="sb" data-k="modules" aria-selected="false">Panele (moduły)</button>
-    </div>
+  <div class="wrap">
+    <div class="grid cols-2">
+      <div class="card">
+        <label class="row gap-6"><input type="radio" name="mode" value="set" checked> zestaw (kW)</label>
+        <label class="row gap-6"><input type="radio" name="mode" value="manual"> ręcznie (szt.)</label>
+      <div class="hr"></div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <input id="q" class="search" placeholder="🔎 Szukaj… (marka, model, opis)">
-      <span id="dynFilters" class="row"></span>
-      <button id="btnAdd" class="btn ok">+ Dodaj pozycję</button>
-      <button id="btnCSV" class="btn ghost">CSV eksport</button>
-      <button id="btnJSON" class="btn ghost">JSON eksport</button>
-      <label class="btn ghost">JSON import <input id="inJSON" type="file" accept="application/json" hidden></label>
-      <span class="pill">Widocznych: <b id="countVis">0</b></span>
-      <span class="pill">Łącznie: <b id="countAll">0</b></span>
-      <span class="pill">Sort: <b id="sortLabel">marka→model</b></span>
-    </div>
+      <div class="stack">
+        <!-- Zestaw / Panele -->
+        <div class="split">
+          <div>
+            <label class="title" for="setKW">Zestaw — moc (kW)</label>
+            <select id="setKW" title="Wybierz moc zestawu (kW)">
+              <option>2.7</option><option>3.6</option><option>4.5</option><option selected>5.0</option>
+              <option>6.0</option><option>7.2</option><option>9.0</option><option>10.0</option>
+            </select>
+            <div class="help muted">W trybie „zestaw” liczba paneli liczy się automatycznie z mocy panelu.</div>
+          </div>
+          <div>
+            <label class="title" for="panelSelect">Panele (firma + model)</label>
+            <select id="panelSelect" title="Wybierz model paneli"></select>
+            <div class="help muted">Moc panelu: <b id="panelWatt">—</b> W • Benchmark: <span id="benchKW" class="badge">— zł/kW</span></div>
+          </div>
+        </div>
 
-    <!-- Tabela -->
-    <div class="card no-pad">
-      <div class="scroll">
-        <table>
-          <thead id="thead"></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+        <div id="manualBlock" class="hidden">
+          <label class="title" for="panelCount">Liczba paneli (szt.)</label>
+          <input id="panelCount" type="number" min="0" step="1" value="10" title="Liczba paneli">
+          <div class="help muted">Tryb „ręcznie” liczy moc zestawu z paneli.</div>
+        </div>
+
+        <!-- Falownik / Bateria -->
+        <div class="split">
+          <div>
+            <label class="title" for="inverterSelect">Falownik</label>
+            <select id="inverterSelect" title="Wybierz falownik"></select>
+            <div class="row">
+              <span id="ratioBadge" class="chip"><span class="dot"></span><span id="ratioText">DC/AC —</span></span>
+              <span class="label-small">docelowo ~0.9–1.1</span>
+            </div>
+          </div>
+          <div>
+            <label class="title" for="batterySelect">Magazyn energii (opcjonalnie)</label>
+            <select id="batterySelect" title="Wybierz magazyn energii"><option value="none">Brak</option></select>
+            <div class="help muted">Auto-sugestia: pojemność ≥ moc PV (kW). Wybór baterii wymusi falownik hybrydowy.</div>
+          </div>
+        </div>
+
+        <!-- Magazyn ciepła -->
+        <div>
+          <label class="title" for="heatSelect">Magazyn ciepła (opcjonalnie)</label>
+          <select id="heatSelect" title="Wybierz magazyn ciepła"><option value="none">Brak</option></select>
+          <div class="help muted">Ryczałt 3000 zł/szt. — wybierz pojemność.</div>
+        </div>
+
+        <!-- Montaż / kabel -->
+        <div class="split">
+          <div>
+            <label class="title" for="mountType">Montaż</label>
+            <select id="mountType" title="Typ montażu">
+              <option value="pitched" selected>Dach skośny (0 zł)</option>
+              <option value="flat">Dach płaski (+500 zł)</option>
+              <option value="ground">Grunt (+500 zł + przekop)</option>
+            </select>
+          </div>
+          <div>
+            <label class="title" for="cableExtra">Dodatkowy kabel ponad 20 m</label>
+            <div class="row">
+              <input id="cableExtra" class="max-w-140" type="number" min="0" step="1" value="0" title="Dodatkowy kabel ponad 20 m">
+              <span class="muted subtle">50 zł / m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pakiety / dodatki -->
+        <div class="row">
+          <label class="row gap-8"><input type="checkbox" id="transportYes" title="Transport i logistyka"> transport i logistyka (450 zł)</label>
+        </div>
+
+        <div class="split">
+          <div>
+            <label class="title">Pakiety akcesoriów</label>
+            <div class="stack">
+              <label class="row gap-8"><input type="checkbox" id="pkgMeterBoard" title="Pakiet: licznik + rozdzielnia"> licznik + rozdzielnia</label>
+              <label class="row gap-8"><input type="checkbox" id="pkgOptAuto" title="Optymalizatory: auto"> optymalizatory (auto: = liczba paneli)</label>
+              <label class="row gap-8"><input type="checkbox" id="pkgTrench" title="Przekop (pakiet)"> przekop (ryczałt +2000 zł)</label>
+            </div>
+          </div>
+          <div>
+            <label class="title">Ustawienia ręczne</label>
+            <div class="stack">
+              <div class="row gap-8">
+                <label class="row gap-6"><input type="checkbox" id="optManual" title="Optymalizatory ręcznie"> optymalizatory ręcznie</label>
+                <input id="optQty" class="max-w-120" type="number" min="0" step="1" value="0" title="Ilość optymalizatorów (szt.)">
+                <span class="muted subtle">@ 230 zł/szt.</span>
+              </div>
+              <div class="row gap-8">
+                <label class="row gap-6"><input type="checkbox" id="meterYes" title="Licznik"> licznik (410 zł)</label>
+                <label class="row gap-6"><input type="checkbox" id="boardYes" title="Rozdzielnia"> rozdzielnia (820 zł)</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Przekop (osobno, bo auto-sugestia przy gruncie) -->
+        <div>
+          <label class="title" for="trenchYes">Przekop (ryczałt)</label>
+          <div class="row">
+            <input id="trenchYes" type="checkbox" title="Przekop (ryczałt)">
+            <span class="muted subtle">+2000 zł • przy „Grunt” włączamy automatycznie (możesz odznaczyć).</span>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <!-- VAT / rabat / prowizja / dotacja -->
+        <div class="split">
+          <div>
+            <label class="title">Inwestor & VAT</label>
+            <div class="row">
+              <select id="investorType" class="max-w-180" title="Typ inwestora">
+                <option value="private" selected>Osoba prywatna</option>
+                <option value="company">Firma</option>
+              </select>
+              <div class="row gap-6">
+                <label for="area" class="muted subtle">Pow. domu</label>
+                <input id="area" class="max-w-100" type="number" min="1" value="120" title="Powierzchnia domu/mieszkania (m2)">
+                <span class="muted subtle">m²</span>
+              </div>
+            </div>
+            <div class="help muted">Dom ≤300 m² / mieszkanie ≤150 m² → 8% VAT; firma → 23%.</div>
+          </div>
+          <div>
+            <label class="title">Rabat</label>
+            <div class="row">
+              <input id="discountValue" class="max-w-120" type="number" min="0" step="1" value="0" title="Wartość rabatu" placeholder="rabat">
+              <select id="discountType" class="max-w-90" title="Typ rabatu">
+                <option value="amount">zł</option>
+                <option value="percent">%</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="split">
+          <div>
+            <label class="title">Prowizja handlowca</label>
+            <div class="row">
+              <input id="commissionPct" class="max-w-120" type="number" min="0" step="0.1" value="0" title="Procent prowizji">
+              <span class="muted subtle">%</span>
+            </div>
+            <div class="help muted">Liczona od netto po rabacie (z doliczonym ukrytym narzutem firmy w podstawie prowizji).</div>
+          </div>
+          <div>
+            <label class="title">Dotacja „Mój Prąd”</label>
+            <div class="row">
+              <select id="subsidyMode" class="max-w-200" title="Tryb dotacji">
+                <option value="apply" selected>Zastosuj (auto)</option>
+                <option value="ignore">Nie stosuj</option>
+              </select>
+              <span class="muted subtle">limit ≤50% kosztów kwalifikowanych</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="title" for="notes">Uwagi do oferty</label>
+          <textarea id="notes" placeholder="Warunki montażu, termin, uwagi techniczne…" title="Uwagi do oferty"></textarea>
+        </div>
+
+        <div class="hr"></div>
+
+        <!-- Zapis / eksport -->
+        <div class="row no-print">
+          <input id="offerName" class="max-w-320" placeholder="Nazwa oferty (np. Kowalski 5kW)" title="Nazwa oferty">
+          <button id="btnSave" class="btn ok">Zapisz</button>
+          <button id="btnLoad" class="btn ghost">Wczytaj</button>
+          <button id="btnExportJSON" class="btn ghost">Eksport JSON</button>
+          <button id="btnExportCSV" class="btn ghost">Eksport CSV</button>
+          <button id="btnPrint" class="btn warn">Drukuj / PDF</button>
+          <button id="btnReset" class="btn bad">Reset</button>
+        </div>
       </div>
-      <div class="small" style="padding:10px 12px">
-        Edycja w komórkach. Usuń/duplikuj w kolumnie „Akcje”. Zmiany zapisują się automatycznie.
-        Skróty: <span class="kbd">/</span> fokus • <span class="kbd">Alt+N</span> nowa • klik nagłówka = sort.
+    </div>
+
+    <!-- PRAWA: PODSUMOWANIE / STICKY -->
+    <div class="card sticky">
+      <div class="stack">
+        <div class="row justify-between">
+          <span class="pill">Moc zestawu PV</span>
+          <span id="pvKW" class="sum">0.00 kW</span>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Pozycja</th><th>Ilość</th><th>Netto</th></tr>
+          </thead>
+          <tbody id="lines"></tbody>
+          <tfoot id="totals"></tfoot>
+        </table>
+
+        <div class="row justify-between">
+          <span class="pill">Dotacja „Mój Prąd”</span>
+          <span id="subsidy" class="sum">0 zł</span>
+        </div>
+
+        <div class="row justify-between">
+          <span class="pill">Benchmark</span>
+          <span id="benchFinal" class="sum">— zł/kW</span>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ===== Wbudowane CSV (edytujesz w tym pliku) ===== -->
+<script type="text/csv" id="csv_panels">
+name;power (W);price
+JINKO JKM445N-54HL4R-B Full Black;445;240
+TRINA Vertex S+ 440 FB;440;200
+LONGI LR7-54HTH-460M;460;225
+JA SOLAR JAM60D41-500/LB Full Black;500;250
+</script>
+
+<script type="text/csv" id="csv_inverters">
+name;power (kW);price;type
+DEYE SUN-6K-SG04LP3-EU;6;4200;on-grid
+HUAWEI SUN2000-10KTL-M1;10;3953;on-grid
+SOFAR HYD 10KTL-3PH (hyb.);10;6227;hybrid
+GOODWE GW10K-ET-20 (hyb.);10;4631;hybrid
+</script>
+
+<script type="text/csv" id="csv_batteries">
+name;capacity (kWh);price
+HUAWEI LUNA2000-5;5;12000
+HUAWEI LUNA2000-10;10;22000
+GOODWE Lynx Home F 9.6;9.6;23000
+</script>
+
+<script type="text/csv" id="csv_heat">
+name;capacity (l);price
+ARKON HeatTank 200;200;3000
+ARKON HeatTank 300;300;3000
+ARKON HeatTank 500;500;3000
+</script>
+
 <script>
-'use strict';
+(() => {
+  // ===== Stawki i ukryty narzut firmy =====
+  const COMPANY_MARGIN = 8000; // ukryty, doliczany do sumy (nie jako pozycja)
+  const COST_OPT = 230;
+  const COST_METER = 410;
+  const COST_BOARD = 820;
+  const COST_TRENCH = 2000;
+  const COST_CABLE = 50;     // zł/m ponad 20 m
+  const MOUNT_FLAT = 500;    // płaski
+  const MOUNT_GROUND = 500;  // grunt
+  const COST_TRANSPORT = 450;
 
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const INT0 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
-const INT1 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:1});
-const INT2 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:2});
-const fmt = (n,dp=0)=> (isFinite(+n)? (dp===0?INT0:dp===1?INT1:INT2).format(+n) : '—');
-const uid = ()=> 'PNL_'+Math.random().toString(36).slice(2)+'_'+Date.now().toString(36);
-const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c));
-const money = n => isFinite(+n)? INT0.format(Math.round(+n))+' zł' : '—';
+  // ===== Dane (z CSV wbudowanych) =====
+  let PANELS=[], INVERTERS=[], BATTERIES=[], HEATS=[];
+  let lastManualPick = { inverter:false, battery:false };
 
-const KS = { modules:'arkon_panels_modules_v2', sets:'arkon_panels_sets_v2' };
+  // ===== helpers =====
+  const $ = s => document.querySelector(s);
+  const PLN = v => (Math.round((+v||0)*100)/100).toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2})+' zł';
+  const zloty = v => Math.round((+v||0)*100)/100;
 
-const state = {
-  tab:'sets',
-  q:'',
-  sort:{key:'brand_model',dir:1},
-  filters:{
-    modules:{tech:'', pMin:'', pMax:'', effMin:'', color:''},
-    sets:{kwMin:'', kwMax:'', roof:''}
-  },
-  data:{ modules:[], sets:[] }
-};
-
-function seedIfEmpty(){
-  if(!(state.data.modules||[]).length){
-    state.data.modules = [
-      {id:uid(),brand:'JINKO',model:'JKM445N-54HL4R-B Full Black',tech:'TopCon N',bifacial:'NIE',watt:445,eff:21.5,color:'black',size:'1762×1134×30',temp:'-0.30',warr_prod:15,warr_perf:30,net_price:239, note:'182mm, half-cut'},
-      {id:uid(),brand:'TRINA',model:'Vertex S+ 440 Full Black',tech:'TopCon N',bifacial:'NIE',watt:440,eff:21.7,color:'black',size:'1762×1134×30',temp:'-0.30',warr_prod:25,warr_perf:30,net_price:205, note:''},
-      {id:uid(),brand:'LONGI',model:'LR7-54HTH-460M',tech:'HPBC',bifacial:'NIE',watt:460,eff:21.9,color:'black',size:'1903×1134×30',temp:'-0.29',warr_prod:15,warr_perf:25,net_price:225, note:''},
-      {id:uid(),brand:'JA SOLAR',model:'JAM60D41-500/LB (bifacial)',tech:'TopCon N',bifacial:'TAK',watt:500,eff:22.0,color:'silver',size:'1903×1134×30',temp:'-0.29',warr_prod:15,warr_perf:30,net_price:249, note:'double-glass'}
-    ];
-  }
-  if(!(state.data.sets||[]).length){
-    state.data.sets = [
-      {id:uid(),title:'2.7 kW • 6× 450–460W (FB)', kw:2.7, roof:'blachodachówka', items:'Panele: 6× 450–460W full black; Montaż: dach skośny (blachodachówka)', base_price:6900, note:'Startowy pakiet panelowy'},
-      {id:uid(),title:'4.0 kW • 9× 440–460W (FB)', kw:4.0, roof:'dachówka',      items:'Panele: 9× 440–460W full black; Montaż: dach skośny (dachówka)', base_price:10200, note:''},
-      {id:uid(),title:'6.0 kW • 13–14× 440–460W',  kw:6.0, roof:'blachodachówka', items:'Panele: 13–14× 440–460W; Montaż: dach skośny (blachodachówka)', base_price:14900, note:'popularny'}
-    ];
-  }
-}
-
-function loadAll(){
-  try{ state.data.modules = JSON.parse(localStorage.getItem(KS.modules)||'[]')||[]; }catch{ state.data.modules=[]; }
-  try{ state.data.sets    = JSON.parse(localStorage.getItem(KS.sets)||'[]')||[]; }catch{ state.data.sets=[]; }
-}
-function saveTab(){
-  localStorage.setItem(KS[state.tab], JSON.stringify(state.data[state.tab]||[]));
-  render();
-}
-
-const COLS = {
-  sets:[
-    {k:'title',lbl:'Nazwa zestawu',w:280},
-    {k:'kw',lbl:'Moc [kW]',num:1},
-    {k:'roof',lbl:'Podłoże',sel:['blachodachówka','dachówka','dach płaski','grunt']},
-    {k:'items',lbl:'Skład',w:420},
-    {k:'base_price',lbl:'Cena bazowa (netto) [zł]',num:0},
-    {k:'note',lbl:'Uwagi',w:220}
-  ],
-  modules:[
-    {k:'brand',lbl:'Marka'},
-    {k:'model',lbl:'Model',w:240},
-    {k:'tech',lbl:'Technologia',sel:['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna']},
-    {k:'bifacial',lbl:'Bifacial',sel:['NIE','TAK']},
-    {k:'watt',lbl:'Moc [W]',num:0},
-    {k:'eff',lbl:'Sprawność [%]',num:2},
-    {k:'color',lbl:'Kolor',sel:['black','silver']},
-    {k:'size',lbl:'Wymiar [mm]',w:140},
-    {k:'temp',lbl:'Coeff. [%/°C]'},
-    {k:'warr_prod',lbl:'Gwarancja prod. [l]',num:0},
-    {k:'warr_perf',lbl:'Gwarancja perf. [l]',num:0},
-    {k:'net_price',lbl:'Cena (netto) [zł]',num:0},
-    {k:'note',lbl:'Uwagi',w:200}
-  ]
-};
-
-function renderDynamicFilters(){
-  const box = $('#dynFilters'); box.innerHTML='';
-  if(state.tab==='modules'){
-    box.innerHTML = `
-      <select id="f_tech"><option value="">Technologia</option>${['Mono PERC','TopCon N','HJT','HPBC','IBC','Inna'].map(t=><option>${esc(t)}</option>).join('')}</select>
-      <input id="f_pmin" class="narrow" type="number" placeholder="W min">
-      <input id="f_pmax" class="narrow" type="number" placeholder="W max">
-      <input id="f_eff" class="narrow" type="number" step="0.1" placeholder="Sprawność ≥">
-      <select id="f_color"><option value="">Kolor</option><option>black</option><option>silver</option></select>`;
-    ['f_tech','f_pmin','f_pmax','f_eff','f_color'].forEach(id=>{
-      const el = $('#'+id); el.addEventListener('input',applyFilters); el.addEventListener('change',applyFilters);
-    });
-  }else if(state.tab==='sets'){
-    box.innerHTML = `
-      <input id="f_kwmin" class="narrow" type="number" step="0.1" placeholder="kW min">
-      <input id="f_kwmax" class="narrow" type="number" step="0.1" placeholder="kW max">
-      <select id="f_roof"><option value="">Podłoże</option><option>blachodachówka</option><option>dachówka</option><option>dach płaski</option><option>grunt</option></select>`;
-    ['f_kwmin','f_kwmax','f_roof'].forEach(id=>{
-      const el = $('#'+id); el.addEventListener('input',applyFilters); el.addEventListener('change',applyFilters);
+  function parseInlineCSV(id){
+    const el = document.getElementById(id);
+    if(!el) return null;
+    const txt = el.textContent.trim(); if(!txt) return null;
+    const rows = txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    if(!rows.length) return null;
+    const delim = rows[0].includes(';')?';':',';
+    const head = rows[0].split(delim).map(h=>h.trim().toLowerCase());
+    return rows.slice(1).map(line=>{
+      const col = line.split(delim).map(c=>c.replace(/^"|"$/g,'').trim());
+      const o={}; head.forEach((h,i)=>o[h]=col[i]??''); return o;
     });
   }
-}
-function applyFilters(){
-  if(state.tab==='modules'){
-    state.filters.modules = {
-      tech:$('#f_tech').value, pMin:$('#f_pmin').value, pMax:$('#f_pmax').value,
-      effMin:$('#f_eff').value, color:$('#f_color').value
-    };
-  }else if(state.tab==='sets'){
-    state.filters.sets = {
-      kwMin:$('#f_kwmin').value, kwMax:$('#f_kwmax').value, roof:$('#f_roof').value
-    };
-  }
-  render();
-}
 
-function toggleSort(key){
-  if(state.sort.key===key){ state.sort.dir*=-1; } else { state.sort.key=key; state.sort.dir=1; }
-  render();
-}
-function sortFn(a,b){
-  const k=state.sort.key, d=state.sort.dir;
-  const va = String(a[k]??'').toLowerCase();
-  const vb = String(b[k]??'').toLowerCase();
-  if(!isNaN(+a[k]) && !isNaN(+b[k])) return d*(+a[k]-+b[k]);
-  return d*va.localeCompare(vb,'pl',{sensitivity:'base'});
-}
+  function loadEmbedded(){
+    // Panels
+    const P = parseInlineCSV('csv_panels')||[];
+    PANELS = P.map(x=>({ name:x['name'], watt:+(x['power (w)']||x['power']||0), price:+x['price']||0 }))
+              .filter(x=>x.name && x.watt>0);
 
-function renderHead(){
-  const cols = COLS[state.tab];
-  const ths = ['<th>Akcje</th>'].concat(cols.map(c=><th>${esc(c.lbl)}</th>));
-  $('#thead').innerHTML = <tr>${ths.join('')}</tr>;
-  Array.from($('#thead').querySelectorAll('th')).forEach((th,i)=>{
-    if(i===0) return;
-    const col = COLS[state.tab][i-1];
-    th.style.cursor='pointer';
-    th.title = 'Kliknij aby sortować';
-    th.addEventListener('click',()=>{ toggleSort(col.k); $('#sortLabel').textContent = col.lbl; });
-  });
-}
+    // Inverters
+    const I = parseInlineCSV('csv_inverters')||[];
+    INVERTERS = I.map(x=>{
+      const name = x['name'];
+      const kw   = +(x['power (kw)']||x['power']||0);
+      const price= +(x['price']||0);
+      const t    = String(x['type']||name||'').toLowerCase();
+      const hybrid = /hyb/.test(t) || /hybrid/.test(t);
+      return {name, kw, price, hybrid};
+    }).filter(x=>x.name && x.kw>0);
 
-function render(){
-  renderHead();
-  renderDynamicFilters();
+    // Batteries
+    const B = parseInlineCSV('csv_batteries')||[];
+    BATTERIES = B.map(x=>({name:x['name'], kwh:+(x['capacity (kwh)']||x['kwh']||0), price:+x['price']||0}))
+                 .filter(x=>x.name && x.kwh>0);
 
-  const cols = COLS[state.tab];
-  let rows = (state.data[state.tab]||[]).slice();
-
-  const q = ($('#q').value||'').toLowerCase();
-  if(q){ rows = rows.filter(r=> JSON.stringify(r).toLowerCase().includes(q) ); }
-
-  if(state.tab==='modules'){
-    const f=state.filters.modules;
-    if(f.tech) rows=rows.filter(r=>r.tech===f.tech);
-    if(+f.pMin) rows=rows.filter(r=>+r.watt >= +f.pMin);
-    if(+f.pMax) rows=rows.filter(r=>+r.watt <= +f.pMax);
-    if(+f.effMin) rows=rows.filter(r=>+r.eff >= +f.effMin);
-    if(f.color) rows=rows.filter(r=>String(r.color).toLowerCase()===String(f.color).toLowerCase());
-  }else if(state.tab==='sets'){
-    const f=state.filters.sets;
-    if(+f.kwMin) rows=rows.filter(r=>+r.kw >= +f.kwMin);
-    if(+f.kwMax) rows=rows.filter(r=>+r.kw <= +f.kwMax);
-    if(f.roof) rows=rows.filter(r=>String(r.roof)===f.roof);
+    // Heats
+    const H = parseInlineCSV('csv_heat')||[];
+    HEATS = H.map(x=>({name:x['name'], l:+(x['capacity (l)']||x['l']||0), price:+x['price']||3000}))
+             .filter(x=>x.name && x.l>0);
   }
 
-  if(state.sort.key==='brand_model'){
-    rows.sort((a,b)=>{
-      const a1=(a.brand||'')+' '+(a.model||''); const b1=(b.brand||'')+' '+(b.model||'');
-      return state.sort.dir * a1.localeCompare(b1,'pl',{sensitivity:'base'});
+  function populateAll(){
+    const selP=$('#panelSelect'); selP.innerHTML='';
+    PANELS.forEach((p,i)=>{
+      const o=document.createElement('option');
+      o.value=i;
+      o.textContent = `${p.name} (${p.watt} W)`;
+      selP.appendChild(o);
     });
-  }else{
-    rows.sort(sortFn);
-  }
+    $('#panelWatt').textContent = PANELS[0]?PANELS[0].watt:'—';
 
-  $('#countAll').textContent = (state.data[state.tab]||[]).length;
-  $('#countVis').textContent = rows.length;
-
-  const tb = $('#tbody'); tb.innerHTML='';
-  rows.forEach((r)=>{
-    const tr=document.createElement('tr');
-    const act = document.createElement('td');
-    act.innerHTML = `<div class="row">
-        <button class="btn ghost" data-act="dup" data-id="${r.id}">Duplikuj</button>
-        <button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button>
-      </div>`;
-    tr.appendChild(act);
-
-    cols.forEach(col=>{
-      const td=document.createElement('td');
-      const id = r.id+''+col.k;
-      const v  = r[col.k];
-      if(col.sel){
-        td.innerHTML = <select id="${id}">${col.sel.map(o=><option ${o==v?'selected':''}>${o}</option>).join('')}</select>;
-      }else if(col.num!=null){
-        td.innerHTML = <input id="${id}" type="number" class="narrow" step="${col.num===0?1:(col.num===1?0.1:0.01)}" value="${v??''}">;
-      }else{
-        td.innerHTML = `<input id="${id}" value="${v==null?'':v}" ${col.w?style="min-width:${col.w}px":''}>`;
-      }
-      tr.appendChild(td);
-      const el = td.querySelector('#'+CSS.escape(id));
-      if(el){
-        el.addEventListener('input', ()=> editCell(r.id,col.k,(col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
-        el.addEventListener('change', ()=> editCell(r.id,col.k,(col.num!=null? (el.value===''? '' : +el.value) : el.value)) );
-      }
+    const selI=$('#inverterSelect'); selI.innerHTML='';
+    INVERTERS.forEach((x,i)=>{
+      const o=document.createElement('option');
+      o.value=i;
+      o.textContent = `${x.name} (${x.kw} kW${x.hybrid?' • hyb.':''})`;
+      selI.appendChild(o);
     });
 
-    tb.appendChild(tr);
-  });
+    const selB=$('#batterySelect'); selB.innerHTML='<option value="none">Brak</option>';
+    BATTERIES.forEach((b,i)=>{
+      const o=document.createElement('option');
+      o.value=i;
+      o.textContent = `${b.name} (${b.kwh} kWh)`;
+      selB.appendChild(o);
+    });
 
-  tb.querySelectorAll('[data-act="del"]').forEach(b=>b.addEventListener('click',()=>{
-    const id=b.dataset.id;
-    state.data[state.tab] = (state.data[state.tab]||[]).filter(x=>x.id!==id);
-    saveTab();
-  }));
-  tb.querySelectorAll('[data-act="dup"]').forEach(b=>b.addEventListener('click',()=>{
-    const id=b.dataset.id;
-    const src = (state.data[state.tab]||[]).find(x=>x.id===id);
-    if(!src) return;
-    const copy = JSON.parse(JSON.stringify(src)); copy.id=uid();
-    if(copy.title) copy.title = copy.title + ' (kopia)';
-    state.data[state.tab].unshift(copy);
-    saveTab();
-  }));
-}
+    const selH=$('#heatSelect'); selH.innerHTML='<option value="none">Brak</option>';
+    HEATS.forEach((h,i)=>{
+      const o=document.createElement('option');
+      o.value=i;
+      o.textContent = `${h.name} (${h.l} l)`;
+      selH.appendChild(o);
+    });
+  }
 
-function editCell(id,key,val){
-  const arr = state.data[state.tab]||[];
-  const it = arr.find(x=>x.id===id); if(!it) return;
-  it[key]=val;
-  saveTab();
-}
+  function vatRate(){
+    if ($('#investorType').value==='company') return 0.23;
+    const area = Math.max(0, +$('#area').value||0);
+    return (area<=300)?0.08:0.23; // prosta reguła dla domu (dla mieszkania analogicznie)
+  }
 
-function toCSV(rows, cols){
-  const escCsv = v => { let s=(v==null?'':String(v)); if(/[;\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; };
-  const out = [cols.join(';')].concat(rows.map(r=>cols.map(c=>escCsv(r[c])).join(';')));
-  const blob = new Blob([out.join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panels_'+state.tab+'.csv'; a.click(); URL.revokeObjectURL(a.href);
-}
-function saveJSON(data){
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='panels_'+state.tab+'.json'; a.click(); URL.revokeObjectURL(a.href);
-}
-function readJSON(f){ return f.text().then(t=>JSON.parse(t)); }
-
-$$('.sb').forEach(b=>b.addEventListener('click',()=>{
-  $$('.sb').forEach(x=>x.setAttribute('aria-selected','false'));
-  b.setAttribute('aria-selected','true');
-  state.tab = b.dataset.k;
-  state.sort = {key:'brand_model',dir:1};
-  render();
-}));
-$('#q').addEventListener('input', e=>{ state.q = e.target.value.trim(); render(); });
-window.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); } });
-window.addEventListener('keydown', e=>{ if(e.altKey && /n/i.test(e.key)) addRow(); });
-
-$('#btnAdd').addEventListener('click', addRow);
-$('#btnCSV').addEventListener('click', ()=>{ const cols = COLS[state.tab].map(c=>c.k); toCSV(state.data[state.tab]||[], cols); });
-$('#btnJSON').addEventListener('click', ()=> saveJSON(state.data[state.tab]||[]) );
-$('#inJSON').addEventListener('change', async e=>{
-  const f=e.target.files[0]; if(!f) return;
-  try{
-    const arr=await readJSON(f);
-    if(!Array.isArray(arr)) throw new Error('Zły plik JSON (oczekuję tablicy).');
-    state.data[state.tab]=arr;
-    saveTab();
-  }catch(err){ alert('Błąd importu: '+(err.message||err)); }
-  e.target.value='';
-});
-
-function addRow(){
-  const def = (tab)=>{
-    switch(tab){
-      case 'modules': return {id:uid(),brand:'',model:'',tech:'Mono PERC',bifacial:'NIE',watt:450,eff:21.0,color:'black',size:'',temp:'-0.35',warr_prod:12,warr_perf:25,net_price:0,note:''};
-      case 'sets': return {id:uid(),title:'Nowy zestaw paneli',kw:3.0,roof:'blachodachówka',items:'',base_price:0,note:''};
+  function autoPickInverter(pvKW, needHybrid){
+    if (lastManualPick.inverter) return;
+    let best=-1, bestKW=Infinity;
+    INVERTERS.forEach((inv,i)=>{
+      if (needHybrid && !inv.hybrid) return;
+      if (!needHybrid && inv.hybrid) return;
+      if (inv.kw>=pvKW && inv.kw<bestKW){best=i; bestKW=inv.kw;}
+    });
+    if (best<0){
+      // fallback: największy zgodnego typu
+      let mx=-1, mxKW=-1;
+      INVERTERS.forEach((inv,i)=>{
+        if (needHybrid && !inv.hybrid) return;
+        if (!needHybrid && inv.hybrid) return;
+        if (inv.kw>mxKW){mx=i; mxKW=inv.kw;}
+      });
+      if (mx>=0) best=mx; else best=0;
     }
-  };
-  state.data[state.tab].unshift(def(state.tab));
-  saveTab();
-}
+    $('#inverterSelect').value=String(best);
+  }
 
-loadAll();
-seedIfEmpty();
-render();
+  function autoPickBattery(pvKW){
+    if (lastManualPick.battery) return;
+    // najmniejsza pojemność ≥ pvKW
+    let best=-1, bestK=Infinity;
+    BATTERIES.forEach((b,i)=>{ if(b.kwh>=pvKW && b.kwh<bestK){best=i; bestK=b.kwh;} });
+    if (best<0 && BATTERIES.length) best = BATTERIES.length-1;
+    if (best>=0){ $('#batterySelect').value=String(best); }
+  }
+
+  function dcAcBadge(dcKW, acKW){
+    const textEl = $('#ratioText');
+    const dotEl = $('#ratioBadge .dot');
+    if (!acKW){ textEl.textContent='DC/AC —'; dotEl.className='dot'; return; }
+    const r = (dcKW/acKW);
+    let cls='warn';
+    if (r>=0.8 && r<=1.2) cls='ok';
+    if (r<0.6 || r>1.4) cls='bad';
+    textEl.textContent = `DC/AC ${r.toFixed(2)}`;
+    dotEl.className = `dot ${cls}`;
+  }
+
+  function subsidyCalc(lines, hasPV, hasBat, hasHeat){
+    // kwalifikowane = sumaryczne netto linii (bez prowizji; wartości ujemne rabatu nie podbijają puli)
+    const eligible = lines.reduce((a,l)=>a+Math.max(0,l.net),0);
+    let cap = 0;
+    if (hasPV){
+      if (hasBat && !hasHeat) cap = 23000;
+      else if (hasHeat && !hasBat) cap = 12000;
+      else if (hasBat && hasHeat) cap = 23000; // przyjmujemy wyższą ścieżkę
+    } else {
+      if (hasBat) cap = 16000;
+      else cap = 0;
+    }
+    return Math.min(cap, eligible*0.5);
+  }
+
+  function recalc(){
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const setKW = +$('#setKW').value;
+    const panel = PANELS[+$('#panelSelect').value]||null;
+
+    // liczba paneli
+    let qtyPanels = 0;
+    if (mode==='set'){
+      qtyPanels = (panel && panel.watt>0) ? Math.ceil(setKW*1000/panel.watt) : 0;
+      $('#manualBlock').style.display = 'none';
+    } else {
+      qtyPanels = Math.max(0, +$('#panelCount').value||0);
+      $('#manualBlock').style.display = 'block';
+    }
+    const pvKW = panel ? (panel.watt*qtyPanels)/1000 : 0;
+    $('#pvKW').textContent = pvKW.toFixed(2)+' kW';
+
+    // benchmark panel/kW (tylko same panele)
+    if (panel && panel.watt>0){
+      const pricePerKW = (panel.price * (1000/panel.watt));
+      $('#benchKW').textContent = PLN(pricePerKW);
+      $('#panelWatt').textContent = panel.watt;
+    }else{
+      $('#benchKW').textContent = '— zł/kW';
+      $('#panelWatt').textContent = '—';
+    }
+
+    // bateria/auto
+    const batVal = $('#batterySelect').value;
+    const battery = (batVal==='none')?null:BATTERIES[+batVal];
+    if (!lastManualPick.battery && $('#batterySelect').value!=='none' && pvKW>0) {
+      autoPickBattery(pvKW);
+    }
+
+    // falownik — hybrydowy jeśli jest bateria
+    const needHybrid = !!battery;
+    autoPickInverter(pvKW, needHybrid);
+    const inverter = INVERTERS[+$('#inverterSelect').value]||null;
+    dcAcBadge(pvKW, inverter?inverter.kw:0);
+
+    // montaż
+    const mount = $('#mountType').value;
+
+    // pakiety
+    const pkgMeterBoard = $('#pkgMeterBoard').checked;
+    const pkgOptAuto    = $('#pkgOptAuto').checked;
+
+    // ręczne
+    const optManual = $('#optManual').checked;
+    const optQty    = Math.max(0, +$('#optQty').value||0);
+    const meterYes  = $('#meterYes').checked || pkgMeterBoard;
+    const boardYes  = $('#boardYes').checked || pkgMeterBoard;
+
+    // auto przekop przy gruncie ↔ checkbox pakietu przekopu
+    if (mount==='ground' && !$('#trenchYes').checked) $('#trenchYes').checked = true;
+
+    // linie (bez prowizji i bez ukrytego narzutu)
+    const lines=[];
+
+    if (panel && qtyPanels>0) lines.push({name:`Panele: ${panel.name}`, qty:`${qtyPanels} szt.`, net: zloty(panel.price*qtyPanels)});
+
+    if (inverter && pvKW>0) lines.push({name:`Falownik: ${inverter.name}`, qty:'1 szt.', net: zloty(inverter.price)});
+
+    if (battery) lines.push({name:`Magazyn energii: ${battery.name}`, qty:'1 szt.', net: zloty(battery.price)});
+
+    const heatVal = $('#heatSelect').value;
+    if (heatVal!=='none'){
+      const ht = HEATS[+heatVal];
+      if (ht) lines.push({name:`Magazyn ciepła: ${ht.name}`, qty:'1 szt.', net: zloty(ht.price)});
+    }
+
+    if (mount==='flat'  && qtyPanels>0) lines.push({name:'Montaż: dach płaski (dopłata)', qty:'1 kpl.', net:zloty(MOUNT_FLAT)});
+    if (mount==='ground'&& qtyPanels>0) lines.push({name:'Montaż: grunt (dopłata)',       qty:'1 kpl.', net:zloty(MOUNT_GROUND)});
+
+    if ($('#trenchYes').checked) lines.push({name:'Przekop instalacyjny (ryczałt)', qty:'1 kpl.', net:zloty(COST_TRENCH)});
+
+    const cableExtra = Math.max(0, +$('#cableExtra').value||0);
+    if (cableExtra>0) lines.push({name:'Dodatkowy kabel (ponad 20 m)', qty:`${cableExtra} m`, net:zloty(cableExtra*COST_CABLE)});
+
+    // optymalizatory – pakiet auto lub ręcznie
+    if (pkgOptAuto && qtyPanels>0) lines.push({name:'Optymalizatory mocy (auto)', qty:`${qtyPanels} szt.`, net:zloty(qtyPanels*COST_OPT)});
+    if (optManual && optQty>0)      lines.push({name:'Optymalizatory mocy (ręcznie)', qty:`${optQty} szt.`, net:zloty(optQty*COST_OPT)});
+
+    if (meterYes) lines.push({name:'Licznik produkcji 3F', qty:'1 szt.', net:zloty(COST_METER)});
+    if (boardYes) lines.push({name:'Rozdzielnia AC/DC',    qty:'1 szt.', net:zloty(COST_BOARD)});
+
+    if ($('#transportYes').checked){
+      lines.push({name:'Transport i logistyka', qty:'1 kpl.', net:zloty(COST_TRANSPORT)});
+    }
+
+    // sumy netto (pozycje)
+    const netBase = lines.reduce((a,l)=>a+l.net,0);
+
+    // rabat
+    let discount = 0;
+    const dVal = Math.max(0, +$('#discountValue').value||0);
+    const dType= $('#discountType').value;
+    if (dVal>0){
+      discount = (dType==='percent') ? zloty(netBase * (dVal/100)) : zloty(dVal);
+    }
+    const netAfterDiscount = Math.max(0, zloty(netBase - discount));
+
+    // prowizja — od kwoty po rabacie + ukryty narzut firmy
+    const commPct = Math.max(0, +$('#commissionPct').value||0);
+    const commNet = zloty((netAfterDiscount + COMPANY_MARGIN) * (commPct/100));
+    const netWithComm = zloty(netAfterDiscount + commNet);
+
+    // VAT
+    const vatR = vatRate();
+    const vatAmt = zloty(netWithComm * vatR);
+    const gross = zloty(netWithComm + vatAmt);
+
+    // ukryty narzut firmy – tylko w sumie
+    const marginVat = zloty(COMPANY_MARGIN * vatR);
+    const totalNetWithMargin = zloty(netWithComm + COMPANY_MARGIN);
+    const totalVatWithMargin = zloty(vatAmt + marginVat);
+    const totalGrossWithMargin = zloty(totalNetWithMargin + totalVatWithMargin);
+
+    // dotacja
+    let subsidy = 0;
+    const hasPV = qtyPanels>0;
+    const hasBat = !!battery;
+    const hasHeat = (heatVal!=='none');
+    if ($('#subsidyMode').value==='apply'){
+      subsidy = Math.floor( subsidyCalc(lines, hasPV, hasBat, hasHeat) );
+    }
+    const grossAfterSubsidy = Math.max(0, zloty(totalGrossWithMargin - subsidy));
+
+    // benchmark finalny zł/kW (netto z narzutem, bez VAT i dotacji)
+    const benchFinal = (pvKW>0) ? zloty(totalNetWithMargin / pvKW) : 0;
+
+    // render linii
+    const tbody=$('#lines'); tbody.innerHTML='';
+    lines.forEach(l=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML = `<td>${l.name}</td><td>${l.qty}</td><td>${PLN(l.net)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    // stopka sum
+    const tfoot=$('#totals'); tfoot.innerHTML='';
+    function add(label,val,bold=false){
+      const tr=document.createElement('tr');
+      tr.innerHTML = `<th class="${bold?'title':''}">${label}</th><th></th><th class="${bold?'sum':''}">${PLN(val)}</th>`;
+      tfoot.appendChild(tr);
+    }
+    add('RAZEM netto (pozycje)', netBase);
+    if (discount>0) add(`Rabat (${dType==='percent'? dVal+'%':'kwotowy'})`, zloty(-discount));
+    if (commNet>0)  add(`Prowizja handlowca (${commPct.toFixed(1)}%)`, commNet);
+    add('RAZEM netto (po rabacie i prowizji)', netWithComm, true);
+    add(`VAT ${Math.round(vatR*100)}%`, vatAmt);
+    add('RAZEM brutto (bez narzutu firmy)', gross);
+    // narzutu nie pokazujemy jako pozycji — tylko doliczony w sumach końcowych:
+    add('RAZEM netto (z narzutem firmy)', totalNetWithMargin);
+    add('RAZEM VAT (z narzutem firmy)', totalVatWithMargin);
+    add('RAZEM brutto', totalGrossWithMargin, true);
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<th class="title">DO ZAPŁATY (po dotacji)</th><th></th><th class="sum">${PLN(grossAfterSubsidy)}</th>`;
+    tfoot.appendChild(tr);
+
+    // prawy panel: dotacja + benchmark
+    $('#subsidy').textContent = PLN(subsidy);
+    $('#benchFinal').textContent = (pvKW>0 ? PLN(benchFinal).replace(' zł','')+' /kW' : '— zł/kW');
+  }
+
+  // ===== Zapis/odczyt/eksport =====
+  function snapshot(){
+    return {
+      mode: document.querySelector('input[name="mode"]:checked').value,
+      setKW: $('#setKW').value,
+      panel: +$('#panelSelect').value,
+      panelCount: +($('#panelCount').value||0),
+      inverter: +$('#inverterSelect').value,
+      battery: $('#batterySelect').value,
+      heat: $('#heatSelect').value,
+      mount: $('#mountType').value,
+      cableExtra: +($('#cableExtra').value||0),
+      pkgMeterBoard: $('#pkgMeterBoard').checked,
+      pkgOptAuto: $('#pkgOptAuto').checked,
+      optManual: $('#optManual').checked,
+      optQty: +($('#optQty').value||0),
+      meterYes: $('#meterYes').checked,
+      boardYes: $('#boardYes').checked,
+      trenchYes: $('#trenchYes').checked,
+      transportYes: $('#transportYes').checked,
+      investorType: $('#investorType').value,
+      area: +($('#area').value||0),
+      commissionPct: +($('#commissionPct').value||0),
+      subsidyMode: $('#subsidyMode').value,
+      discountValue: +($('#discountValue').value||0),
+      discountType: $('#discountType').value,
+      notes: $('#notes').value
+    };
+  }
+  function restore(state){
+    if (!state) return;
+    document.querySelector(`input[name="mode"][value="${state.mode||'set'}"]`).checked = true;
+    $('#manualBlock').style.display = (state.mode==='manual')?'block':'none';
+    $('#setKW').value = state.setKW||'5.0';
+    $('#panelSelect').value = String(state.panel||0);
+    $('#panelCount').value = state.panelCount||0;
+    $('#inverterSelect').value = String(state.inverter||0);
+    $('#batterySelect').value = state.battery || 'none';
+    $('#heatSelect').value = state.heat || 'none';
+    $('#mountType').value = state.mount || 'pitched';
+    $('#cableExtra').value = state.cableExtra||0;
+    $('#pkgMeterBoard').checked = !!state.pkgMeterBoard;
+    $('#pkgOptAuto').checked = !!state.pkgOptAuto;
+    $('#optManual').checked = !!state.optManual;
+    $('#optQty').value = state.optQty||0;
+    $('#meterYes').checked = !!state.meterYes;
+    $('#boardYes').checked = !!state.boardYes;
+    $('#trenchYes').checked = !!state.trenchYes;
+    $('#transportYes').checked = !!state.transportYes;
+    $('#investorType').value = state.investorType||'private';
+    $('#area').value = state.area||120;
+    $('#commissionPct').value = state.commissionPct||0;
+    $('#subsidyMode').value = state.subsidyMode||'apply';
+    $('#discountValue').value = state.discountValue||0;
+    $('#discountType').value = state.discountType||'amount';
+    $('#notes').value = state.notes||'';
+    recalc();
+  }
+  function saveOffer(){
+    const name = ($('#offerName').value||'').trim();
+    if (!name){ alert('Podaj nazwę oferty.'); return; }
+    const list = JSON.parse(localStorage.getItem('pv_offers')||'{}');
+    list[name] = snapshot();
+    localStorage.setItem('pv_offers', JSON.stringify(list));
+    alert('Zapisano ofertę: '+name);
+  }
+  function loadOffer(){
+    const list = JSON.parse(localStorage.getItem('pv_offers')||'{}');
+    const names = Object.keys(list);
+    if (!names.length){ alert('Brak zapisanych ofert.'); return; }
+    const name = prompt('Podaj nazwę oferty do wczytania:\n' + names.join('\n'));
+    if (!name) return;
+    if (!list[name]){ alert('Nie znaleziono: '+name); return; }
+    $('#offerName').value = name;
+    restore(list[name]);
+  }
+  function exportJSON(){
+    const name = ($('#offerName').value||'oferta').replace(/\W+/g,'_');
+    const blob = new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'.json'; a.click(); URL.revokeObjectURL(a.href);
+  }
+  function exportCSV(){
+    const s = snapshot();
+    const rows = [
+      ['pole','wartość'],
+      ['tryb', s.mode],
+      ['zestaw_kW', s.setKW],
+      ['panel', PANELS[s.panel]?.name||''],
+      ['panel_watt', PANELS[s.panel]?.watt||''],
+      ['panele_szt', s.panelCount],
+      ['inwerter', INVERTERS[s.inverter]?.name||''],
+      ['bateria', s.battery==='none'?'brak':(BATTERIES[+s.battery]?.name||'')],
+      ['magazyn_ciepla', s.heat==='none'?'brak':(HEATS[+s.heat]?.name||'')],
+      ['montaz', s.mount],
+      ['kabel_extra_m', s.cableExtra],
+      ['pakiet_licznik_rozdzielnia', s.pkgMeterBoard],
+      ['pakiet_opt_auto', s.pkgOptAuto],
+      ['opt_manual', s.optManual],
+      ['opt_qty', s.optQty],
+      ['licznik', s.meterYes],
+      ['rozdzielnia', s.boardYes],
+      ['przekop', s.trenchYes],
+      ['transport', s.transportYes],
+      ['inwestor', s.investorType],
+      ['powierzchnia', s.area],
+      ['prowizja_pct', s.commissionPct],
+      ['dotacja_tryb', s.subsidyMode],
+      ['rabat', s.discountValue + (s.discountType==='percent'?'%':' zł')],
+      ['uwagi', (s.notes||'').replace(/\n/g,' ')]
+    ];
+    const csv = rows.map(r=>r.map(x=>String(x).includes(';')?('"'+String(x).replace(/"/g,'""')+'"'):String(x)).join(';')).join('\n');
+    const name = ($('#offerName').value||'oferta').replace(/\W+/g,'_');
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'.csv'; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  // ===== Presety =====
+  function bindPresets(){
+    document.getElementById('preset5').addEventListener('click', ()=>{
+      document.querySelector('input[name="mode"][value="set"]').checked = true;
+      document.getElementById('manualBlock').style.display='none';
+      document.getElementById('setKW').value='5.0';
+      document.getElementById('panelSelect').selectedIndex=0;   // pierwszy model paneli
+      document.getElementById('batterySelect').value='none';
+      document.getElementById('heatSelect').value='none';
+      document.getElementById('pkgMeterBoard').checked=true;
+      document.getElementById('pkgOptAuto').checked=false;
+      document.getElementById('boardYes').checked=true;
+      document.getElementById('meterYes').checked=true;
+      document.getElementById('mountType').value='pitched';
+      document.getElementById('cableExtra').value=0;
+      document.getElementById('commissionPct').value=0;
+      document.getElementById('subsidyMode').value='apply';
+      document.getElementById('transportYes').checked=true;
+      recalc();
+    });
+    document.getElementById('preset6b').addEventListener('click', ()=>{
+      document.querySelector('input[name="mode"][value="set"]').checked = true;
+      document.getElementById('manualBlock').style.display='none';
+      document.getElementById('setKW').value='6.0';
+      document.getElementById('panelSelect').selectedIndex=0;
+      const firstBattery = document.querySelector('#batterySelect option[value]:not([value="none"])');
+      if (firstBattery) firstBattery.selected = true;
+      document.getElementById('pkgMeterBoard').checked=true;
+      document.getElementById('pkgOptAuto').checked=true; // do każdego panelu
+      document.getElementById('mountType').value='pitched';
+      document.getElementById('transportYes').checked=true;
+      recalc();
+    });
+    document.getElementById('preset10full').addEventListener('click', ()=>{
+      document.querySelector('input[name="mode"][value="set"]').checked = true;
+      document.getElementById('manualBlock').style.display='none';
+      document.getElementById('setKW').value='10.0';
+      document.getElementById('panelSelect').selectedIndex=2; // LONGI 460
+      const lastInverter = document.getElementById('inverterSelect').options.length-1;
+      if (lastInverter>=0) document.getElementById('inverterSelect').selectedIndex = lastInverter;
+      const lastBattery = document.getElementById('batterySelect').options.length-1;
+      if (lastBattery>=1) document.getElementById('batterySelect').selectedIndex = lastBattery; // nie "Brak"
+      document.getElementById('pkgMeterBoard').checked=true;
+      document.getElementById('pkgOptAuto').checked=true;
+      document.getElementById('mountType').value='flat'; // pokaż dopłatę 500 zł
+      document.getElementById('trenchYes').checked=false;
+      document.getElementById('transportYes').checked=true;
+      recalc();
+    });
+  }
+
+  // ===== Bindy UI =====
+  function bind(){
+    // tryb
+    document.querySelectorAll('input[name="mode"]').forEach(r=>{
+      r.addEventListener('change', ()=>{
+        const manual = (r.value==='manual' && r.checked);
+        $('#manualBlock').style.display = manual ? 'block':'none';
+        recalc();
+      });
+    });
+
+    // panele
+    $('#panelSelect').addEventListener('change', ()=>{ lastManualPick.inverter=false; lastManualPick.battery=false; recalc(); });
+    $('#panelCount').addEventListener('input', recalc);
+    $('#setKW').addEventListener('change', recalc);
+
+    // inwerter/bateria/bufor
+    $('#inverterSelect').addEventListener('change', ()=>{ lastManualPick.inverter=true; recalc(); });
+    $('#batterySelect').addEventListener('change', ()=>{ lastManualPick.battery=true; recalc(); });
+    $('#heatSelect').addEventListener('change', recalc);
+
+    // montaż/dodatki
+    $('#mountType').addEventListener('change', recalc);
+    $('#cableExtra').addEventListener('input', recalc);
+    $('#pkgMeterBoard').addEventListener('change', recalc);
+    $('#pkgOptAuto').addEventListener('change', recalc);
+    $('#pkgTrench').addEventListener('change', ()=>{ $('#trenchYes').checked = $('#pkgTrench').checked; recalc(); });
+    $('#optManual').addEventListener('change', recalc);
+    $('#optQty').addEventListener('input', recalc);
+    $('#meterYes').addEventListener('change', recalc);
+    $('#boardYes').addEventListener('change', recalc);
+    $('#trenchYes').addEventListener('change', recalc);
+    $('#transportYes').addEventListener('change', recalc);
+
+    // VAT/rabat/prowizja/dotacja
+    $('#investorType').addEventListener('change', recalc);
+    $('#area').addEventListener('input', recalc);
+    $('#commissionPct').addEventListener('input', recalc);
+    $('#subsidyMode').addEventListener('change', recalc);
+    $('#discountValue').addEventListener('input', recalc);
+    $('#discountType').addEventListener('change', recalc);
+
+    // akcje
+    $('#btnPrint').addEventListener('click', ()=>window.print());
+    $('#btnReset').addEventListener('click', ()=>{
+      lastManualPick={inverter:false,battery:false};
+      document.querySelector('input[name="mode"][value="set"]').checked = true;
+      $('#manualBlock').style.display='none';
+      $('#setKW').value='5.0';
+      $('#panelSelect').selectedIndex=0;
+      $('#panelCount').value=10;
+      $('#inverterSelect').selectedIndex=0;
+      $('#batterySelect').value='none';
+      $('#heatSelect').value='none';
+      $('#mountType').value='pitched';
+      $('#cableExtra').value=0;
+      $('#pkgMeterBoard').checked=false;
+      $('#pkgOptAuto').checked=false;
+      $('#pkgTrench').checked=false;
+      $('#optManual').checked=false; $('#optQty').value=0;
+      $('#meterYes').checked=false; $('#boardYes').checked=false;
+      $('#trenchYes').checked=false;
+      $('#transportYes').checked=false;
+      $('#investorType').value='private'; $('#area').value=120;
+      $('#commissionPct').value=0;
+      $('#subsidyMode').value='apply';
+      $('#discountValue').value=0; $('#discountType').value='amount';
+      $('#notes').value='';
+      recalc();
+    });
+    $('#btnSave').addEventListener('click', saveOffer);
+    $('#btnLoad').addEventListener('click', loadOffer);
+    $('#btnExportJSON').addEventListener('click', exportJSON);
+    $('#btnExportCSV').addEventListener('click', exportCSV);
+  }
+
+  // start
+  loadEmbedded();
+  populateAll();
+  bind();
+  bindPresets();
+  recalc();
+})();
 </script>
 </body>
 </html>
