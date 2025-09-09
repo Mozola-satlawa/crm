@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>STALMARK (pellet) — Konfigurator zestawu (kocioł + CWU + montaż)</title>
+  <style>
+    :root{--bg:#f6fff7;--panel:#fff;--line:#d9f5df;--text:#083c1c;--muted:#3e7a52;--accent:#22c55e;--accent-2:#16a34a;--accent-soft:#d9fbe5;--chip-bg:#eafcf1;--danger:#ef4444;--warn:#f59e0b}
+    *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:18px auto 48px;padding:0 16px}header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    h1{font-size:22px;margin:0}.sub{font-size:12px;color:var(--muted)}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}.panel h3{margin:0 0 8px;font-size:16px}
+    .btn{background:var(--accent);color:#052e16;border:1px solid var(--accent-2);padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}.btn.ghost{background:var(--chip-bg);border:1px dashed var(--line);color:var(--text)}
+    .btn.warn{background:#fff4d7;border-color:#fcd34d;color:#7a4a00}.btn.danger{background:#ffe5e5;border-color:#fecaca;color:#7a0000}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1060px){.grid{grid-template-columns:1fr .9fr}}label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    select,input[type=text],input[type=number]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fbfffc}select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}.col{grid-column:span 12}@media(min-width:680px){.col{grid-column:span 4}.col.wide{grid-column:span 8}}
+    .muted{color:var(--muted)}.sep{height:1px;background:var(--line);margin:10px 0}.bundle-grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:960px){.bundle-grid{grid-template-columns:1fr 1fr}}
+    .card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.card h4{margin:0 0 8px;font-size:15px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#e8fff0;border:1px solid #c7f6d4;font-size:11px;font-weight:800;margin-right:6px}
+    ul.clean{margin:6px 0 0;padding-left:18px}ul.clean li{margin:3px 0}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:8px 10px}thead th{background:#f2fff5;text-align:left}.right{text-align:right;white-space:nowrap}
+    .price-preview{font-weight:800;font-size:18px;margin-top:6px}
+    nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    nav a{color:#064e3b;text-decoration:none;border:1px solid var(--line);background:var(--chip-bg);padding:6px 10px;border-radius:999px}
+    nav a:hover{background:#eefdf3}
+    .mini{font-size:12px;color:var(--muted)}
+    .bridge-note{background:#f2fff7;border:1px dashed var(--line);padding:8px;border-radius:12px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>STALMARK — konfigurator zestawu (pellet)</h1>
+        <div class="sub">
+          Zestaw = kocioł (pellet) + zasobnik CWU + montaż.
+          Grzejniki (montaż): <b>750 PLN/szt.</b> • Wkład kominowy: <b>650 PLN/mb</b>.
+          Tylko kotły STALMARK na pellet.
+        </div>
+        <nav>
+          <!-- spójna nawigacja: przejście do katalogu Komponenty • Piece -->
+          <a href="komponenty-piece.html" target="_blank" id="goArkon">Otwórz katalog: Komponenty • Piece</a>
+        </nav>
+      </div>
+      <div class="bar">
+        <button class="btn" id="exportQuote">Eksport koszyka (XLSX)</button>
+        <button class="btn ghost" id="copyQuote">Kopiuj ofertę</button>
+        <button class="btn ghost" id="print">Drukuj / PDF</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="panel">
+        <h3>Dobierz parametry</h3>
+        <div class="row">
+          <div class="col wide">
+            <label>Model kotła (STALMARK pellet — lokalna lista)</label>
+            <select id="boiler"></select>
+          </div>
+          <div class="col">
+            <label>Moc [kW]</label>
+            <input id="power" type="text" readonly placeholder="auto z modelu">
+          </div>
+          <div class="col">
+            <label>Typ/paliwo</label>
+            <input id="type" type="text" readonly value="pellet">
+          </div>
+          <div class="col">
+            <label>Cena kotła [PLN]</label>
+            <input id="boilerPrice" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Zasobnik CWU [l]</label>
+            <select id="tank"></select>
+          </div>
+          <div class="col">
+            <label>Cena zbiornika [PLN]</label>
+            <input id="tankPrice" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Liczba grzejników (montaż)</label>
+            <input id="rads" type="number" min="0" step="1" value="0">
+            <div class="mini">750 PLN/szt.</div>
+          </div>
+          <div class="col">
+            <label>Wkład kominowy [m]</label>
+            <input id="chimneyM" type="number" min="0" step="0.1" value="0">
+            <div class="mini">650 PLN/mb</div>
+          </div>
+          <div class="col">
+            <label>VAT</label>
+            <select id="vat">
+              <option value="0.08">8%</option>
+              <option value="0.23">23%</option>
+            </select>
+          </div>
+          <div class="col wide">
+            <div class="muted">Aktualna cena zestawu (wg wyboru):</div>
+            <div id="pricePreview" class="price-preview">—</div>
+          </div>
+        </div>
+
+        <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Piece (pellet/STALMARK) ▼▼▼ -->
+        <div class="sep"></div>
+        <h3 style="margin-top:0">Mostek ARKON — Piece (pellet/STALMARK)</h3>
+        <div class="row">
+          <div class="col">
+            <label>Marka (z „Komponenty • Piece”)</label>
+            <select id="arkonBrand"></select>
+          </div>
+          <div class="col">
+            <label>Filtr mocy min [kW]</label>
+            <input id="arkonPowMin" type="number" step="0.1" placeholder="np. 10">
+          </div>
+          <div class="col">
+            <label>Filtr mocy max [kW]</label>
+            <input id="arkonPowMax" type="number" step="0.1" placeholder="np. 40">
+          </div>
+          <div class="col wide">
+            <label>Model (z „Komponenty • Piece”)</label>
+            <select id="arkonModel" disabled></select>
+          </div>
+          <div class="col">
+            <label>Akcje</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn ghost" id="useArkonBoiler">Użyj tego kotła</button>
+              <button class="btn ghost" id="openArkon">Otwórz katalog (nowa karta)</button>
+            </div>
+          </div>
+          <div class="col wide">
+            <div id="arkonPreview" class="bridge-note">Brak wyboru z katalogu. Wybierz STALMARK/pellet.</div>
+          </div>
+        </div>
+        <div class="sub">
+          Źródło: <code>localStorage["arkon_components_boilers_v2"]</code>. Wymuszamy <b>STALMARK</b> + <b>pellet</b>.
+          Preferencje do katalogu: <code>arkon_return_to</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>.
+          Odbiór wyboru: <code>arkon_selected_boiler_id</code> lub <code>postMessage</code> (<code>type:"ARKON_BOILER_SELECTED"</code>).
+        </div>
+        <!-- ▲▲▲ KONIEC MOSTKA ▲▲▲ -->
+
+        <div class="sep"></div>
+        <div class="row">
+          <div class="col"><button class="btn" id="addPack">Dodaj: Zestaw (kocioł + CWU + montaż)</button></div>
+          <div class="col"><button class="btn warn" id="addBoilerOnly">Dodaj: Sam kocioł</button></div>
+        </div>
+      </div>
+
+      <div class="panel" id="mustHavePanel">
+        <h3>Skład zestawu (must-have)</h3>
+        <div id="mustHaveList" class="muted">Wybierz kocioł i zasobnik — pokażę skład.</div>
+      </div>
+
+      <div class="panel">
+        <h3>Koszyk</h3>
+        <table id="basket">
+          <thead><tr><th>Pozycja</th><th>Ilość</th><th class="right">Cena</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="sep"></div>
+        <div class="row">
+          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" style="font-weight:800;font-size:22px;"></div></div>
+          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" style="font-weight:800;font-size:22px;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Akcesoria (opcjonalnie)</h3>
+      <div class="bundle-grid" id="addons"></div>
+      <div class="sep"></div>
+      <button class="btn ghost" id="addSelectedAddons">Dodaj wybrane</button>
+      <div class="sub" style="margin-top:6px">Grzejniki (montaż) i wkład kominowy wliczane są w cenę zestawu wg pól powyżej.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    /* ================== DANE STALMARK — tylko pellet (lokalny fallback) ==================
+       Jeśli katalog „Komponenty • Piece” ma tę markę, to mostek ARKON przyjmie ceny i modele z katalogu.
+       Poniższe służą jako baza startowa / demo (możesz je podmienić). */
+    const STALMARK_MODELS = [
+      // EKO SILVER III
+      { model:'EKO SILVER III 10 kW', power:10, fuel:'pellet', price:15600 },
+      { model:'EKO SILVER III 14 kW', power:14, fuel:'pellet', price:16580 },
+      { model:'EKO SILVER III 19 kW', power:19, fuel:'pellet', price:16900 },
+      { model:'EKO SILVER III 24 kW', power:24, fuel:'pellet', price:18900 },
+      { model:'EKO SILVER III 30 kW', power:30, fuel:'pellet', price:19600 },
+      { model:'EKO SILVER III 40 kW', power:40, fuel:'pellet', price:24700 },
+      // EKO BOX II
+      { model:'EKO BOX II 10 kW',    power:10, fuel:'pellet', price:14700 },
+      { model:'EKO BOX II 15 kW',    power:15, fuel:'pellet', price:15400 },
+      { model:'EKO BOX II 20 kW',    power:20, fuel:'pellet', price:18400 },
+      // PELLET VEGAS II
+      { model:'PELLET VEGAS II 12 kW', power:12, fuel:'pellet', price:15600 },
+      { model:'PELLET VEGAS II 15 kW', power:15, fuel:'pellet', price:15300 },
+      { model:'PELLET VEGAS II 20 kW', power:20, fuel:'pellet', price:17700 },
+      { model:'PELLET VEGAS II 25 kW', power:25, fuel:'pellet', price:16600 }
+    ];
+
+    /* ====== Zasobniki i akcesoria ====== */
+    const TANKS = { '120':2100, '150':2450, '200':2900, '300':3800 };
+    const ACCESSORY_BASE = {
+      "Zawór 3-drogowy przełączający 1\"":470,
+      "Grupa bezpieczeństwa CO 3 bar":150,
+      "Filtr siatkowy Y 1\"":180,
+      "Separator magnetyczny / odmulacz 5/4\"":840,
+      "Naczynie przeponowe CO 18 l":460,
+      "Pompa obiegowa CO 25-60":1440
+    };
+
+    /* ====== Biznes / wyliczenia ====== */
+    const PACK_INSTALL_BASE = 18000; // baza montaż + materiały (niewidoczna)
+    const RAD_PRICE = 750;           // montaż grzejnika / szt.
+    const CHIMNEY_PRICE = 650;       // wkład kominowy / metr
+    const ONLY_BOILER_SURCHARGE = 0; // dopłata do "sam kocioł" (ukryta), jeśli chcesz
+
+    const state = {
+      vat:0.08, basket:[],
+      selectedBoiler:null, selectedTank:null,
+      rads:0, chimneyM:0,
+      arkon:{ boilers:[], byBrand:{}, selected:null, cache:[] }
+    };
+
+    const q = s=>document.querySelector(s);
+    const INT = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const fmt = n => INT.format(Number(n)||0);
+
+    function pricePack(boilerPrice, tankPrice, rads, chimneyM){
+      return (Number(boilerPrice)||0)
+           + (Number(tankPrice)||0)
+           + PACK_INSTALL_BASE
+           + (Number(rads)||0) * RAD_PRICE
+           + (Number(chimneyM)||0) * CHIMNEY_PRICE;
+    }
+
+    function addToBasket(name, finalPrice, qty=1){
+      const i = state.basket.findIndex(x=>x.name===name && Math.abs(x.final-finalPrice)<0.01);
+      if(i>=0) state.basket[i].qty += qty; else state.basket.push({name, final:finalPrice, qty});
+      renderBasket();
+    }
+
+    function renderBasket(){
+      const tb=q('#basket tbody'); tb.innerHTML=''; let sum=0;
+      state.basket.forEach((it,i)=>{
+        sum += it.final*it.qty;
+        const tr=document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it.name}</td>
+          <td><input type="number" data-qty-basket="${i}" value="${it.qty}" min="1" style="width:70px; padding:6px 8px; border:1px solid var(--line); border-radius:10px;"></td>
+          <td class="right">${fmt(it.final)} PLN</td>
+          <td class="right"><button class="btn danger" data-del="${i}">Usuń</button></td>`;
+        tb.appendChild(tr);
+      });
+      q('#sumFinal').textContent  = fmt(sum) + ' PLN';
+      q('#sumBrutto').textContent = fmt(sum*(1+state.vat)) + ' PLN';
+    }
+
+    function activeBoiler(){
+      if(state.arkon.selected){
+        return {
+          model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
+          power: state.arkon.selected.powMax || state.arkon.selected.powMin || '',
+          fuel:  'pellet',
+          price: Number(state.arkon.selected.price)||0,
+          flue:  state.arkon.selected.flue || ''
+        };
+      }
+      return state.selectedBoiler;
+    }
+
+    function renderMustHave(){
+      const box=q('#mustHaveList');
+      const b=activeBoiler(), t=state.selectedTank;
+      if(!b||!t){ box.textContent='Wybierz kocioł i zasobnik — pokażę skład.'; return; }
+      const items = [];
+      items.push(`Kocioł pellet — ${b.model}${b.power?` (${b.power} kW)`:''}`);
+      items.push(`Zasobnik CWU — ${t} l`);
+      items.push('Zasobnik pelletu z podajnikiem + zapalarka (zgodnie z modelem)');
+      items.push('Automatyczne czyszczenie wymiennika (jeśli w modelu)');
+      items.push('Armatura: zawór 3D CWU/CO, grupa bezpieczeństwa CO, zawór zwrotny');
+      items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
+      items.push('Naczynie przeponowe CO, odpowietrzniki automatyczne');
+      const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${RAD_PRICE} PLN/szt.`);
+      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${CHIMNEY_PRICE} PLN/mb${state.arkon.selected?.flue ? ` • zalec. Ø ${state.arkon.selected.flue} mm`:''}`);
+      items.push('Montaż, uruchomienie, konfiguracja sterowania');
+      box.innerHTML = '<ul class="clean">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
+    }
+
+    function renderPreview(){
+      const b = activeBoiler();
+      const t = state.selectedTank;
+      const r = Number(state.rads)||0;
+      const m = Number(state.chimneyM)||0;
+      if(!b || !t){ q('#pricePreview').textContent='—'; return; }
+      const sum = pricePack(Number(b.price)||0, TANKS[t], r, m);
+      q('#pricePreview').textContent = fmt(sum) + ' PLN netto (brutto: ' + fmt(sum*(1+state.vat)) + ' PLN)';
+    }
+
+    /* ====== UI fill (lokalne STALMARK pellet) ====== */
+    function fillBoilers(){
+      const s=q('#boiler');
+      const sorted=STALMARK_MODELS.slice().sort((a,b)=> a.power-b.power || a.price-b.price );
+      s.innerHTML = sorted.map((b,i)=>`<option value="${i}">${b.model} • ${b.power} kW • ${fmt(b.price)} PLN</option>`).join('');
+      s.value="0"; state.selectedBoiler = sorted[0];
+      q('#power').value = (state.selectedBoiler.power||'') + (state.selectedBoiler.power?' kW':'');
+      q('#type').value  = 'pellet';
+      q('#boilerPrice').value = fmt(state.selectedBoiler.price) + ' PLN';
+      s.addEventListener('change', ()=>{
+        const idx=Number(s.value)||0; state.selectedBoiler=sorted[idx];
+        q('#power').value = (state.selectedBoiler.power||'') + (state.selectedBoiler.power?' kW':'');
+        q('#type').value  = 'pellet';
+        q('#boilerPrice').value = fmt(state.selectedBoiler.price) + ' PLN';
+        renderPreview(); renderMustHave();
+      });
+    }
+    function fillTanks(){
+      const s=q('#tank'); const sizes=Object.keys(TANKS).map(Number).sort((a,b)=>a-b);
+      s.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(TANKS[v])} PLN</option>`).join('');
+      s.value=String(sizes[0]); state.selectedTank=s.value;
+      q('#tankPrice').value = fmt(TANKS[state.selectedTank]) + ' PLN';
+      s.addEventListener('change', ()=>{
+        state.selectedTank = s.value;
+        q('#tankPrice').value = fmt(TANKS[state.selectedTank]) + ' PLN';
+        renderPreview(); renderMustHave();
+      });
+    }
+    function fillAddons(){
+      const box=q('#addons'); box.innerHTML='';
+      Object.keys(ACCESSORY_BASE).forEach((name,i)=>{
+        const price=ACCESSORY_BASE[name];
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <h4>${name}</h4>
+          <div class="muted">Cena: ${fmt(price)} PLN</div>
+          <div style="margin-top:8px;">
+            <label>Ilość</label>
+            <input type="number" min="1" step="1" value="1" data-qty="${i}">
+          </div>
+          <div style="margin-top:10px;"><button class="btn ghost" data-addon="${i}">Dodaj</button></div>`;
+        box.appendChild(card);
+      });
+    }
+
+    /* ====== MOSTEK z ARKON — ładujemy tylko STALMARK pellet ====== */
+    const ARKON_LS_KEY = 'arkon_components_boilers_v2';
+    const ARKON_PING_KEY = 'arkon_boilers_updated';
+    const ARKON_SELECTED_KEY = 'arkon_selected_boiler_id';
+    const ARKON_RETURN_KEY = 'arkon_return_to';
+    const ARKON_PREF_BRAND = 'arkon_pref_brand';
+    const ARKON_PREF_FUEL  = 'arkon_pref_fuel';
+
+    function loadArkon(){
+      try{
+        const raw = localStorage.getItem(ARKON_LS_KEY); if(!raw) return;
+        const list = JSON.parse(raw); if(!Array.isArray(list)) return;
+        state.arkon.cache = list;
+        state.arkon.boilers = list
+          .filter(r => String(r.brand||'').toLowerCase()==='stalmark'
+                    && String(r.fuel || r.type || '').toLowerCase().includes('pellet'))
+          .map(r=>({
+            id:r.id, brand:r.brand||'', model:r.model||'',
+            price:Number(r.price)||0,
+            powMin:Number(r.powMin)||null, powMax:Number(r.powMax)||null,
+            fuel:'pellet', notes:r.notes||'',
+            flue: r.flue || r['Spalin Ø [mm]'] || ''
+          }));
+        state.arkon.byBrand = state.arkon.boilers.reduce((a,b)=>{ (a[b.brand]??=[]).push(b); return a; },{});
+      }catch{}
+    }
+    function filterArkonModelsByPower(list){
+      const mn = Number(q('#arkonPowMin')?.value); const mx = Number(q('#arkonPowMax')?.value);
+      return list.filter(x=>{
+        const lo = Number(x.powMin||x.power||0) || 0;
+        const hi = Number(x.powMax||x.power||0) || lo;
+        if(!isNaN(mn) && mn>0 && hi < mn) return false;
+        if(!isNaN(mx) && mx>0 && lo > mx) return false;
+        return true;
+      });
+    }
+    function fillArkonBrands(){
+      const sel=q('#arkonBrand'); if(!sel) return;
+      const brands=Object.keys(state.arkon.byBrand).sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
+      sel.innerHTML = brands.length
+        ? brands.map(b=>`<option ${b.toLowerCase()==='stalmark'?'selected':''}>${b}</option>`).join('')
+        : '<option value="">— brak danych —</option>';
+    }
+    function fillArkonModels(){
+      const brand=q('#arkonBrand')?.value||''; const ms=q('#arkonModel'); if(!ms) return;
+      let list = (state.arkon.byBrand[brand]||[]).slice();
+      list = filterArkonModelsByPower(list);
+      ms.disabled = list.length===0;
+      ms.innerHTML = list.length? '<option value="">— wybierz model —</option>' : '<option value="">— brak modeli —</option>';
+      if(!list.length){ q('#arkonPreview').textContent='Brak modeli dla zadanych filtrów.'; return; }
+      list.sort((a,b)=> (a.powMax||a.powMin||0) - (b.powMax||b.powMin||0) );
+      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.model}${x.powMax||x.powMin?` • ${x.powMin||''}-${x.powMax||''} kW`:''} • ${fmt(x.price)} PLN</option>`).join('');
+      q('#arkonPreview').textContent = 'Wybierz model, aby zobaczyć szczegóły i cenę.';
+    }
+    function renderArkonPreview(){
+      const p = state.arkon.selected;
+      const box = q('#arkonPreview');
+      if(!p){ box.textContent = 'Brak wyboru z katalogu. Wybierz STALMARK/pellet.'; return; }
+      const pow = (p.powMin||'') + (p.powMax?`–${p.powMax}`:'');
+      box.innerHTML = `
+        <b>${p.brand} ${p.model}</b><br>
+        Moc: ${pow||'—'} kW • Cena: <b>${fmt(p.price)} PLN</b>${p.flue?` • Spalin Ø: ${p.flue} mm`:''}
+        ${p.notes?`<div class="mini" style="margin-top:4px">${p.notes}</div>`:''}
+      `;
+    }
+    function selectArkonById(id){
+      if(!id) return;
+      loadArkon();
+      const found = (state.arkon.boilers||[]).find(x=>x.id===id);
+      if(!found) return; // ignorujemy inne marki/paliwa
+      const bSel = q('#arkonBrand'); if(bSel){ bSel.value = found.brand || ''; }
+      fillArkonModels();
+      const mSel = q('#arkonModel'); if(mSel){ mSel.value = found.id; }
+      state.arkon.selected = found;
+      renderArkonPreview();
+      // nadpisz pola w kalkulatorze
+      q('#boilerPrice').value = fmt(found.price) + ' PLN';
+      q('#power').value = (found.powMax||found.powMin||'') || '';
+      q('#type').value = 'pellet';
+      renderPreview(); renderMustHave();
+    }
+
+    // bindy mostka
+    document.addEventListener('change', (e)=>{
+      if(e.target.id==='arkonBrand' || e.target.id==='arkonPowMin' || e.target.id==='arkonPowMax'){
+        state.arkon.selected=null; fillArkonModels(); renderArkonPreview(); renderPreview();
+      }
+      if(e.target.id==='arkonModel'){
+        const id=e.target.value;
+        state.arkon.selected = (state.arkon.boilers||[]).find(x=>x.id===id) || null;
+        if(state.arkon.selected){
+          q('#boilerPrice').value = fmt(state.arkon.selected.price) + ' PLN';
+          q('#power').value = (state.arkon.selected.powMax||state.arkon.selected.powMin||'') || '';
+          q('#type').value = 'pellet';
+        }
+        renderArkonPreview(); renderPreview(); renderMustHave();
+      }
+    });
+    document.getElementById('useArkonBoiler').addEventListener('click', ()=>{
+      if(!state.arkon.selected) return alert('Wybierz markę i model z bazy ARKON (STALMARK/pellet).');
+      renderArkonPreview(); renderPreview(); renderMustHave();
+    });
+    document.getElementById('openArkon').addEventListener('click', ()=>{
+      try{
+        localStorage.setItem(ARKON_RETURN_KEY, location.href);
+        localStorage.setItem(ARKON_PREF_BRAND, 'STALMARK');
+        localStorage.setItem(ARKON_PREF_FUEL,  'pellet');
+      }catch{}
+      window.open('komponenty-piece.html', '_blank', 'noopener');
+    });
+    document.getElementById('goArkon').addEventListener('click', ()=>{
+      try{
+        localStorage.setItem(ARKON_RETURN_KEY, location.href);
+        localStorage.setItem(ARKON_PREF_BRAND, 'STALMARK');
+        localStorage.setItem(ARKON_PREF_FUEL,  'pellet');
+      }catch{}
+    });
+
+    // nasłuch zmian z innej karty (po wyborze w ARKON)
+    window.addEventListener('storage', (e)=>{
+      if(e.key===ARKON_PING_KEY || e.key===ARKON_LS_KEY){
+        const curId = state.arkon.selected?.id;
+        loadArkon(); fillArkonBrands(); fillArkonModels();
+        if(curId) selectArkonById(curId); else { state.arkon.selected=null; renderArkonPreview(); renderPreview(); renderMustHave(); }
+      }
+      if(e.key===ARKON_SELECTED_KEY && e.newValue){
+        selectArkonById(e.newValue); // przyjmie tylko STALMARK/pellet
+      }
+    });
+    // odbiór przez postMessage
+    window.addEventListener('message', (ev)=>{
+      if(ev.data && ev.data.type==='ARKON_BOILER_SELECTED'){ selectArkonById(ev.data.id); }
+    });
+    // dodatkowo sprawdź przy powrocie do zakładki
+    window.addEventListener('focus', ()=>{
+      try{
+        const selId = localStorage.getItem(ARKON_SELECTED_KEY);
+        if(selId) selectArkonById(selId);
+      }catch{}
+    });
+
+    /* ====== Zdarzenia globalne ====== */
+    document.addEventListener('input', (e)=>{
+      if(e.target.id==='rads'){ state.rads=Math.max(0, Number(e.target.value)||0); renderPreview(); renderMustHave(); }
+      if(e.target.id==='chimneyM'){ state.chimneyM=Math.max(0, Number(e.target.value)||0); renderPreview(); renderMustHave(); }
+      if(e.target.id==='vat'){ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); }
+      if(e.target.matches('[data-qty-basket]')){
+        const i=Number(e.target.getAttribute('data-qty-basket')); state.basket[i].qty=Math.max(1, Number(e.target.value)||1); renderBasket();
+      }
+    });
+    document.addEventListener('click', (e)=>{
+      const del=e.target.getAttribute('data-del');
+      if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); return; }
+
+      const addId=e.target.getAttribute('data-addon');
+      if(addId!=null){
+        const i=Number(addId); const name=Object.keys(ACCESSORY_BASE)[i];
+        const qty=Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`)?.value)||1);
+        addToBasket(name, ACCESSORY_BASE[name], qty); return;
+      }
+
+      if(e.target.id==='addPack'){
+        const b=activeBoiler(), t=state.selectedTank; if(!b||!t) return alert('Wybierz kocioł i zasobnik.');
+        const price = pricePack(Number(b.price)||0, TANKS[t], Number(state.rads)||0, Number(state.chimneyM)||0);
+        const rlabel = state.rads?` + grzejniki x${state.rads}`:'';
+        const mlabel = (Number(state.chimneyM)||0)>0 ? ` + wkład ${state.chimneyM} m` : '';
+        addToBasket(`Zestaw: ${b.model} + CWU ${t} l + montaż${rlabel}${mlabel}`, price, 1); return;
+      }
+      if(e.target.id==='addBoilerOnly'){
+        const b=activeBoiler(); if(!b) return alert('Wybierz kocioł.');
+        addToBasket(`Kocioł (pellet): ${b.model} — tylko urządzenie`, (Number(b.price)||0)+ONLY_BOILER_SURCHARGE, 1); return;
+      }
+    });
+
+    // eksport / kopiuj / drukuj
+    document.getElementById('exportQuote').addEventListener('click', ()=>{
+      const ws = XLSX.utils.json_to_sheet(state.basket.map(it => ({ Pozycja: it.name, Ilość: it.qty, Cena: it.final })));
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
+      XLSX.writeFile(wb, 'Koszyk_STALMARK_pellet_zestaw.xlsx');
+    });
+    document.getElementById('copyQuote').addEventListener('click', ()=>{
+      const vat=Number(document.getElementById('vat').value)||0.08;
+      const sum=state.basket.reduce((a,b)=>a+b.final*b.qty,0);
+      let txt='Oferta — STALMARK (pellet)\n\n'; state.basket.forEach(it=>{ txt+=`• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
+      txt += `\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
+      navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
+    });
+    document.getElementById('print').addEventListener('click', ()=> window.print());
+
+    // init
+    function init(){
+      fillBoilers(); fillTanks(); fillAddons();
+      loadArkon(); fillArkonBrands(); fillArkonModels();
+      renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
+
+      // odbiór wyboru jeśli został zapisany wcześniej
+      try{
+        const selId = localStorage.getItem(ARKON_SELECTED_KEY);
+        if(selId) selectArkonById(selId);
+      }catch{}
+    }
+    init();
+  </script>
+</body>
+</html>
