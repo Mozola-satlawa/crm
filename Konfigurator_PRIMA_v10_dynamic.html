@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Konfigurator PRIMA — v10 (dynamiczna kotłownia)</title>
+  <title>Pompy ciepła — Konfigurator zestawu (HP + bufor + CWU + montaż)</title>
   <style>
     :root{--bg:#f6fff7;--panel:#fff;--line:#d9f5df;--text:#083c1c;--muted:#3e7a52;--accent:#22c55e;--accent-2:#16a34a;--accent-soft:#d9fbe5;--chip-bg:#eafcf1;--danger:#ef4444;--warn:#f59e0b}
     *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
@@ -12,20 +11,35 @@
     h1{font-size:22px;margin:0}.sub{font-size:12px;color:var(--muted)}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}.panel h3{margin:0 0 8px;font-size:16px}
     .btn{background:var(--accent);color:#052e16;border:1px solid var(--accent-2);padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}.btn.ghost{background:var(--chip-bg);border:1px dashed var(--line);color:var(--text)}
     .btn.warn{background:#fff4d7;border-color:#fcd34d;color:#7a4a00}.btn.danger{background:#ffe5e5;border-color:#fecaca;color:#7a0000}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1060px){.grid{grid-template-columns:1fr .9fr}}label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    select,input[type=text]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fbfffc}select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}.col{grid-column:span 12}@media(min-width:680px){.col{grid-column:span 4}.col.wide{grid-column:span 8}}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1060px){.grid{grid-template-columns:1fr .95fr}}label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    select,input[type=text],input[type=number]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fbfffc}select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}.col{grid-column:span 12}@media(min-width:720px){.col{grid-column:span 4}.col.wide{grid-column:span 8}}
     .muted{color:var(--muted)}.sep{height:1px;background:var(--line);margin:10px 0}.bundle-grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:960px){.bundle-grid{grid-template-columns:1fr 1fr}}
     .card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.card h4{margin:0 0 8px;font-size:15px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#e8fff0;border:1px solid #c7f6d4;font-size:11px;font-weight:800;margin-right:6px}
     ul.clean{margin:6px 0 0;padding-left:18px}ul.clean li{margin:3px 0}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:8px 10px}thead th{background:#f2fff5;text-align:left}.right{text-align:right;white-space:nowrap}
+    .price-preview{font-weight:800;font-size:18px;margin-top:6px}
+    nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    nav a{color:#064e3b;text-decoration:none;border:1px solid var(--line);background:var(--chip-bg);padding:6px 10px;border-radius:999px}
+    nav a:hover{background:#eefdf3}
+    .mini{font-size:12px;color:var(--muted)}
+    .bridge-note{background:#f2fff7;border:1px dashed var(--line);padding:8px;border-radius:12px;margin-top:8px}
+    .warnline{padding:8px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#7a4a00;margin-top:6px}
+    .okline{padding:8px;border-radius:10px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;margin-top:6px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>Konfigurator PRIMA — v10</h1>
-        <div class="sub">Filtruj po <b>mocy [kW]</b>. Poniżej <b>must‑have</b> elementy. Ceny końcowe są liczone automatycznie.</div>
+        <h1>Pompy ciepła — konfigurator zestawu</h1>
+        <div class="sub">
+          Zestaw = <b>pompa ciepła</b> + <b>bufor</b> + <b>zasobnik CWU</b> + <b>montaż</b> (+ opcje).<br>
+          Montaż grzejników: <b>750 PLN/szt.</b> • (Brak komina — pompy tego nie wymagają).
+        </div>
+        <nav>
+          <a href="komponenty-pompy.html" target="_blank" id="goArkonPumps">Otwórz katalog: Komponenty • Pompy</a>
+          <a href="komponenty-piece.html" target="_blank">Komponenty • Piece</a>
+        </nav>
       </div>
       <div class="bar">
         <button class="btn" id="exportQuote">Eksport koszyka (XLSX)</button>
@@ -38,48 +52,84 @@
       <div class="panel">
         <h3>Dobierz parametry</h3>
         <div class="row">
-          <div class="col">
-            <label>Rodzaj</label>
-            <select id="rodzaj">
-              <option value="">— dowolny —</option>
-              <option value="MONOBLOK">MONOBLOK</option>
-              <option value="SPLIT">SPLIT</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Moc pompy <b>[kW]</b> <span class="muted">(filtr po mocy)</span></label>
-            <select id="power"><option value="">— dowolna —</option></select>
-          </div>
-          <div class="col">
-            <label>Bufor</label>
-            <select id="bufor">
-              <option value="">— dowolny —</option>
-              <option value="60">60</option>
-              <option value="200">200</option>
-              <option value="Complete 250/110">Complete 250/110</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Wymiennik / Zbiornik</label>
-            <select id="wymiennik">
-              <option value="">— dowolny —</option>
-              <option value="Tower Grand 200">Tower Grand 200</option>
-              <option value="Tower Grand 300">Tower Grand 300</option>
-              <option value="Complete 250/110">Complete 250/110</option>
-            </select>
-          </div>
           <div class="col wide">
-            <label>Szukaj</label>
-            <input id="q" type="text" placeholder="np. PRIMA, Tower Grand, zawór…" />
+            <label>Model pompy (lokalna lista)</label>
+            <select id="hp"></select>
           </div>
-        </div>
+          <div class="col">
+            <label>Moc A7/W35 [kW]</label>
+            <input id="pA7" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Moc A-7/W35 [kW]</label>
+            <input id="pA_7" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Typ / układ</label>
+            <input id="hpType" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Fazy</label>
+            <input id="hpPhase" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>SCOP</label>
+            <input id="hpSCOP" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Chłodziwo</label>
+            <input id="hpRef" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Hałas [dB(A)]</label>
+            <input id="hpNoise" type="text" readonly>
+          </div>
+          <div class="col">
+            <label>Cena urządzenia [PLN]</label>
+            <input id="hpPrice" type="text" readonly>
+          </div>
 
-        <div class="sep"></div>
-        <div id="matchInfo" class="muted">Wybierz parametry – pokażę najlepsze dopasowanie.</div>
-        <div class="sep"></div>
-        <div class="row">
-          <div class="col"><button class="btn" id="addPumpOnly">Dodaj: Tylko pompa</button></div>
-          <div class="col"><button class="btn warn" id="addFullBoilerRoom">Dodaj: Kotłownia z montażem</button></div>
+          <div class="col">
+            <label>Bufor [l]</label>
+            <select id="buffer"></select>
+          </div>
+          <div class="col">
+            <label>Cena bufora [PLN]</label>
+            <input id="bufferPrice" type="text" readonly>
+          </div>
+
+          <div class="col">
+            <label>Zasobnik CWU [l]</label>
+            <select id="tank"></select>
+          </div>
+          <div class="col">
+            <label>Cena zasobnika [PLN]</label>
+            <input id="tankPrice" type="text" readonly>
+          </div>
+
+          <div class="col">
+            <label>Liczba grzejników (montaż)</label>
+            <input id="rads" type="number" min="0" step="1" value="0">
+            <div class="mini">750 PLN/szt.</div>
+          </div>
+
+          <div class="col">
+            <label>Zawór 3-drogowy CWU</label>
+            <select id="v3d"><option value="0">W zestawie</option><option value="450">Dodać (450 PLN)</option></select>
+          </div>
+          <div class="col">
+            <label>Grupa bezpieczeństwa HP</label>
+            <select id="safety"><option value="0">W zestawie</option><option value="390">Dodać (390 PLN)</option></select>
+          </div>
+          <div class="col">
+            <label>Hydraulika (zestaw rozdzielaczy)</label>
+            <select id="hydro"><option value="0">Podstawowa</option><option value="1800">Rozszerzona (+1 obieg) 1800 PLN</option><option value="3200">Dwa obiegi 3200 PLN</option></select>
+          </div>
+          <div class="col">
+            <label>Glikol (tylko monoblok)</label>
+            <select id="glycol"><option value="0">Nie</option><option value="600">Tak, 30 l (600 PLN)</option><option value="900">Tak, 50 l (900 PLN)</option></select>
+          </div>
+
           <div class="col">
             <label>VAT</label>
             <select id="vat">
@@ -87,12 +137,71 @@
               <option value="0.23">23%</option>
             </select>
           </div>
+
+          <div class="col wide">
+            <div class="muted">Aktualna cena zestawu:</div>
+            <div id="pricePreview" class="price-preview">—</div>
+            <div id="typeHint" class="okline" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Pompy ▼▼▼ -->
+        <div class="sep"></div>
+        <h3 style="margin-top:0">Mostek ARKON — Pompy ciepła</h3>
+        <div class="row">
+          <div class="col">
+            <label>Marka (katalog ARKON)</label>
+            <select id="arkonBrand"></select>
+          </div>
+          <div class="col">
+            <label>Typ (filtr)</label>
+            <select id="arkonKind">
+              <option value="">— dowolny —</option>
+              <option value="monoblok">Monoblok</option>
+              <option value="split">Split</option>
+              <option value="all-in-one">All-in-One</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Min moc A7 [kW]</label>
+            <input id="arkonMin" type="number" step="0.1" placeholder="np. 6">
+          </div>
+          <div class="col">
+            <label>Max moc A7 [kW]</label>
+            <input id="arkonMax" type="number" step="0.1" placeholder="np. 16">
+          </div>
+          <div class="col wide">
+            <label>Model (z katalogu)</label>
+            <select id="arkonModel" disabled></select>
+          </div>
+          <div class="col">
+            <label>Akcje</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn ghost" id="useArkon">Użyj tej pompy</button>
+              <button class="btn ghost" id="openArkon">Otwórz katalog (nowa karta)</button>
+            </div>
+          </div>
+          <div class="col wide">
+            <div id="arkonPreview" class="bridge-note">Brak wyboru. Użyj katalogu „Komponenty • Pompy”.</div>
+          </div>
+        </div>
+        <div class="sub">
+          Źródło: <code>localStorage["arkon_components_heatpumps_v2"]</code>. Preferencje przekazujemy przez:
+          <code>arkon_return_to</code>, <code>arkon_pref_category="pompy"</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_kind</code>.
+          Wybór odbieramy przez <code>arkon_selected_heatpump_id</code> lub <code>postMessage</code> (<code>type:"ARKON_HEATPUMP_SELECTED"</code>).
+        </div>
+        <!-- ▲▲▲ KONIEC MOSTKA ▲▲▲ -->
+
+        <div class="sep"></div>
+        <div class="row">
+          <div class="col"><button class="btn" id="addPack">Dodaj: Zestaw (HP + bufor + CWU + montaż)</button></div>
+          <div class="col"><button class="btn warn" id="addHpOnly">Dodaj: Sama pompa</button></div>
         </div>
       </div>
 
       <div class="panel" id="mustHavePanel">
-        <h3>Skład zestawu (must‑have)</h3>
-        <div id="mustHaveList" class="muted">Wybierz parametry, aby zobaczyć skład.</div>
+        <h3>Skład zestawu (must-have)</h3>
+        <div id="mustHaveList" class="muted">Wybierz pompę, bufor i zasobnik — pokażę skład.</div>
       </div>
 
       <div class="panel">
@@ -110,254 +219,205 @@
     </div>
 
     <div class="panel">
-      <h3>Gotowe zestawy (propozycje)</h3>
-      <div class="bundle-grid" id="bundles"></div>
-    </div>
-
-    <div class="panel">
-      <h3>Akcesoria / dodatkowe komponenty</h3>
-      <div id="addons" class="bundle-grid"></div>
+      <h3>Akcesoria (opcjonalnie)</h3>
+      <div class="bundle-grid" id="addons"></div>
       <div class="sep"></div>
       <button class="btn ghost" id="addSelectedAddons">Dodaj wybrane</button>
+      <div class="sub" style="margin-top:6px">Montaż grzejników wliczasz polem „Liczba grzejników”. Glikol dotyczy tylko monobloków.</div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
-    const DATA = {"price_key": "Cena netto w PLN", "rows": [{"Nr katalogowy zestawu": "SG-000045", "Model": "PRIMA 8GT", "Rodzaj wymiennika": "SGW(S) Tower Grand 200", "Bufor c.o.": "60", "Zawór": "Zawór trójdrogowy do realizacji c.w.u.", "Komplet elektryczny": "K6/4\" (2 kW)", "Centrala SMART HOME Lite": "Centrala SMART HOME Lite", "Cena netto w PLN": "9054"}, {"Nr katalogowy zestawu": "SG-000046", "Model": "PRIMA 10GT", "Rodzaj wymiennika": "SGW(S) Tower Grand 200", "Bufor c.o.": "60", "Zawór": "Zawór trójdrogowy do realizacji c.w.u.", "Komplet elektryczny": "K6/4\" (2 kW)", "Centrala SMART HOME Lite": "Centrala SMART HOME Lite", "Cena netto w PLN": "9442"}, {"Nr katalogowy zestawu": "SG-000054", "Model": "PRIMA 3F 12GT", "Rodzaj wymiennika": "SGW(S) Tower Grand 300", "Bufor c.o.": "60", "Zawór": "Zawór trójdrogowy do realizacji c.w.u.", "Komplet elektryczny": "K6/4\" (2 kW)", "Centrala SMART HOME Lite": "Centrala SMART HOME Lite", "Cena netto w PLN": "10886"}, {"Nr katalogowy zestawu": "SG-000056", "Model": "PRIMA 3F 16GT", "Rodzaj wymiennika": "SGW(S) Tower Grand 300", "Bufor c.o.": "60", "Zawór": "Zawór trójdrogowy do realizacji c.w.u.", "Komplet elektryczny": "K6/4\" (2 kW)", "Centrala SMART HOME Lite": "Centrala SMART HOME Lite", "Cena netto w PLN": "11138"}]};
-    const ACCESSORY_BASE = {"Zbiornik c.w.u. 300 l": 3000, "Pompa obiegowa 25-40": 1200, "Pompa obiegowa 25-60": 1440, "Pompa obiegowa 25-80": 1680, "Separator magnetyczny / odmulacz 5/4\"": 840, "Filtr siatkowy Y 1\"": 180, "Separator powietrza / odpowietrznik automatyczny": 380, "Grupa bezpieczeństwa c.w.u. 6 bar": 720, "Zawór mieszający termostatyczny c.w.u. 3/4\"": 580, "Zawór trójdrożny przełączający 1\"": 470, "Zawór kulowy 1\" (para)": 160, "Zawór spustowy 1/2\"": 60, "Zawór antyzamarzaniowy": 360, "Naczynie wzbiorcze CO 12 l": 380, "Naczynie wzbiorcze CO 18 l": 460, "Zawór bezpieczeństwa CO 3 bar": 150, "Zawór zwrotny 1\"": 110, "Taca skroplin do pompy ciepła": 830, "Pompa skroplin": 510, "Przewód grzewczy do tacy skroplin": 430, "Stopy amortyzujące / amortyzatory": 340, "Konsola / stelaż jednostki zewnętrznej": 620, "Otulina kauczukowa – pakiet": 460, "Płyn glikolowy do instalacji (20 l)": 580, "Grzałka elektryczna 3 kW 230V": 690, "Zestaw armatury montażowej": 1140};
+    /* ================== LOKALNA BAZA POMP (na sztywno) ==================
+       Pola: model, brand, kind(monoblok/split/all-in-one), phase(1F/3F), pA7, pA_7, scop, ref, noise, price.
+       Ceny są startowe (do modyfikacji). */
 
-    // Biznes — ukryte reguły:
-    const PUMP_SURCHARGE = 5000;   // dopłata do „tylko pompa” (niewidoczna w UI)
-    const PACK_BASE_8KW = 38000;   // kotłownia z montażem dla 8 kW (bazowa, niewidoczna)
+    const HEATPUMPS = [
+      // Panasonic Aquarea R32
+      {brand:'Panasonic', model:'Aquarea J 5 kW Split',          kind:'split',      phase:'1F', pA7:5.0,  pA_7:3.7, scop:4.8, ref:'R32', noise:52, price:20500},
+      {brand:'Panasonic', model:'Aquarea J 7 kW Split',          kind:'split',      phase:'1F', pA7:7.0,  pA_7:4.9, scop:4.7, ref:'R32', noise:53, price:21900},
+      {brand:'Panasonic', model:'Aquarea J 9 kW Split',          kind:'split',      phase:'1F', pA7:9.0,  pA_7:6.2, scop:4.6, ref:'R32', noise:54, price:23900},
+      {brand:'Panasonic', model:'Aquarea K 9 kW Monoblok',       kind:'monoblok',   phase:'1F', pA7:9.0,  pA_7:6.1, scop:4.7, ref:'R32', noise:55, price:25500},
+      {brand:'Panasonic', model:'Aquarea K 12 kW Monoblok 3F',   kind:'monoblok',   phase:'3F', pA7:12.0, pA_7:7.8, scop:4.6, ref:'R32', noise:56, price:27900},
 
-    const q = (s) => document.querySelector(s);
-    const priceKey = DATA.price_key || "Cena netto w PLN";
-    const state = { vat: 0.08, basket: [], match: null, pumpBaseByPower: {} };
+      // Daikin Altherma
+      {brand:'Daikin',    model:'Altherma 3 6 kW Split',         kind:'split',      phase:'1F', pA7:6.0,  pA_7:4.2, scop:5.0, ref:'R32', noise:53, price:25200},
+      {brand:'Daikin',    model:'Altherma 3 8 kW Split',         kind:'split',      phase:'1F', pA7:8.0,  pA_7:5.4, scop:4.9, ref:'R32', noise:54, price:26800},
+      {brand:'Daikin',    model:'Altherma 3 11 kW Monoblok 3F',  kind:'monoblok',   phase:'3F', pA7:11.0, pA_7:7.5, scop:4.7, ref:'R32', noise:56, price:29800},
 
-    const BUNDLES = [
-      { id:'mono60', label:'MONOBLOK – Tower Grand 200 + bufor 60 + instalacja', prefer:{ rodzaj:'MONOBLOK', bufor:'60', wym:'Tower Grand 200' } },
-      { id:'monoComplete', label:'MONOBLOK – Complete 250/110 + instalacja', prefer:{ rodzaj:'MONOBLOK', bufor:'Complete 250/110', wym:'Complete 250/110' } },
-      { id:'split200', label:'SPLIT – Tower Grand 300 + bufor 200 + instalacja', prefer:{ rodzaj:'SPLIT', bufor:'200', wym:'Tower Grand 300' } },
-      { id:'splitComplete', label:'SPLIT – Complete 250/110 + instalacja', prefer:{ rodzaj:'SPLIT', bufor:'Complete 250/110', wym:'Complete 250/110' } }
+      // Mitsubishi Ecodan
+      {brand:'Mitsubishi',model:'Ecodan 8 kW Split',             kind:'split',      phase:'1F', pA7:8.0,  pA_7:5.6, scop:4.8, ref:'R32', noise:54, price:26400},
+      {brand:'Mitsubishi',model:'Ecodan 11 kW Split 3F',         kind:'split',      phase:'3F', pA7:11.0, pA_7:7.2, scop:4.7, ref:'R32', noise:56, price:30200},
+
+      // Vaillant aroTHERM plus (R290)
+      {brand:'Vaillant',  model:'aroTHERM plus 7 kW Monoblok',   kind:'monoblok',   phase:'1F', pA7:7.0,  pA_7:5.0, scop:5.0, ref:'R290', noise:54, price:31900},
+      {brand:'Vaillant',  model:'aroTHERM plus 12 kW Monoblok',  kind:'monoblok',   phase:'3F', pA7:12.0, pA_7:8.5, scop:4.8, ref:'R290', noise:56, price:35900},
+
+      // LG Therma V
+      {brand:'LG',        model:'Therma V 7 kW Split',           kind:'split',      phase:'1F', pA7:7.0,  pA_7:4.7, scop:4.8, ref:'R32', noise:53, price:21900},
+      {brand:'LG',        model:'Therma V 12 kW Split 3F',       kind:'split',      phase:'3F', pA7:12.0, pA_7:7.9, scop:4.7, ref:'R32', noise:56, price:28700},
+
+      // Viessmann Vitocal
+      {brand:'Viessmann', model:'Vitocal 100-S 8 kW',            kind:'split',      phase:'1F', pA7:8.0,  pA_7:5.2, scop:4.7, ref:'R32', noise:54, price:27800},
+      {brand:'Viessmann', model:'Vitocal 150-A 10 kW monoblok',  kind:'monoblok',   phase:'1F', pA7:10.0, pA_7:6.8, scop:4.8, ref:'R290', noise:55, price:33900},
+
+      // Buderus / Bosch
+      {brand:'Buderus',   model:'Logatherm WPLS 6 kW',           kind:'split',      phase:'1F', pA7:6.0,  pA_7:4.0, scop:4.7, ref:'R32', noise:53, price:23900},
+      {brand:'Bosch',     model:'Compress 7000iAW 9 kW',         kind:'split',      phase:'1F', pA7:9.0,  pA_7:6.1, scop:4.9, ref:'R32', noise:54, price:29900},
+
+      // All-in-One (zintegrowany zasobnik)
+      {brand:'Panasonic', model:'Aquarea All-in-One 7 kW',       kind:'all-in-one', phase:'1F', pA7:7.0,  pA_7:5.0, scop:4.8, ref:'R32', noise:53, price:30900},
+      {brand:'Daikin',    model:'Altherma 3 AIO 8 kW',           kind:'all-in-one', phase:'1F', pA7:8.0,  pA_7:5.4, scop:4.8, ref:'R32', noise:54, price:32800}
     ];
 
-    function parsePLN(x){
-      if (x == null) return NaN;
-      if (typeof x === 'number') return x;
-      let s = String(x).replace(/[^0-9,.-\s]/g,'').replace(/\s+/g,'').replace(',', '.');
-      const n = parseFloat(s);
-      return isNaN(n) ? NaN : n;
-    }
-    function fmt(n){ return (n??0).toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-    function joinVals(r){ return Object.values(r).map(v => v==null?'':String(v)).join(' | '); }
-    function powerFromModel(modelVal){
-      const s = String(modelVal || '').toUpperCase();
-      const m = s.match(/(\d{1,2})\s*GT/);
-      return m ? m[1] : '';
-    }
+    /* ====== Bufory i zasobniki (na sztywno) ====== */
+    const BUFFERS = { '50':1200, '80':1450, '100':1650, '120':1900, '150':2200, '200':2600, '300':3600 };
+    const TANKS   = { '120':2100, '150':2450, '200':2900, '250':3400, '300':3800 };
 
-    function derive(row){
-      const out = { ...row };
-      const model = String(row['Model'] || row['Model pompy ciepła'] || '').toUpperCase();
-      out.__rodzaj = /\bPRIMA S/.test(model) ? 'SPLIT' : (/\bPRIMA\b/.test(model) ? 'MONOBLOK' : '');
-      const wym = String(row['Rodzaj wymiennika'] || '').toUpperCase();
-      if (/TOWER GRAND\s*200/.test(wym)) out.__wym = 'Tower Grand 200';
-      else if (/TOWER GRAND\s*300/.test(wym)) out.__wym = 'Tower Grand 300';
-      else if (/COMPLETE\s*250\/110/.test(wym)) out.__wym = 'Complete 250/110';
-      else out.__wym = '';
-      const bufor = String(row['Bufor c.o.'] || '').toUpperCase();
-      out.__bufor = /200/.test(bufor) ? '200' : (/60/.test(bufor) ? '60' : (out.__wym === 'Complete 250/110' ? 'Complete 250/110' : ''));
-      out.__power = powerFromModel(model);
-      out.__netto = parsePLN(row[priceKey]);
-      return out;
-    }
-    function rows(){ return (DATA.rows||[]).map(derive); }
+    /* ====== Akcesoria dodatkowe do koszyka ====== */
+    const ACCESSORY_BASE = {
+      "Grupa hydrauliczna (pompa + zawory)":1550,
+      "Rozdzielacz 2-obiegowy (z mieszaczem)":2200,
+      "Moduł internetowy / bramka":980,
+      "Antywibracyjne podstawy agregatu":320,
+      "Zawory serwisowe HP":260,
+      "Zawór zwrotny + kulowe (kpl.)":180,
+      "Zasuwy odcinające (kpl.)":140,
+      "Czujnik temp. zewnętrznej (jeśli brak)":160
+    };
 
-    function buildPumpBaseByPower(){
-      const dict = {};
-      rows().forEach(r => {
-        if (!r.__power || isNaN(r.__netto)) return;
-        const p = Number(r.__netto);
-        if (!(r.__power in dict) || p < dict[r.__power]) dict[r.__power] = p; // najmniejsza cena jako baza
-      });
-      state.pumpBaseByPower = dict;
-    }
+    /* ====== Zasady wyceny ====== */
+    const INSTALL_BASE = 19500; // montaż + materiały bazowe
+    const RAD_PRICE = 750;      // montaż grzejnika / szt.
+    const ONLY_HP_SURCHARGE = 0;
 
-    function packPriceForPower(power){
-      const dict = state.pumpBaseByPower;
-      if (!power) return PACK_BASE_8KW;
-      const ref8 = dict['8'] ?? Object.values(dict).sort((a,b)=>a-b)[0] ?? PACK_BASE_8KW;
-      const sel = dict[power] ?? ref8;
-      const delta = sel - ref8;
-      return PACK_BASE_8KW + delta;
-    }
+    const state = {
+      vat:0.08, basket:[],
+      selectedHp:null, selectedBuffer:null, selectedTank:null,
+      rads:0, v3d:0, safety:0, hydro:0, glycol:0,
+      arkon:{ list:[], byBrand:{}, selected:null }
+    };
 
-    function bestMatch(pref=null){
-      const list = rows();
-      const rodzaj = pref?.rodzaj || q('#rodzaj').value;
-      const power = q('#power').value;
-      const bufor = pref?.bufor || q('#bufor').value;
-      const wym = pref?.wym || q('#wymiennik').value;
-      const qv = q('#q').value.trim().toLowerCase();
-      let filtered = list.filter(r => {
-        if (rodzaj && r.__rodzaj !== rodzaj) return false;
-        if (power && r.__power !== power) return false;
-        if (bufor && r.__bufor !== bufor) return false;
-        if (wym && r.__wym !== wym) return false;
-        if (qv && !joinVals(r).toLowerCase().includes(qv)) return false;
-        return true;
-      });
-      filtered.sort((a,b) => {
-        const score = (x) => (x.__power?10:0) + (x['Centrala SMART HOME Lite']||x['Centrala Smart Home SINUM Lite']?2:0) - (isNaN(x.__netto)?100:0);
-        return score(b) - score(a);
-      });
-      return filtered[0] || null;
-    }
-
-    function renderMatch(){
-      const m = bestMatch();
-      state.match = m;
-      const box = q('#matchInfo');
-      if (!m){ box.textContent='Brak dopasowania – zmień filtry.'; q('#mustHaveList').textContent='—'; return; }
-      const label = (m['Model'] || m['Nr katalogowy zestawu'] || 'Zestaw') + ' • ' + (m.__rodzaj||'') + (m.__power?(' • '+m.__power+' kW'):'') + (m.__bufor?(' • bufor '+m.__bufor):'');
-      box.innerHTML = 'Wybrano: <b>'+label+'</b>';
-      renderMustHave(m);
-    }
-
-    function buildPowerOptions(){
-      const set = new Set(); rows().forEach(r => { if (r.__power) set.add(r.__power); });
-      let arr = Array.from(set).sort((a,b)=>Number(a)-Number(b));
-      if (arr.length < 2) arr = ['6','8','10','12','16'];
-      q('#power').innerHTML = '<option value="">— dowolna —</option>' + arr.map(v => `<option value="${v}">${v}</option>`).join('');
-    }
+    const q = s=>document.querySelector(s);
+    const INT = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const INT0 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+    const fmt = n => INT.format(Number(n)||0);
 
     function addToBasket(name, finalPrice, qty=1){
-      const list = state.basket;
-      const idx = list.findIndex(x => x.name === name && Math.abs(x.final - finalPrice) < 0.01);
-      if (idx >= 0) list[idx].qty += qty; else list.push({ name, final: finalPrice, qty });
+      const i = state.basket.findIndex(x=>x.name===name && Math.abs(x.final-finalPrice)<0.01);
+      if(i>=0) state.basket[i].qty += qty; else state.basket.push({name, final:finalPrice, qty});
       renderBasket();
     }
     function renderBasket(){
-      const tb = q('#basket tbody'); tb.innerHTML='';
-      let sumF=0;
-      state.basket.forEach((it,i) => {
-        sumF += it.final * it.qty;
-        const tr = document.createElement('tr');
+      const tb=q('#basket tbody'); tb.innerHTML=''; let sum=0;
+      state.basket.forEach((it,i)=>{
+        sum += it.final*it.qty;
+        const tr=document.createElement('tr');
         tr.innerHTML = `
           <td>${it.name}</td>
-          <td><input type="number" data-qty="${i}" value="${it.qty}" min="1" style="width:70px; padding:6px 8px; border:1px solid var(--line); border-radius:10px;"></td>
+          <td><input type="number" data-qty-basket="${i}" value="${it.qty}" min="1" style="width:70px; padding:6px 8px; border:1px solid var(--line); border-radius:10px;"></td>
           <td class="right">${fmt(it.final)} PLN</td>
           <td class="right"><button class="btn danger" data-del="${i}">Usuń</button></td>`;
         tb.appendChild(tr);
       });
-      q('#sumFinal').textContent = fmt(sumF) + ' PLN';
-      q('#sumBrutto').textContent = fmt(sumF * (1 + state.vat)) + ' PLN';
+      q('#sumFinal').textContent  = fmt(sum) + ' PLN';
+      q('#sumBrutto').textContent = fmt(sum*(1+state.vat)) + ' PLN';
     }
 
-    function renderMustHave(m){
-      const box = q('#mustHaveList');
-      if (!m){ box.textContent='—'; return; }
-      const isMono = (m.__rodzaj === 'MONOBLOK');
+    function activeHp(){
+      if(state.arkon.selected){
+        const a = state.arkon.selected;
+        return {
+          brand:a.brand, model:a.model, kind:a.kind||a.type||'',
+          phase:a.phase||'1F', pA7:a.pA7||a.power||'', pA_7:a.pA_7||'',
+          scop:a.scop||'', ref:a.ref||a.refrigerant||'', noise:a.noise||'',
+          price:Number(a.price)||0
+        }
+      }
+      return state.selectedHp;
+    }
+
+    function renderMustHave(){
+      const b=activeHp(), buf=state.selectedBuffer, t=state.selectedTank;
+      const box=q('#mustHaveList');
+      if(!b||!buf||!t){ box.textContent='Wybierz pompę, bufor i zasobnik — pokażę skład.'; return; }
       const items = [];
-      items.push(`Pompa ciepła PRIMA ${m.__rodzaj||""} ${m.__power||""} kW`);
-      if (m.__wym === 'Complete 250/110') {
-        items.push('Zbiornik kombinowany Complete 250/110 – wymiennik c.w.u. + bufor c.o.');
-      } else {
-        if (m.__wym) items.push(`Wymiennik do pomp ciepła – ${m.__wym}`);
-        if (m.__bufor) items.push(`Bufor/sprzęgło hydrauliczne – ${m.__bufor} l`);
+      items.push(`Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase})`);
+      items.push(`Bufor — ${buf} l`);
+      if(b.kind==='all-in-one'){
+        items.push(`Zasobnik CWU — AIO (wbudowany) lub dodatkowy ${t} l`);
+      }else{
+        items.push(`Zasobnik CWU — ${t} l`);
       }
-      items.push('Zawór trójdrogowy do realizacji c.w.u.');
-      items.push('Komplet elektryczny GE z grz. 2 kW 230V – K6/4"');
-      if (m['Centrala SMART HOME Lite'] || m['Centrala Smart Home SINUM Lite']) items.push('Centrala Smart Home (Lite)');
-      items.push('Pompa obiegowa CO (min. 1 szt.)');
-      items.push('Filtr siatkowy Y + separator magnetyczny + odpowietrznik automatyczny');
-      items.push('Grupa bezpieczeństwa c.w.u., zawór bezpieczeństwa CO, zawór zwrotny, naczynie wzbiorcze CO');
-      if (isMono){
-        items.push('Taca skroplin + przewód grzewczy do tacy');
-        items.push('Stopy amortyzujące / konsola jednostki zewnętrznej');
-        items.push('Otulina + płyn glikolowy do obiegu');
-      } else {
-        items.push('Elementy montażowe przewodów chłodniczych (SPLIT)');
+      items.push('Armatura: zawór 3D CWU/CO, grupa bezpieczeństwa, zawory serwisowe');
+      if(Number(state.glycol)>0 && b.kind==='monoblok'){
+        items.push('Glikol do obiegu zewnętrznego (monoblok)');
       }
-      items.push('Zestaw armatury montażowej (zawory, nyple, mufy itp.)');
-      box.innerHTML = '<ul class="clean">' + items.map(t => `<li>${t}</li>`).join('') + '</ul>';
+      items.push('Rozdzielacz(y) / hydraulika wg wyboru');
+      const r = Number(state.rads)||0;
+      if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN`);
+      items.push('Montaż, uruchomienie, konfiguracja sterowania, szkolenie użytkownika');
+      box.innerHTML = '<ul class="clean">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
     }
 
-    document.addEventListener('change', (e)=>{
-      if (e.target.id==='vat'){ state.vat = Number(e.target.value)||0.08; renderBasket(); }
-      if (['rodzaj','power','bufor','wymiennik'].includes(e.target.id)) renderMatch();
-    });
-    document.addEventListener('input', (e)=>{
-      if (e.target.id==='q') renderMatch();
-      if (e.target.matches('[data-qty]')){
-        const i = Number(e.target.getAttribute('data-qty'));
-        state.basket[i].qty = Math.max(1, Number(e.target.value)||1);
-        renderBasket();
-      }
-    });
-    document.addEventListener('click', (e)=>{
-      const del = e.target.getAttribute('data-del');
-      if (del){ state.basket.splice(Number(del),1); renderBasket(); return; }
-
-      const bid = e.target.getAttribute('data-bundle');
-      if (bid){
-        const b = BUNDLES.find(x=>x.id===bid);
-        const m = bestMatch(b.prefer);
-        if (!m) return alert('Brak dopasowania do tego zestawu – zmień moc/rodzaj lub sprawdź inny pakiet.');
-        const price = packPriceForPower(m.__power);
-        addToBasket(`${b.label} – ${m.__rodzaj||''} ${m.__power||''} kW`, price, 1);
-        return;
-      }
-
-      if (e.target.id==='addPumpOnly'){
-        const m = state.match;
-        if (!m) return alert('Najpierw dobierz zestaw (filtry u góry).');
-        const pumpBase = Number(m.__netto)||0;
-        const final = pumpBase + PUMP_SURCHARGE; // dopłata ukryta
-        addToBasket(`Pompa PRIMA ${m.__power||''} kW (${m.__rodzaj||''}) – tylko pompa`, final, 1);
-        return;
-      }
-      if (e.target.id==='addFullBoilerRoom'){
-        const m = state.match;
-        if (!m) return alert('Najpierw dobierz zestaw (filtry u góry).');
-        const price = packPriceForPower(m.__power);
-        addToBasket(`Kotłownia z montażem – ${m.__rodzaj||''} ${m.__power||''} kW`, price, 1);
-        return;
-      }
-
-      const aid = e.target.getAttribute('data-addon');
-      if (aid != null){
-        const i = Number(aid);
-        const name = Object.keys(ACCESSORY_BASE)[i];
-        const qty = Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`).value)||1);
-        const final = ACCESSORY_BASE[name] + 500; // final visible price = base + 500
-        addToBasket(name, final, qty);
-        return;
-      }
-    });
-
-    function renderBundles(){
-      const box = q('#bundles'); box.innerHTML='';
-      BUNDLES.forEach(b => {
-        const card = document.createElement('div'); card.className = 'card';
-        card.innerHTML = `
-          <h4>${b.label}</h4>
-          <div class="muted">Cena pakietu jest liczona dynamicznie względem mocy pompy.</div>
-          <div style="margin-top:8px;"><span class="pill">Dobór wg filtrów (moc, rodzaj)</span></div>
-          <div style="margin-top:10px;"><button class="btn" data-bundle="${b.id}">Dodaj zestaw</button></div>`;
-        box.appendChild(card);
-      });
+    function pricePack(hpPrice, bufferPrice, tankPrice){
+      const extras = Number(state.v3d||0) + Number(state.safety||0) + Number(state.hydro||0)
+                   + Number(state.glycol||0) + (Number(state.rads)||0) * RAD_PRICE;
+      return (Number(hpPrice)||0) + (Number(bufferPrice)||0) + (Number(tankPrice)||0) + INSTALL_BASE + extras;
     }
 
-    function renderAddons(){
-      const box = q('#addons'); box.innerHTML='';
-      Object.keys(ACCESSORY_BASE).forEach((name, i)=>{
-        const final = ACCESSORY_BASE[name] + 500;
-        const card = document.createElement('div'); card.className='card';
+    function renderPreview(){
+      const b=activeHp(), buf=state.selectedBuffer, t=state.selectedTank;
+      if(!b||!buf||!t){ q('#pricePreview').textContent='—'; q('#typeHint').style.display='none'; return; }
+      const sum = pricePack(b.price, BUFFERS[buf]||0, (b.kind==='all-in-one'? 0 : (TANKS[t]||0)));
+      q('#pricePreview').textContent = `${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN)`;
+      // hint pod typ
+      const hint = q('#typeHint'); hint.style.display='block';
+      if(b.kind==='monoblok') hint.textContent='Monoblok: pamiętaj o glikolu/ochronie przeciwzamrożeniowej na odcinku zewnętrznym.';
+      else if(b.kind==='all-in-one') hint.textContent='All-in-One: wbudowany zasobnik CWU — dodatkowy zbiornik zwykle zbędny.';
+      else hint.textContent='Split: czynnik chłodniczy w obiegu wewnętrznym — brak glikolu.';
+    }
+
+    /* ====== UI fill (lokalne) ====== */
+    function fillHp(){
+      const s=q('#hp'); const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7 );
+      s.innerHTML = sorted.map((x,i)=>`<option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW • ${fmt(x.price)} PLN</option>`).join('');
+      s.value='0'; state.selectedHp=sorted[0]; applyHpToUi();
+      s.addEventListener('change', ()=>{ state.selectedHp=sorted[Number(s.value)||0]; applyHpToUi(); });
+    }
+    function applyHpToUi(){
+      const b=activeHp(); if(!b) return;
+      q('#pA7').value= b.pA7 ? (b.pA7+' kW') : '';
+      q('#pA_7').value= b.pA_7 ? (b.pA_7+' kW') : '';
+      q('#hpType').value= b.kind||'';
+      q('#hpPhase').value= b.phase||'';
+      q('#hpSCOP').value= b.scop||'';
+      q('#hpRef').value= b.ref||'';
+      q('#hpNoise').value= b.noise? (b.noise+' dB(A)') : '';
+      q('#hpPrice').value= fmt(b.price)+' PLN';
+      renderPreview(); renderMustHave();
+    }
+    function fillBuffers(){
+      const s=q('#buffer'); const sizes=Object.keys(BUFFERS).map(Number).sort((a,b)=>a-b);
+      s.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(BUFFERS[v])} PLN</option>`).join('');
+      s.value=String(sizes[2]); state.selectedBuffer=s.value; q('#bufferPrice').value = fmt(BUFFERS[state.selectedBuffer])+' PLN';
+      s.addEventListener('change', ()=>{ state.selectedBuffer=s.value; q('#bufferPrice').value = fmt(BUFFERS[state.selectedBuffer])+' PLN'; renderPreview(); renderMustHave(); });
+    }
+    function fillTanks(){
+      const s=q('#tank'); const sizes=Object.keys(TANKS).map(Number).sort((a,b)=>a-b);
+      s.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(TANKS[v])} PLN</option>`).join('');
+      s.value=String(sizes[1]); state.selectedTank=s.value; q('#tankPrice').value = fmt(TANKS[state.selectedTank])+' PLN';
+      s.addEventListener('change', ()=>{ state.selectedTank=s.value; q('#tankPrice').value = fmt(TANKS[state.selectedTank])+' PLN'; renderPreview(); renderMustHave(); });
+    }
+    function fillAddons(){
+      const box=q('#addons'); box.innerHTML='';
+      Object.keys(ACCESSORY_BASE).forEach((name,i)=>{
+        const price=ACCESSORY_BASE[name];
+        const card=document.createElement('div'); card.className='card';
         card.innerHTML = `
           <h4>${name}</h4>
-          <div class="muted">Cena: ${fmt(final)} PLN</div>
+          <div class="muted">Cena: ${fmt(price)} PLN</div>
           <div style="margin-top:8px;">
             <label>Ilość</label>
             <input type="number" min="1" step="1" value="1" data-qty="${i}">
@@ -367,30 +427,197 @@
       });
     }
 
+    /* ====== MOSTEK: ARKON • Pompy ====== */
+    const ARKON_HP_LS_KEY   = 'arkon_components_heatpumps_v2';
+    const ARKON_HP_PING     = 'arkon_heatpumps_updated';
+    const ARKON_HP_SELECTED = 'arkon_selected_heatpump_id';
+    const ARKON_RETURN_KEY  = 'arkon_return_to';
+    const ARKON_PREF_CAT    = 'arkon_pref_category'; // 'pompy'
+    const ARKON_PREF_BRAND  = 'arkon_pref_brand';
+    const ARKON_PREF_KIND   = 'arkon_pref_kind';     // monoblok/split/all-in-one
+
+    function loadArkonHp(){
+      try{
+        const raw = localStorage.getItem(ARKON_HP_LS_KEY); if(!raw) return;
+        const list = JSON.parse(raw); if(!Array.isArray(list)) return;
+        // Normalizacja pól
+        state.arkon.list = list.map(r=>({
+          id: r.id,
+          brand: r.brand || r.Marka || '',
+          model: r.model || r.Model || '',
+          kind: (r.kind || r.typ || r.type || '').toString().toLowerCase(),
+          phase: r.phase || r.Zasilanie || '1F',
+          pA7: Number(r.pA7 || r.power || r['Moc A7'] || r['Moc (A7/W35)'] || 0),
+          pA_7: Number(r.pA_7 || r['Moc A-7'] || 0),
+          scop: r.scop || r.SCOP || '',
+          ref:  r.ref || r.Refrigerant || r.Czynnik || '',
+          noise: r.noise || r['Hałas'] || '',
+          price: Number(r.price || r.Cena || 0)
+        })).filter(x=>x.brand || x.model);
+        state.arkon.byBrand = state.arkon.list.reduce((a,b)=>{ (a[b.brand]??=[]).push(b); return a; },{});
+      }catch{}
+    }
+    function fillArkonBrands(){
+      const sel=q('#arkonBrand'); const brands=Object.keys(state.arkon.byBrand).sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
+      sel.innerHTML = '<option value="">— wybierz —</option>' + brands.map(b=>`<option>${b}</option>`).join('');
+    }
+    function currentArkonFiltered(){
+      const brand=q('#arkonBrand').value;
+      const kind=q('#arkonKind').value;
+      const mn=Number(q('#arkonMin').value), mx=Number(q('#arkonMax').value);
+      let list = brand? (state.arkon.byBrand[brand]||[]).slice() : state.arkon.list.slice();
+      if(kind) list = list.filter(x=> (x.kind||'').includes(kind));
+      return list.filter(x=>{
+        const p = Number(x.pA7||0);
+        if(!isNaN(mn) && mn>0 && p<mn) return false;
+        if(!isNaN(mx) && mx>0 && p>mx) return false;
+        return true;
+      }).sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || (a.pA7 - b.pA7));
+    }
+    function fillArkonModels(){
+      const ms=q('#arkonModel'); const list=currentArkonFiltered();
+      ms.disabled = list.length===0;
+      ms.innerHTML = list.length? '<option value="">— wybierz model —</option>' : '<option value="">— brak modeli —</option>';
+      if(!list.length){ q('#arkonPreview').textContent='Brak modeli dla filtrów.'; return; }
+      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.brand} ${x.model} • ${x.kind||'—'} • A7 ${x.pA7||'—'} kW • ${fmt(x.price)} PLN</option>`).join('');
+      q('#arkonPreview').textContent='Wybierz model z listy, aby podejrzeć.';
+    }
+    function selectArkonById(id){
+      if(!id) return;
+      loadArkonHp();
+      const found = (state.arkon.list||[]).find(x=>x.id===id); if(!found) return;
+      q('#arkonBrand').value = found.brand || '';
+      fillArkonModels();
+      q('#arkonModel').value = found.id;
+      state.arkon.selected = found;
+      renderArkonPreview();
+      // wstaw do UI
+      state.selectedHp = null; // używamy wyboru z ARKON
+      applyHpToUi();
+    }
+    function renderArkonPreview(){
+      const p=state.arkon.selected, box=q('#arkonPreview');
+      if(!p){ box.textContent='Brak wyboru. Użyj katalogu „Komponenty • Pompy”.'; return; }
+      box.innerHTML = `<b>${p.brand} ${p.model}</b><br>
+        ${p.kind||'—'}, ${p.phase||'1F'} • A7: ${p.pA7||'—'} kW • A-7: ${p.pA_7||'—'} kW • SCOP: ${p.scop||'—'} • ${p.ref||''}${p.noise? ` • ${p.noise} dB(A)` : ''} • Cena: <b>${fmt(p.price)} PLN</b>`;
+    }
+
+    // bindy mostka
+    document.addEventListener('change', (e)=>{
+      if(e.target.id==='arkonBrand' || e.target.id==='arkonKind' || e.target.id==='arkonMin' || e.target.id==='arkonMax'){
+        state.arkon.selected=null; fillArkonModels(); renderArkonPreview();
+      }
+      if(e.target.id==='arkonModel'){
+        const id=e.target.value;
+        state.arkon.selected = (state.arkon.list||[]).find(x=>x.id===id) || null;
+        renderArkonPreview(); applyHpToUi();
+      }
+      if(e.target.id==='v3d' || e.target.id==='safety' || e.target.id==='hydro' || e.target.id==='glycol'){
+        state[e.target.id] = Number(e.target.value)||0; renderPreview(); renderMustHave();
+      }
+    });
+    document.getElementById('useArkon').addEventListener('click', ()=>{
+      if(!state.arkon.selected) return alert('Wybierz pompę w mostku ARKON.');
+      applyHpToUi();
+    });
+    document.getElementById('openArkon').addEventListener('click', ()=>{
+      try{
+        localStorage.setItem(ARKON_RETURN_KEY, location.href);
+        localStorage.setItem(ARKON_PREF_CAT, 'pompy');
+        const b = q('#arkonBrand').value; const k=q('#arkonKind').value;
+        if(b) localStorage.setItem(ARKON_PREF_BRAND, b);
+        if(k) localStorage.setItem(ARKON_PREF_KIND,  k);
+      }catch{}
+      window.open('komponenty-pompy.html', '_blank', 'noopener');
+    });
+    document.getElementById('goArkonPumps').addEventListener('click', ()=>{
+      try{
+        localStorage.setItem(ARKON_RETURN_KEY, location.href);
+        localStorage.setItem(ARKON_PREF_CAT, 'pompy');
+      }catch{}
+    });
+
+    window.addEventListener('storage', (e)=>{
+      if(e.key===ARKON_HP_PING || e.key===ARKON_HP_LS_KEY){
+        const curId = state.arkon.selected?.id;
+        loadArkonHp(); fillArkonBrands(); fillArkonModels();
+        if(curId) selectArkonById(curId); else { state.arkon.selected=null; renderArkonPreview(); renderPreview(); renderMustHave(); }
+      }
+      if(e.key===ARKON_HP_SELECTED && e.newValue){
+        selectArkonById(e.newValue);
+      }
+    });
+    window.addEventListener('message', (ev)=>{
+      if(ev.data && ev.data.type==='ARKON_HEATPUMP_SELECTED'){ selectArkonById(ev.data.id); }
+    });
+    window.addEventListener('focus', ()=>{
+      try{
+        const selId = localStorage.getItem(ARKON_HP_SELECTED);
+        if(selId) selectArkonById(selId);
+      }catch{}
+    });
+
+    /* ====== INPUTS: VAT, rads, addons ====== */
+    document.addEventListener('input', (e)=>{
+      if(e.target.id==='rads'){ state.rads=Math.max(0, Number(e.target.value)||0); renderPreview(); renderMustHave(); }
+      if(e.target.id==='vat'){ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); }
+      if(e.target.matches('[data-qty-basket]')){
+        const i=Number(e.target.getAttribute('data-qty-basket')); state.basket[i].qty=Math.max(1, Number(e.target.value)||1); renderBasket();
+      }
+    });
+
+    document.addEventListener('click', (e)=>{
+      const del=e.target.getAttribute('data-del');
+      if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); return; }
+
+      const addId=e.target.getAttribute('data-addon');
+      if(addId!=null){
+        const i=Number(addId); const name=Object.keys(ACCESSORY_BASE)[i];
+        const qty=Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`)?.value)||1);
+        addToBasket(name, ACCESSORY_BASE[name], qty); return;
+      }
+
+      if(e.target.id==='addPack'){
+        const b=activeHp(), buf=state.selectedBuffer, t=state.selectedTank; if(!b||!buf||!t) return alert('Wybierz pompę, bufor i zasobnik.');
+        const price = pricePack(b.price, BUFFERS[buf]||0, (b.kind==='all-in-one'? 0 : (TANKS[t]||0)));
+        const rlabel = state.rads? ` + grzejniki x${state.rads}` : '';
+        const extras = [];
+        if(Number(state.v3d)>0) extras.push('zawór 3D');
+        if(Number(state.safety)>0) extras.push('gr. bezpieczeństwa');
+        if(Number(state.hydro)>0) extras.push('hydraulika+');
+        if(Number(state.glycol)>0 && b.kind==='monoblok') extras.push('glikol');
+        const elabel = extras.length? ` + ${extras.join(', ')}` : '';
+        addToBasket(`Zestaw: ${b.brand} ${b.model} + bufor ${buf} l + ${b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+t+' l')} + montaż${rlabel}${elabel}`, price, 1);
+        return;
+      }
+
+      if(e.target.id==='addHpOnly'){
+        const b=activeHp(); if(!b) return alert('Wybierz pompę.');
+        addToBasket(`Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie`, (Number(b.price)||0)+ONLY_HP_SURCHARGE, 1); return;
+      }
+    });
+
+    // eksport / kopiuj / drukuj
     document.getElementById('exportQuote').addEventListener('click', ()=>{
       const ws = XLSX.utils.json_to_sheet(state.basket.map(it => ({ Pozycja: it.name, Ilość: it.qty, Cena: it.final })));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
-      XLSX.writeFile(wb, 'Koszyk_PRIMA_v10.xlsx');
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
+      XLSX.writeFile(wb, 'Koszyk_PompyCiepla_zestaw.xlsx');
     });
     document.getElementById('copyQuote').addEventListener('click', ()=>{
-      const vat = Number(document.getElementById('vat').value)||0.08;
-      let sum = state.basket.reduce((a,b)=>a + b.final*b.qty, 0);
-      let txt = 'Oferta\n\n';
-      state.basket.forEach(it => { txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
+      const vat=Number(document.getElementById('vat').value)||0.08;
+      const sum=state.basket.reduce((a,b)=>a+b.final*b.qty,0);
+      let txt='Oferta — Pompa ciepła (zestaw)\n\n';
+      state.basket.forEach(it=>{ txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
       txt += `\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
-      navigator.clipboard.writeText(txt);
-      alert('Skopiowano do schowka');
+      navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
     });
     document.getElementById('print').addEventListener('click', ()=> window.print());
 
+    // INIT
     function init(){
-      buildPumpBaseByPower();
-      buildPowerOptions();
-      renderMatch();
-      renderBundles();
-      renderAddons();
-      renderBasket();
+      fillHp(); fillBuffers(); fillTanks(); fillAddons();
+      loadArkonHp(); fillArkonBrands(); fillArkonModels();
+      renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
     }
     init();
   </script>
