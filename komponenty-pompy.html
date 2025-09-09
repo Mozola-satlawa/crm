@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
@@ -12,9 +11,12 @@
   body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
   header{padding:16px;background:#11183a;border-bottom:1px solid var(--line)}
   header h1{margin:0;font-size:22px}
-  nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+  nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);align-items:center}
   nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
   nav a:hover{background:#223160}
+  .nav-spacer{flex:1}
+  .nav-prima{background:#1d3c2a;border-color:#2d7a4a}
+  .nav-prima:hover{background:#225a32}
   .wrap{max-width:1400px;margin:auto;padding:16px}
   .grid{display:grid;gap:12px}
   @media(min-width:1100px){ .cols-2{grid-template-columns:1.6fr 1fr} }
@@ -26,6 +28,7 @@
   .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .btn.ok{background:#194d34;border-color:#2f9762}
   .btn.warn{background:#3a2a19;border-color:#9d7a33}
+  .btn.tiny{padding:4px 8px;font-size:12px}
   .btn[disabled]{opacity:.55;cursor:not-allowed}
   input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
   input::placeholder{color:#aeb8da99}
@@ -33,7 +36,7 @@
   .muted{color:var(--muted);font-size:13px}
   table{width:100%;border-collapse:separate;border-spacing:0}
   th,td{padding:10px;border-bottom:1px solid var(--grid);vertical-align:top;text-align:left}
-  th{font-size:12px;color:var(--muted);position:sticky;top:0;background:#151d46;z-index:1}
+  th{font-size:12px;color:#aeb8da;position:sticky;top:0;background:#151d46;z-index:1}
   tbody tr:hover{background:#0d153033}
   .small{font-size:12px;color:#aeb8da}
   .status{padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #2a3a75;background:#0f1a44}
@@ -74,6 +77,9 @@
   <a href="komponenty-ocieplenie.html">Ocieplenie</a>
   <a href="komponenty-stolarka.html">Stolarka</a>
   <a href="komponenty-hydraulika.html">Hydraulika</a>
+  <span class="nav-spacer"></span>
+  <!-- PRZEŁĄCZNIK do PRIMA (z prawej strony nav) -->
+  <a id="navPrimaLink" class="nav-prima" href="Konfigurator_PRIMA_v10_dynamic.html" title="Przejdź do Konfiguratora PRIMA">→ Konfigurator PRIMA</a>
 </nav>
 
 <div class="wrap grid cols-2">
@@ -165,14 +171,14 @@
       <!-- PRIMA integration controls -->
       <div class="row" style="margin-top:8px;align-items:flex-end">
         <div style="flex:1;min-width:220px">
-          <label class="small">URL konfiguratora PRIMA (opcjonalnie)</label>
-          <input id="primaUrl" placeholder="np. /prima.html lub https://…">
+          <label class="small">URL konfiguratora PRIMA</label>
+          <input id="primaUrl" placeholder="np. Konfigurator_PRIMA_v10_dynamic.html lub https://…">
         </div>
         <button id="btnPrimaOpen" class="btn ghost" title="Otwórz konfigurator PRIMA">Otwórz PRIMA</button>
         <button id="btnPrimaSend" class="btn warn" title="Wyślij aktualnie edytowaną pompę do PRIMA" disabled>Wyślij do PRIMA</button>
       </div>
       <div class="small muted" style="margin-top:6px">
-        Zmiany w bazie są zapisywane w <code>localStorage</code> pod kluczem <span class="kbd">arkon_cmp_pumps_v1</span> i sygnalizowane przez <span class="kbd">arkon_pumps_updated</span>.
+        Zmiany w bazie są zapisywane w <code>localStorage</code> pod kluczem <span class="kbd">arkon_cmp_pumps_v1</span> i sygnalizowane przez <span class="kbd">arkon_pumps_updated</span>. Skrót: <span class="kbd">Alt</span>+<span class="kbd">P</span> — przełącz do PRIMA.
       </div>
 
       <details style="margin-top:8px">
@@ -280,52 +286,37 @@ const LS_KEY = 'arkon_cmp_pumps_v1';
 const PRIMA_URL_KEY = 'arkon_prima_url';
 const LS_PING_KEY = 'arkon_pumps_updated';
 const LS_SELECTED_ID = 'arkon_selected_pump_id';
+const PRIMA_DEFAULT = 'Konfigurator_PRIMA_v10_dynamic.html';
 
 let pumps = load(LS_KEY, []);
 function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; } }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(pumps)); render(); fillBrands(); broadcastUpdate(); }
 function broadcastUpdate(){ try{ localStorage.setItem(LS_PING_KEY, String(Date.now())); }catch{} }
 function getPrimaUrl(){ try{ return localStorage.getItem(PRIMA_URL_KEY) || ''; }catch{ return ''; } }
-function setPrimaUrl(u){ try{ localStorage.setItem(PRIMA_URL_KEY, u||''); }catch{} }
+function setPrimaUrl(u){ try{ localStorage.setItem(PRIMA_URL_KEY, u||''); updatePrimaLink(); }catch{} }
+function ensurePrimaUrl(){ let u = getPrimaUrl(); if(!u){ u = PRIMA_DEFAULT; setPrimaUrl(u); $('#primaUrl').value = u; } }
 
 /* ===== seed (jeśli pusto) ===== */
 if(!pumps.length){
   pumps = [
-    // Panasonic
-    {id:uid(),brand:'Panasonic',model:'Aquarea T‑CAP 9kW',type:'split',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:52,cwu:'brak',price:32000,tags:['T-CAP','-20C'],notes:'Wysoka moc na mrozie, dobry do grzejników niskotemp.',acc:'Bufor 100l; Zawór 3D DN25; Grundfos Alpha2',link:''},
-    {id:uid(),brand:'Panasonic',model:'Aquarea All‑in‑One 200l 7kW',type:'split',power:7,scop:4.8,refrig:'R32',phase:'1~',lowtemp:'tak',noise:50,cwu:'200 l',price:36000,tags:['AIO','podłogówka'],notes:'Zintegrowany zasobnik 200 l',acc:'Zawór 3D DN20; Wilo Yonos PARA',link:''},
-    // Daikin
+    {id:uid(),brand:'Panasonic',model:'Aquarea T-CAP 9kW',type:'split',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:52,cwu:'brak',price:32000,tags:['T-CAP','-20C'],notes:'Wysoka moc na mrozie, dobry do grzejników niskotemp.',acc:'Bufor 100l; Zawór 3D DN25; Grundfos Alpha2',link:''},
+    {id:uid(),brand:'Panasonic',model:'Aquarea All-in-One 200l 7kW',type:'split',power:7,scop:4.8,refrig:'R32',phase:'1~',lowtemp:'tak',noise:50,cwu:'200 l',price:36000,tags:['AIO','podłogówka'],notes:'Zintegrowany zasobnik 200 l',acc:'Zawór 3D DN20; Wilo Yonos PARA',link:''},
     {id:uid(),brand:'Daikin',model:'Altherma 3 8kW',type:'split',power:8,scop:4.7,refrig:'R32',phase:'1~',lowtemp:'tak',noise:48,cwu:'brak',price:34500,tags:['Quiet'],notes:'Cicha jednostka, COP wysoki przy +7 °C',acc:'Bufor 50l; Grundfos Alpha2',link:''},
     {id:uid(),brand:'Daikin',model:'Altherma 3 H HT 14kW',type:'split',power:14,scop:4.2,refrig:'R32',phase:'3~',lowtemp:'tak',noise:54,cwu:'brak',price:48000,tags:['wysoka temp'],notes:'Do modernizacji z grzejnikami',acc:'Bufor 100l; Zawór 3D DN32',link:''},
-    // Mitsubishi
     {id:uid(),brand:'Mitsubishi',model:'Ecodan 8.5kW',type:'split',power:8.5,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:49,cwu:'brak',price:35500,tags:['Zubadan'],notes:'Stabilna moc na mrozie (Zubadan)',acc:'Sprzęgło 25; Wilo Yonos',link:''},
-    // LG
     {id:uid(),brand:'LG',model:'Therma V 9kW Monoblok',type:'monoblok',power:9,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:53,cwu:'brak',price:31500,tags:['monoblok'],notes:'Prosta instalacja wodna',acc:'Bufor 50l; Naczynie 18l',link:''},
-    // Samsung
     {id:uid(),brand:'Samsung',model:'EHS Mono 12kW',type:'monoblok',power:12,scop:4.4,refrig:'R32',phase:'3~',lowtemp:'tak',noise:55,cwu:'brak',price:33500,tags:['PV-ready'],notes:'Dobra integracja z PV',acc:'Zawór 3D DN25; Alpha2',link:''},
-    // Vaillant R290
     {id:uid(),brand:'Vaillant',model:'aroTHERM plus 7kW',type:'monoblok',power:7,scop:4.8,refrig:'R290',phase:'1~',lowtemp:'tak',noise:48,cwu:'brak',price:39900,tags:['R290','wysoka temp'],notes:'Do grzejników: do 75 °C',acc:'Bufor 100l; Sprzęgło 25',link:''},
-    // Viessmann
-    {id:uid(),brand:'Viessmann',model:'Vitocal 150‑A 10kW',type:'monoblok',power:10,scop:4.7,refrig:'R290',phase:'3~',lowtemp:'tak',noise:50,cwu:'brak',price:44500,tags:['R290'],notes:'Nowa generacja na propanie',acc:'Zawór 3D; Grundfos Alpha3',link:''},
-    // Bosch
+    {id:uid(),brand:'Viessmann',model:'Vitocal 150-A 10kW',type:'monoblok',power:10,scop:4.7,refrig:'R290',phase:'3~',lowtemp:'tak',noise:50,cwu:'brak',price:44500,tags:['R290'],notes:'Nowa generacja na propanie',acc:'Zawór 3D; Grundfos Alpha3',link:''},
     {id:uid(),brand:'Bosch',model:'Compress 7000i AW 9kW',type:'split',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:51,cwu:'brak',price:33800,tags:['7000i'],notes:'Sterownik zdalny, aplikacja',acc:'Bufor 50l; Wilo',link:''},
-    // NIBE
-    {id:uid(),brand:'NIBE',model:'S2125‑12',type:'monoblok',power:12,scop:4.9,refrig:'R290',phase:'3~',lowtemp:'tak',noise:53,cwu:'brak',price:52000,tags:['premium','R290'],notes:'Top sprawność, rozbudowana automatyka',acc:'Bufor 100l; Stratos MAXO',link:''},
-    // Atlantic
+    {id:uid(),brand:'NIBE',model:'S2125-12',type:'monoblok',power:12,scop:4.9,refrig:'R290',phase:'3~',lowtemp:'tak',noise:53,cwu:'brak',price:52000,tags:['premium','R290'],notes:'Top sprawność, rozbudowana automatyka',acc:'Bufor 100l; Stratos MAXO',link:''},
     {id:uid(),brand:'Atlantic',model:'Extensa AI 8kW',type:'split',power:8,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:50,cwu:'brak',price:28900,tags:['budżet'],notes:'Ekonomiczna',acc:'Filtr + magnetyt',link:''},
-    // Gree
     {id:uid(),brand:'Gree',model:'Versati 10kW',type:'split',power:10,scop:4.3,refrig:'R32',phase:'1~',lowtemp:'tak',noise:54,cwu:'brak',price:26500,tags:['value'],notes:'Dobry stosunek cena/jakość',acc:'Bufor 50l',link:''},
-    // Midea
-    {id:uid(),brand:'Midea',model:'M‑Thermal 12kW',type:'monoblok',power:12,scop:4.4,refrig:'R32',phase:'3~',lowtemp:'tak',noise:55,cwu:'brak',price:25900,tags:['monoblok'],notes:'Popularna w zestawach OEM',acc:'Zawór 3D',link:''},
-    // Haier
+    {id:uid(),brand:'Midea',model:'M-Thermal 12kW',type:'monoblok',power:12,scop:4.4,refrig:'R32',phase:'3~',lowtemp:'tak',noise:55,cwu:'brak',price:25900,tags:['monoblok'],notes:'Popularna w zestawach OEM',acc:'Zawór 3D',link:''},
     {id:uid(),brand:'Haier',model:'Super Aqua 8kW',type:'split',power:8,scop:4.4,refrig:'R32',phase:'1~',lowtemp:'tak',noise:52,cwu:'brak',price:24800,tags:['ekonomia'],notes:'Aplikacja mobilna',acc:'Grundfos Alpha2',link:''},
-    // Hitachi
     {id:uid(),brand:'Hitachi',model:'Yutaki S 11kW',type:'split',power:11,scop:4.5,refrig:'R32',phase:'3~',lowtemp:'tak',noise:52,cwu:'brak',price:39900,tags:['japońska'],notes:'Szeroka modulacja',acc:'Bufor 100l',link:''},
-    // Stiebel
     {id:uid(),brand:'Stiebel Eltron',model:'WPL 09 ACS classic',type:'monoblok',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:47,cwu:'brak',price:51200,tags:['premium','cicha'],notes:'Bardzo niski hałas',acc:'Sprzęgło 25',link:''},
-    // Buderus
     {id:uid(),brand:'Buderus',model:'Logatherm WSW 8 (gruntowa)',type:'gruntowa',power:8,scop:5.0,refrig:'R410A',phase:'3~',lowtemp:'tak',noise:43,cwu:'brak',price:62000,tags:['gruntowa'],notes:'Sonde / kolektor poziomy',acc:'Solanka; wymiennik',link:''},
-    // Toshiba
     {id:uid(),brand:'Toshiba',model:'Estia 8kW',type:'split',power:8,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:49,cwu:'brak',price:32900,tags:['sprawdzone'],notes:'Dobra praca częściowa',acc:'Alpha2; bufor 50l',link:''},
   ];
   save();
@@ -374,7 +365,6 @@ function render(){
     if(filter.pmax!=='' && (Number(p.power)||0) > filter.pmax) return false;
     if(filter.priceMax!=='' && (Number(p.price)||0) > filter.priceMax) return false;
     if(filter.use){
-      // prosta heurystyka: dom<=12 kW, mdu>12, basen tag 'basen'
       if(filter.use==='dom' && (Number(p.power)||0)>12) return false;
       if(filter.use==='mdu' && (Number(p.power)||0)<=12) return false;
       if(filter.use==='basen' && !(p.tags||[]).join(' ').toLowerCase().includes('basen')) return false;
@@ -404,7 +394,8 @@ function render(){
     const tags = (p.tags||[]).map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('');
     tr.innerHTML = `
       <td>
-        <button class="btn ghost open" data-id="${p.id}" title="Edytuj" type="button">✏️</button>
+        <button class="btn ghost tiny open" data-id="${p.id}" title="Edytuj" type="button">✏️</button>
+        <button class="btn tiny" data-sendprima="${p.id}" title="Wyślij ten model do PRIMA i przełącz">PRIMA ↗</button>
       </td>
       <td><b>${escapeHtml(p.brand||'')}</b><div class="small">${escapeHtml(p.model||'')}</div></td>
       <td>${escapeHtml(p.type||'')}</td>
@@ -422,6 +413,7 @@ function render(){
   });
 
   tb.querySelectorAll('.open').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); openDrawer(b.dataset.id); }));
+  tb.querySelectorAll('[data-sendprima]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); sendToPrima(b.dataset.sendprima, /*sameTab*/ true); }));
 }
 
 /* ===== brand filter fill ===== */
@@ -449,7 +441,7 @@ const drawer = $('#drawer');
 $('#btnClose').addEventListener('click', closeDrawer);
 $('#btnDel').addEventListener('click', ()=>{ if(openId && confirm('Usunąć pompę?')) removePump(openId); });
 $('#btnDup').addEventListener('click', ()=>{ if(openId) duplicatePump(openId); });
-$('#btnSendFromDrawer').addEventListener('click', ()=>{ if(openId) sendToPrima(openId); });
+$('#btnSendFromDrawer').addEventListener('click', ()=>{ if(openId) sendToPrima(openId, /*sameTab*/ true); });
 
 function openDrawer(id){
   openId = id;
@@ -473,7 +465,6 @@ function openDrawer(id){
   $('#e_link').value = p.link||'';
 
   bindEditorHandlers();
-  // włącz przycisk w Operacjach
   const btnOpsSend = $('#btnPrimaSend'); if (btnOpsSend) btnOpsSend.disabled = false;
 }
 function closeDrawer(){ drawer.classList.remove('open'); openId=null; const btnOpsSend=$('#btnPrimaSend'); if(btnOpsSend) btnOpsSend.disabled=true; }
@@ -528,7 +519,7 @@ $('#btnCSV').addEventListener('click', ()=>{
     const r = cols.map(k=>{
       let v = (k==='tags') ? (p.tags||[]).join('|') : (p[k]??'');
       v = String(v);
-      if(/[;\n"]/g.test(v)) v = '"'+v.replace(/"/g,'""')+'"';
+      if(/[;\n"]/.test(v)) v = '"'+v.replace(/"/g,'""')+'"';
       return v;
     });
     rows.push(r.join(';'));
@@ -538,35 +529,54 @@ $('#btnCSV').addEventListener('click', ()=>{
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
 
-/* ===== PRIMA integration actions ===== */
-$('#primaUrl').value = getPrimaUrl();
+/* ===== PRIMA integration ===== */
 $('#primaUrl').addEventListener('input', e=> setPrimaUrl(e.target.value.trim()));
-$('#btnPrimaOpen').addEventListener('click', ()=>{
-  const url = getPrimaUrl();
-  if(!url){ alert('Podaj URL do konfiguratora PRIMA (pole nad przyciskami).'); return; }
-  window.open(url, '_blank');
-});
+$('#btnPrimaOpen').addEventListener('click', ()=> goToPrima(/*sameTab*/ false));
 $('#btnPrimaSend').addEventListener('click', ()=>{
   if(!openId){ alert('Otwórz edycję pompy (✏️), a następnie wyślij.'); return; }
-  sendToPrima(openId);
+  sendToPrima(openId, /*sameTab*/ true);
+});
+document.getElementById('navPrimaLink').addEventListener('click', (e)=>{
+  e.preventDefault();
+  // jeśli jest otwarta jakaś pompa, przekaż ją
+  if(openId) try{ localStorage.setItem(LS_SELECTED_ID, openId); }catch{}
+  goToPrima(/*sameTab*/ true);
 });
 
-function sendToPrima(id){
-  // zapisz wszystko, wyemituj sygnał i spróbuj podać wybrane ID
+function updatePrimaLink(){
+  const link = document.getElementById('navPrimaLink');
+  if (link){ link.href = getPrimaUrl() || PRIMA_DEFAULT; }
+}
+function goToPrima(sameTab){
+  ensurePrimaUrl();
+  const url = getPrimaUrl() || PRIMA_DEFAULT;
+  // ping i ewentualne ID już ustawione w LS_SELECTED_ID
+  broadcastUpdate();
+  if (sameTab) window.location.href = url; else window.open(url, '_blank');
+}
+function sendToPrima(id, sameTab){
   save();
   try{ localStorage.setItem(LS_SELECTED_ID, id); }catch{}
   broadcastUpdate();
-  // wyślij postMessage (jeśli PRIMA otwarta z tego okna i nasłuchuje)
-  try{ window.opener?.postMessage({ type:'ARKON_PUMP_SELECTED', id }, '*'); }catch{}
-  const url = getPrimaUrl();
-  if(url){ window.open(url, '_blank'); }
+  goToPrima(!!sameTab);
 }
+
+/* ===== hotkeys ===== */
+document.addEventListener('keydown', (e)=>{
+  if (e.altKey && (e.key==='p' || e.key==='P')){ e.preventDefault(); 
+    if(openId) try{ localStorage.setItem(LS_SELECTED_ID, openId);}catch{}
+    goToPrima(true);
+  }
+});
 
 /* ===== debounce ===== */
 function debounce(fn,ms){ let t; return function(){ const a=arguments; clearTimeout(t); t=setTimeout(()=>fn.apply(null,a),ms||180); }; }
 
 /* ===== boot ===== */
 render();
+$('#primaUrl').value = getPrimaUrl() || PRIMA_DEFAULT;
+ensurePrimaUrl();
+updatePrimaLink();
 
 </script>
 </body>
