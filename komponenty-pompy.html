@@ -1,10 +1,11 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ARKON — Komponenty: Pompy ciepła</title>
-<meta name="description" content="Baza pomp ciepła: marki, modele, parametry, akcesoria. Filtrowanie, sortowanie, import/eksport, edycja.">
+<title>ARKON — Komponenty: Pompy ciepła (PRIMA-ready)</title>
+<meta name="description" content="Baza pomp ciepła: marki, modele, parametry, akcesoria. Filtrowanie, sortowanie, import/eksport, edycja. Zintegrowane z PRIMA v10.">
 <style>
   :root{ --bg:#0b1020; --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da; --accent:#4cc9f0; --ok:#2fbf71; --warn:#ffb84d; --bad:#ff6b6b; --grid:#243059; --card:#0f1533; --line:#1c2750;}
   *{box-sizing:border-box}
@@ -24,6 +25,8 @@
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
   .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .btn.ok{background:#194d34;border-color:#2f9762}
+  .btn.warn{background:#3a2a19;border-color:#9d7a33}
+  .btn[disabled]{opacity:.55;cursor:not-allowed}
   input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
   input::placeholder{color:#aeb8da99}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
@@ -58,8 +61,8 @@
 <body>
 
 <header>
-  <h1>Komponenty • Pompy ciepła</h1>
-  <div class="muted">Obszerna baza urządzeń i akcesoriów: marki, modele, parametry, ceny, kompatybilność. Zapis lokalny, import/eksport CSV/JSON.</div>
+  <h1>Komponenty • Pompy ciepła <span class="small" style="font-weight:400">— PRIMA-ready</span></h1>
+  <div class="muted">Obszerna baza urządzeń i akcesoriów: marki, modele, parametry, ceny, kompatybilność. Zapis lokalny, import/eksport CSV/JSON. Aktualizacje emitują sygnał dla PRIMA.</div>
 </header>
 
 <nav>
@@ -158,6 +161,20 @@
         <button id="btnCSV" class="btn ghost">CSV</button>
         <button id="btnPrint" class="btn ghost">Drukuj</button>
       </div>
+      
+      <!-- PRIMA integration controls -->
+      <div class="row" style="margin-top:8px;align-items:flex-end">
+        <div style="flex:1;min-width:220px">
+          <label class="small">URL konfiguratora PRIMA (opcjonalnie)</label>
+          <input id="primaUrl" placeholder="np. /prima.html lub https://…">
+        </div>
+        <button id="btnPrimaOpen" class="btn ghost" title="Otwórz konfigurator PRIMA">Otwórz PRIMA</button>
+        <button id="btnPrimaSend" class="btn warn" title="Wyślij aktualnie edytowaną pompę do PRIMA" disabled>Wyślij do PRIMA</button>
+      </div>
+      <div class="small muted" style="margin-top:6px">
+        Zmiany w bazie są zapisywane w <code>localStorage</code> pod kluczem <span class="kbd">arkon_cmp_pumps_v1</span> i sygnalizowane przez <span class="kbd">arkon_pumps_updated</span>.
+      </div>
+
       <details style="margin-top:8px">
         <summary>🎯 Wskazówki doboru</summary>
         <div class="small" style="margin-top:6px">
@@ -221,6 +238,7 @@
         <button id="btnClose" class="btn ghost" type="button">Zamknij</button>
         <button id="btnDel" class="btn bad" type="button">Usuń</button>
         <button id="btnDup" class="btn" type="button">Duplikuj</button>
+        <button id="btnSendFromDrawer" class="btn warn" type="button" title="Wyślij tę pompę do PRIMA">Wyślij do PRIMA</button>
       </div>
     </div>
   </div>
@@ -259,9 +277,16 @@ const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 /* ===== storage ===== */
 const LS_KEY = 'arkon_cmp_pumps_v1';
+const PRIMA_URL_KEY = 'arkon_prima_url';
+const LS_PING_KEY = 'arkon_pumps_updated';
+const LS_SELECTED_ID = 'arkon_selected_pump_id';
+
 let pumps = load(LS_KEY, []);
 function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; } }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(pumps)); render(); fillBrands(); }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(pumps)); render(); fillBrands(); broadcastUpdate(); }
+function broadcastUpdate(){ try{ localStorage.setItem(LS_PING_KEY, String(Date.now())); }catch{} }
+function getPrimaUrl(){ try{ return localStorage.getItem(PRIMA_URL_KEY) || ''; }catch{ return ''; } }
+function setPrimaUrl(u){ try{ localStorage.setItem(PRIMA_URL_KEY, u||''); }catch{} }
 
 /* ===== seed (jeśli pusto) ===== */
 if(!pumps.length){
@@ -424,6 +449,7 @@ const drawer = $('#drawer');
 $('#btnClose').addEventListener('click', closeDrawer);
 $('#btnDel').addEventListener('click', ()=>{ if(openId && confirm('Usunąć pompę?')) removePump(openId); });
 $('#btnDup').addEventListener('click', ()=>{ if(openId) duplicatePump(openId); });
+$('#btnSendFromDrawer').addEventListener('click', ()=>{ if(openId) sendToPrima(openId); });
 
 function openDrawer(id){
   openId = id;
@@ -447,8 +473,10 @@ function openDrawer(id){
   $('#e_link').value = p.link||'';
 
   bindEditorHandlers();
+  // włącz przycisk w Operacjach
+  const btnOpsSend = $('#btnPrimaSend'); if (btnOpsSend) btnOpsSend.disabled = false;
 }
-function closeDrawer(){ drawer.classList.remove('open'); openId=null; }
+function closeDrawer(){ drawer.classList.remove('open'); openId=null; const btnOpsSend=$('#btnPrimaSend'); if(btnOpsSend) btnOpsSend.disabled=true; }
 
 function bindEditorHandlers(){
   ['#e_brand','#e_model','#e_power','#e_scop','#e_noise','#e_price','#e_tags','#e_notes','#e_acc','#e_link'].forEach(sel=>{
@@ -500,7 +528,7 @@ $('#btnCSV').addEventListener('click', ()=>{
     const r = cols.map(k=>{
       let v = (k==='tags') ? (p.tags||[]).join('|') : (p[k]??'');
       v = String(v);
-      if(/[;\n"]/.test(v)) v = '"'+v.replace(/"/g,'""')+'"';
+      if(/[;\n"]/g.test(v)) v = '"'+v.replace(/"/g,'""')+'"';
       return v;
     });
     rows.push(r.join(';'));
@@ -509,6 +537,30 @@ $('#btnCSV').addEventListener('click', ()=>{
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'arkon_pompy.csv'; a.click(); URL.revokeObjectURL(a.href);
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
+
+/* ===== PRIMA integration actions ===== */
+$('#primaUrl').value = getPrimaUrl();
+$('#primaUrl').addEventListener('input', e=> setPrimaUrl(e.target.value.trim()));
+$('#btnPrimaOpen').addEventListener('click', ()=>{
+  const url = getPrimaUrl();
+  if(!url){ alert('Podaj URL do konfiguratora PRIMA (pole nad przyciskami).'); return; }
+  window.open(url, '_blank');
+});
+$('#btnPrimaSend').addEventListener('click', ()=>{
+  if(!openId){ alert('Otwórz edycję pompy (✏️), a następnie wyślij.'); return; }
+  sendToPrima(openId);
+});
+
+function sendToPrima(id){
+  // zapisz wszystko, wyemituj sygnał i spróbuj podać wybrane ID
+  save();
+  try{ localStorage.setItem(LS_SELECTED_ID, id); }catch{}
+  broadcastUpdate();
+  // wyślij postMessage (jeśli PRIMA otwarta z tego okna i nasłuchuje)
+  try{ window.opener?.postMessage({ type:'ARKON_PUMP_SELECTED', id }, '*'); }catch{}
+  const url = getPrimaUrl();
+  if(url){ window.open(url, '_blank'); }
+}
 
 /* ===== debounce ===== */
 function debounce(fn,ms){ let t; return function(){ const a=arguments; clearTimeout(t); t=setTimeout(()=>fn.apply(null,a),ms||180); }; }
