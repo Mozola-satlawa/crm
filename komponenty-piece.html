@@ -59,7 +59,7 @@
     .price-preview{font-weight:800;font-size:18px;margin-top:6px}
     .bridge-note{background:#0e1b40;border:1px dashed var(--line);padding:8px;border-radius:12px;margin-top:8px;color:#cfe1ff}
     .mini{font-size:12px;color:var(--muted)}
-    .hint{font-size:12px;color:#97b1ff}
+    .hint{font-size:12px;color:#aee1ff}
 
     /* Sekcja doboru z powierzchni (wygląd kompaktowy) */
     .inline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -151,6 +151,24 @@
             <label>Cena zbiornika [PLN]</label>
             <input id="tankPrice" type="text" readonly>
           </div>
+
+          <!-- Bufor ciepła: wymagany dla drewna; dla pellet/gaz — opcjonalny -->
+          <div class="col" id="bufferOptWrap" style="display:none">
+            <label>Bufor ciepła (opcjonalnie)</label>
+            <label class="pill" style="display:inline-flex;align-items:center;gap:8px">
+              <input type="checkbox" id="bufferOpt"> Dodaj bufor do zestawu
+            </label>
+          </div>
+          <div class="col" id="bufferWrap" style="display:none">
+            <label id="bufferLabel">Bufor ciepła [l]</label>
+            <select id="buffer"></select>
+            <div class="mini" id="bufferHint">—</div>
+          </div>
+          <div class="col" id="bufferPriceWrap" style="display:none">
+            <label>Cena bufora [PLN]</label>
+            <input id="bufferPrice" type="text" readonly>
+          </div>
+
           <div class="col">
             <label>Liczba grzejników (montaż)</label>
             <input id="rads" type="number" min="0" step="1" value="0">
@@ -247,8 +265,8 @@
         </div>
         <div class="sub">
           Źródło: <code>localStorage["arkon_components_boilers_v2"]</code>. Filtrujemy tylko: <b>Ferroli</b>, <b>DEFRO</b>, <b>Stalmark</b>, <b>LAZAR</b>.<br>
-          Preferencje przekazujemy przez <code>arkon_return_to</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>.
-          Wybór przyjmujemy przez <code>arkon_selected_boiler_id</code> lub <code>postMessage</code> (<code>type:"ARKON_BOILER_SELECTED"</code>).
+          Preferencje przez <code>arkon_return_to</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>.
+          Wybór: <code>arkon_selected_boiler_id</code> lub <code>postMessage</code> (<code>type:"ARKON_BOILER_SELECTED"</code>).
         </div>
         <!-- ▲▲▲ KONIEC MOSTKA ▲▲▲ -->
 
@@ -292,7 +310,6 @@
     'use strict';
 
     /* ================== MODELE „NA SZTYWNO” — tylko nasze marki ================== */
-    // (DEFRO/Stalmark/LAZAR mają już ceny ze skalkulowanymi narzutami zgodnie z wcześniejszymi ustaleniami)
     const FERROLI = [
       { model:'Divacondens E 20 (2F)',             power:20, fuel:'gaz-kondensacyjny', type:'2F', price: 8400 },
       { model:'Divacondens E 24 (2F)',             power:24, fuel:'gaz-kondensacyjny', type:'2F', price: 8800 },
@@ -344,6 +361,10 @@
       "Pompa obiegowa CO 25-60":1440
     };
 
+    /* ===== Bufory ciepła ===== */
+    const BUFFERS = { '500':2600, '800':3200, '1000':3800, '1200':4200, '1500':4900, '2000':6200, '3000':9200 };
+    const BUFFER_MIN_L_PER_KW = 50; // drewno (zgazowujące)
+
     // Stałe biznesowe
     const RAD_PRICE = 750;
     const CHIMNEY_PRICE = 650;
@@ -359,6 +380,7 @@
       vat:0.08, basket:[],
       selectedBoiler:null, selectedTank:null,
       rads:0, chimneyM:0,
+      bufferLiters:0, bufferPrice:0, bufferSelected:false,
       arkon:{ list:[], byBrand:{}, selected:null }
     };
 
@@ -382,11 +404,25 @@
       if(b==='LAZAR') return 'drewno';
       return '';
     }
-    function pricePack(boiler, tank, rads, chimneyM){
+    function requiresBuffer(boiler){
+      const fuel = (boiler?.fuel || fuelOfBrand(state.brand) || '').toLowerCase();
+      return fuel.includes('drewno'); // zgazowujące drewno -> wymagany bufor
+    }
+    function minBufferLiters(power){
+      const p = Number(power)||0;
+      return Math.ceil((p * BUFFER_MIN_L_PER_KW)/100)*100; // zaokrąglij do 100 l
+    }
+    function nearestBufferSize(minL){
+      const sizes = Object.keys(BUFFERS).map(Number).sort((a,b)=>a-b);
+      for(const s of sizes){ if(s>=minL) return s; }
+      return sizes[sizes.length-1];
+    }
+    function pricePack(boiler, tank, rads, chimneyM, bufferPrice){
       const fuel = (boiler && boiler.fuel) ? boiler.fuel : fuelOfBrand(state.brand);
       const base = INSTALL_BASE[fuel] || 0;
       return (Number(boiler?.price)||0)
            + (Number(tank)||0)
+           + (Number(bufferPrice)||0)
            + base
            + (Number(rads)||0)*RAD_PRICE
            + (Number(chimneyM)||0)*CHIMNEY_PRICE;
@@ -432,13 +468,16 @@
       if(!b||!t){ box.textContent='Wybierz markę, model i zasobnik — pokażę skład.'; return; }
       const items = [];
       const labelFuel = (b.fuel||fuelOfBrand(state.brand));
-      items.push(`Kocioł — ${b.model}${b.power? ` (${b.power} kW)`:''} • ${labelFuel}`);
+      items.push(`Kocioł — ${b.model}${b.power? ` (${b.power} kW)` : ''} • ${labelFuel}`);
       items.push(`Zasobnik CWU — ${t} l`);
+      if(requiresBuffer(b) || state.bufferSelected){
+        items.push(`Bufor ciepła — ${state.bufferLiters} l${requiresBuffer(b)?' (wymagany)':' (opcjonalnie)'}`);
+      }
       items.push('Armatura: zawór 3D CWU/CO, grupa bezpieczeństwa CO, zawór zwrotny');
       items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
       items.push('Naczynie przeponowe CO, odpowietrzniki automatyczne');
       const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN/szt.`);
-      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue ? ` • zalec. Ø ${b.flue} mm` : ''}`);
+      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue? ` • zalec. Ø ${b.flue} mm` : ''}`);
       items.push('Montaż, uruchomienie, konfiguracja sterowania');
       box.innerHTML = '<ul class="clean">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
     }
@@ -449,8 +488,91 @@
       const r = Number(state.rads)||0;
       const m = Number(state.chimneyM)||0;
       if(!b || !t){ q('#pricePreview').textContent='—'; return; }
-      const sum = pricePack(b, TANKS[t], r, m);
+      const sum = pricePack(b, TANKS[t], r, m, (requiresBuffer(b) || state.bufferSelected) ? state.bufferPrice : 0);
       q('#pricePreview').textContent = `${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN)`;
+    }
+
+    /* ====== Bufor — UI ====== */
+    function updateBufferUI(){
+      const b = activeBoiler();
+      const optWrap = q('#bufferOptWrap');
+      const wrap = q('#bufferWrap'); 
+      const wrapP = q('#bufferPriceWrap');
+      const label = q('#bufferLabel');
+      const hint = q('#bufferHint');
+      const cb = q('#bufferOpt');
+
+      if(!b){ 
+        optWrap.style.display='none'; wrap.style.display='none'; wrapP.style.display='none';
+        state.bufferSelected=false; state.bufferLiters=0; state.bufferPrice=0; 
+        return; 
+      }
+
+      const req = requiresBuffer(b);
+      const sel = q('#buffer');
+      const sizes = Object.keys(BUFFERS).map(Number).sort((a,b)=>a-b);
+      sel.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(BUFFERS[v])} PLN</option>`).join('');
+
+      if(req){
+        // wymagany dla drewna
+        optWrap.style.display='none';
+        wrap.style.display=''; wrapP.style.display='';
+        label.innerHTML = 'Bufor ciepła [l] <span class="mini">(wymagany dla kotłów zgazowujących)</span>';
+        const minL = minBufferLiters(b.power||0);
+        hint.textContent = `Min. zalecane: ok. ${INT0.format(minL)} l (≈ ${BUFFER_MIN_L_PER_KW} l/kW)`;
+        const def = nearestBufferSize(minL);
+        sel.value = String(def);
+        state.bufferLiters = def;
+        state.bufferPrice = BUFFERS[def];
+        state.bufferSelected = true;
+        q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+      }else{
+        // opcjonalny dla pellet/gaz
+        optWrap.style.display=''; // pokaż przełącznik
+        label.textContent = 'Bufor ciepła [l]';
+        hint.textContent = 'Opcjonalnie — wybierz pojemność (np. 500–1000 l), jeśli inwestor oczekuje zwiększenia komfortu/pojemności cieplnej.';
+        // zwiąż zdarzenie (raz)
+        if(!cb.dataset.bound){
+          cb.addEventListener('change', ()=>{
+            state.bufferSelected = cb.checked;
+            if(!state.bufferSelected){
+              wrap.style.display='none'; wrapP.style.display='none';
+              state.bufferLiters=0; state.bufferPrice=0; q('#bufferPrice').value = '';
+              renderPreview(); renderMustHave();
+            }else{
+              // ustaw domyślnie 500 l
+              sel.value = '500';
+              state.bufferLiters = 500;
+              state.bufferPrice = BUFFERS['500'];
+              wrap.style.display=''; wrapP.style.display='';
+              q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+              renderPreview(); renderMustHave();
+            }
+          });
+          cb.dataset.bound='1';
+        }
+        // pokaż/ukryj zależnie od checkboxa
+        if(cb.checked || state.bufferSelected){
+          wrap.style.display=''; wrapP.style.display='';
+          if(!state.bufferLiters){ sel.value='500'; state.bufferLiters=500; state.bufferPrice=BUFFERS['500']; }
+          q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+          state.bufferSelected = true;
+          cb.checked = true;
+        }else{
+          wrap.style.display='none'; wrapP.style.display='none';
+          state.bufferSelected = false;
+          state.bufferLiters=0; state.bufferPrice=0; q('#bufferPrice').value='';
+        }
+      }
+      // reaguj na zmianę pojemności
+      sel.onchange = ()=>{
+        state.bufferLiters = Number(sel.value)||0;
+        state.bufferPrice = BUFFERS[sel.value]||0;
+        q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+        renderPreview(); renderMustHave();
+      };
+
+      renderPreview(); renderMustHave();
     }
 
     /* ====== Dobór mocy z powierzchni ====== */
@@ -460,7 +582,6 @@
       if(!area) { q('#suggestedKW').value='—'; q('#suggestedModel').textContent='—'; return null; }
       const kw = area*spec/1000 * 1.15; // +15% rezerwy
       q('#suggestedKW').value = INT2.format(kw);
-      // dobierz najbliższy (>=) model z bieżącej marki
       const list = modelsForBrand(state.brand).slice().sort((a,b)=>a.power-b.power);
       let pick = list.find(x=>x.power >= kw) || list[list.length-1];
       if(pick){
@@ -473,7 +594,6 @@
     function applySuggestedModel(){
       const pick = calcSuggestedKW();
       if(!pick) return;
-      // ustaw w lokalnej liście
       const list = modelsForBrand(state.brand).slice().sort((a,b)=> a.power-b.power || a.price-b.price );
       const idx = list.findIndex(x=>x.model===pick.model && x.power===pick.power);
       if(idx>=0){
@@ -489,7 +609,11 @@
       const brandSel = q('#brand'); brandSel.value = state.brand;
       brandSel.addEventListener('change', ()=>{
         state.brand = brandSel.value; state.arkon.selected=null;
-        fillBoilers(); renderPreview(); renderMustHave(); fillArkonDefaults(); calcSuggestedKW();
+        // reset bufora przy zmianie marki
+        state.bufferSelected=false; state.bufferLiters=0; state.bufferPrice=0;
+        const cb = q('#bufferOpt'); if(cb){ cb.checked=false; }
+        fillBoilers(); fillTanks(); updateBufferUI();
+        renderPreview(); renderMustHave(); fillArkonDefaults(); calcSuggestedKW();
       });
     }
     function normalizeLocalModel(b){
@@ -507,6 +631,7 @@
       q('#power').value = b.power? (b.power+' kW') : '';
       q('#type').value  = b.type? b.type : (b.fuel||'');
       q('#boilerPrice').value = fmt(b.price) + ' PLN';
+      updateBufferUI();
       renderPreview(); renderMustHave();
     }
     function fillBoilers(){
@@ -603,15 +728,15 @@
       ms.disabled = list.length===0;
       ms.innerHTML = list.length? '<option value="">— wybierz model —</option>' : '<option value="">— brak modeli —</option>';
       if(!list.length){ q('#arkonPreview').textContent='Brak modeli dla filtrów.'; return; }
-      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.model}${(x.powMax||x.powMin) ? ` • ${x.powMin||''}-${x.powMax||''} kW` : ''} • ${fmt(x.price)} PLN</option>`).join('');
+      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.model}${x.powMax||x.powMin? ` • ${x.powMin||''}-${x.powMax||''} kW` : ''} • ${fmt(x.price)} PLN</option>`).join('');
       q('#arkonPreview').textContent='Wybierz model, aby zobaczyć szczegóły.';
     }
     function renderArkonPreview(){
       const p=state.arkon.selected, box=q('#arkonPreview');
       if(!p){ box.textContent='Brak wyboru z katalogu.'; return; }
-      const pow = (p.powMin||'') + (p.powMax ? `–${p.powMax}` : '');
+      const pow = (p.powMin||'') + (p.powMax? `–${p.powMax}` : '');
       box.innerHTML = `<b>${p.brand} ${p.model}</b><br>
-        Moc: ${pow||'—'} kW • Paliwo: ${p.fuel||'—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue?` • Spalin Ø: ${p.flue} mm`:''}`;
+        Moc: ${pow||'—'} kW • Paliwo: ${p.fuel||'—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue?` • Spalin Ø: ${p.flue} mm` : ''}`;
     }
     function selectArkonById(id){
       if(!id) return;
@@ -627,11 +752,11 @@
       // wpisz do pól głównych
       state.selectedBoiler = {
         model: `${found.brand} ${found.model}`,
-        power: found.powMax||found.powMin||'',
-        fuel: found.fuel||'',
-        type: found.type||'',
-        price: Number(found.price)||0,
-        flue: found.flue||''
+        power:found.powMax||found.powMin||'',
+        fuel:found.fuel||'',
+        type:found.type||'',
+        price:Number(found.price)||0,
+        flue:found.flue||''
       };
       applyBoilerToUi();
     }
@@ -646,11 +771,11 @@
         if(state.arkon.selected){
           state.selectedBoiler = {
             model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
-            power: state.arkon.selected.powMax||state.arkon.selected.powMin||'',
-            fuel: state.arkon.selected.fuel||'',
-            type: state.arkon.selected.type||'',
-            price: Number(state.arkon.selected.price)||0,
-            flue: state.arkon.selected.flue||''
+            power:state.arkon.selected.powMax||state.arkon.selected.powMin||'',
+            fuel:state.arkon.selected.fuel||'',
+            type:state.arkon.selected.type||'',
+            price:Number(state.arkon.selected.price)||0,
+            flue:state.arkon.selected.flue||''
           };
           applyBoilerToUi();
         }
@@ -683,11 +808,19 @@
       }
 
       if(e.target.id==='addPack'){
-        const b=activeBoiler(), t=state.selectedTank; if(!b||!t) return alert('Wybierz kocioł i zasobnik.');
-        const price = pricePack(b, TANKS[t], Number(state.rads)||0, Number(state.chimneyM)||0);
+        const b=activeBoiler(), t=state.selectedTank; 
+        if(!b||!t) return alert('Wybierz kocioł i zasobnik.');
+        if(requiresBuffer(b) && (!state.bufferLiters || !state.bufferPrice)){
+          return alert('Dla kotłów zgazowujących (drewno) wymagany jest bufor ciepła — wybierz pojemność.');
+        }
+        const price = pricePack(
+          b, TANKS[t], Number(state.rads)||0, Number(state.chimneyM)||0,
+          (requiresBuffer(b) || state.bufferSelected) ? state.bufferPrice : 0
+        );
         const rlabel = state.rads?` + grzejniki x${state.rads}`:'';
         const mlabel = (Number(state.chimneyM)||0)>0 ? ` + wkład ${state.chimneyM} m` : '';
-        addToBasket(`Zestaw: ${b.model} + CWU ${t} l + montaż${rlabel}${mlabel}`, price, 1); return;
+        const blabel = (requiresBuffer(b) || state.bufferSelected)?` + bufor ${state.bufferLiters} l`:'';
+        addToBasket(`Zestaw: ${b.model} + CWU ${t} l${blabel} + montaż${rlabel}${mlabel}`, price, 1); return;
       }
 
       if(e.target.id==='addBoilerOnly'){
@@ -707,19 +840,18 @@
       const vat=Number(document.getElementById('vat').value)||0.08;
       const sum=state.basket.reduce((a,b)=>a+b.final*b.qty,0);
       let txt='Oferta — Konfigurator pieców (master)\n\n';
-      state.basket.forEach(it=>{ txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
+      state.basket.forEach(it=>{ txt+=`• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
       txt += `\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
       navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
     });
     document.getElementById('print').addEventListener('click', ()=>{
-      // uzupełnij nagłówek wydruku bieżącą konfiguracją
       const b = activeBoiler();
       const tank = state.selectedTank ? `${state.selectedTank} l` : '—';
-      const sumNet = state.basket.reduce((a,b)=>a+b.final*b.qty,0);
+      const buf = (requiresBuffer(b) || state.bufferSelected) && state.bufferLiters ? ` | Bufor: ${state.bufferLiters} l${requiresBuffer(b)?' (wym.)':''}` : '';
       const meta = [
         `Data: ${new Date().toLocaleString('pl-PL')}`,
         `Marka/Model: ${b?b.model:'—'}`,
-        `Moc: ${b?.power? b.power+' kW':'—'} | Paliwo: ${b?.fuel||'—'}`,
+        `Moc: ${b?.power?b.power+' kW':'—'} | Paliwo: ${b?.fuel||'—'}${buf}`,
         `Zasobnik: ${tank} | VAT: ${Math.round((state.vat||0)*100)}%`,
         `Podgląd ceny zestawu (netto): ${q('#pricePreview').textContent.replace('netto','').split('(')[0].trim()}`
       ].join(' | ');
@@ -730,26 +862,26 @@
     // Linki/mostek
     document.getElementById('openArkon').addEventListener('click', ()=>{
       try{
-        localStorage.setItem(ARKON_RETURN_KEY, location.href);
-        localStorage.setItem(ARKON_PREF_BRAND, state.brand);
-        localStorage.setItem(ARKON_PREF_FUEL,  fuelOfBrand(state.brand));
+        localStorage.setItem('arkon_return_to', location.href);
+        localStorage.setItem('arkon_pref_brand', state.brand);
+        localStorage.setItem('arkon_pref_fuel',  fuelOfBrand(state.brand));
       }catch{}
       window.open('komponenty-piece.html', '_blank', 'noopener');
     });
     document.getElementById('goArkon').addEventListener('click', ()=>{
       try{
-        localStorage.setItem(ARKON_RETURN_KEY, location.href);
-        localStorage.setItem(ARKON_PREF_BRAND, state.brand);
-        localStorage.setItem(ARKON_PREF_FUEL,  fuelOfBrand(state.brand));
+        localStorage.setItem('arkon_return_to', location.href);
+        localStorage.setItem('arkon_pref_brand', state.brand);
+        localStorage.setItem('arkon_pref_fuel',  fuelOfBrand(state.brand));
       }catch{}
     });
     window.addEventListener('storage', (e)=>{
-      if(e.key===ARKON_PING_KEY || e.key===ARKON_LS_KEY){
+      if(e.key==='arkon_boilers_updated' || e.key==='arkon_components_boilers_v2'){
         const curId = state.arkon.selected?.id;
         loadArkon(); fillArkonDefaults();
         if(curId) selectArkonById(curId); else { state.arkon.selected=null; renderArkonPreview(); renderPreview(); renderMustHave(); }
       }
-      if(e.key===ARKON_SELECTED_KEY && e.newValue){
+      if(e.key==='arkon_selected_boiler_id' && e.newValue){
         selectArkonById(e.newValue);
       }
     });
@@ -757,7 +889,7 @@
       if(ev.data && ev.data.type==='ARKON_BOILER_SELECTED'){ selectArkonById(ev.data.id); }
     });
     window.addEventListener('focus', ()=>{
-      try{ const selId = localStorage.getItem(ARKON_SELECTED_KEY); if(selId) selectArkonById(selId); }catch{}
+      try{ const selId = localStorage.getItem('arkon_selected_boiler_id'); if(selId) selectArkonById(selId); }catch{}
     });
 
     // INIT
@@ -765,7 +897,7 @@
       fillBrands(); fillBoilers(); fillTanks(); fillAddons();
       loadArkon(); fillArkonDefaults();
       renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
-      calcSuggestedKW();
+      calcSuggestedKW(); updateBufferUI();
     }
     init();
   </script>
