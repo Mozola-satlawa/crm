@@ -62,9 +62,6 @@
   <h1>Wszystkie pliki i umowy • ARKON CRM</h1>
   <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
 </header>
-<h1>Wszystkie pliki i umowy • ARKON CRM</h1>
-  <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
-</header>
 
 <nav class="tabs" role="tablist">
   <button id="tabDocs" class="active" type="button">📁 Dokumenty (FILES)</button>
@@ -199,10 +196,6 @@ function openPreview(name, href, type){
 function closePreview(){ mFrame.src='about:blank'; modal.classList.remove('open'); }
 
 /* ===== DOKUMENTY (FILES) ===== */
-/* Dodałem dwie pozycje HTML w tej samej liście:
-   - Umowa modyfikowalna → umowa2.html
-   - Umowa ogólna → umowa_arkon_szablon.html
-   Dzięki temu są „w linii” z resztą dokumentów. */
 const FILES = [
   /* SZABLONY/EDYTOR — HTML */
   { name:'Umowa modyfikowalna', href:'umowa2.html',
@@ -219,10 +212,13 @@ const FILES = [
     href:'OSÌ WIADCZENIE BENEFICJENTA O PRZEPROWADZENIU WIZJI LOKALNEJ NIERUCHOMOSÌ CI W CELU WYKONANIA AUDYTU ENERGETYCZNEGO BUDYNKU.pdf',
     desc:'Oświadczenie beneficjenta o przeprowadzeniu wizji lokalnej (PDF).',
     tags:['ogólne','oświadczenie','audyt','pdf'] },
+
+  /* 🔧 NAPRAWIONE: dokładna nazwa + en-dash „–” */
   { name:'Umowa ARKON – ocieplenie 2025.pdf',
-    href:'Umowa_ARKON_ocieplenie_2025.pdf',
+    href:'Umowa ARKON – ocieplenie 2025.pdf',
     desc:'Wzór umowy ARKON – ocieplenie (2025).',
     tags:['umowa','ogólne','pdf'] },
+
   { name:'Zdjęcie WhatsApp 2025-07-20.jpg',
     href:'Zdjęcie WhatsApp 2025-07-20 o 19.05.43_2df47b5f.jpg22.jpg',
     desc:'Zdjęcie z wizji lokalnej.',
