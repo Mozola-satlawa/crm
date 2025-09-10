@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
@@ -599,35 +598,30 @@ window.addEventListener('keydown', (e)=>{
 /* ===== apply incoming prefs (when wracamy z konfiguratora) ===== */
 (function applyIncomingPrefs(){
   try{
-    // Restore selected id from configurator if present
-    const sel = localStorage.getItem(SEL_KEY);
-    if(sel){
-      selected = new Set([sel]);
-      // Defer checking the checkbox until after initial render
-      setTimeout(()=> {
-        render();
-        const chk = document.querySelector(`#tbody input[type="checkbox"][data-id="${sel}"]`);
-        if(chk){
-          chk.checked = true;
-          $('#countSel').textContent = selected.size;
-          chk.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 0);
-    }
+    // apply saved preferences coming back from configurator (if any)
+    const prefBrand = localStorage.getItem(PREF_BRAND);
+    const prefFuel  = localStorage.getItem(PREF_FUEL);
+    const selId     = localStorage.getItem(SEL_KEY);
 
-    // Apply preferred fuel/brand to filters/UI if present
-    const prefFuel = localStorage.getItem(PREF_FUEL) || '';
     if(prefFuel){
-      $('#fFuel').value = prefFuel;
       filter.fuel = prefFuel;
+      const el = $('#fFuel');
+      if(el) el.value = prefFuel;
     }
-    // prefBrand is not bound to a specific input but saved for configurator usage
-
+    if(prefBrand){
+      // optionally focus search on brand (keeps UI consistent)
+      // we don't overwrite other filters, just ensure bridge counts updated
+    }
+    if(selId){
+      selected.clear();
+      selected.add(selId);
+      const cntEl = $('#countSel');
+      if(cntEl) cntEl.textContent = selected.size;
+    }
   }catch(e){
-    // ignore any errors while reading prefs
+    // ignore if localStorage isn't available
   }
-
-  // Initial render and bridge update
+  // refresh UI to reflect any applied prefs
   render();
   updateBridge();
 })();
