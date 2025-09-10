@@ -10,7 +10,6 @@
     --bg:#0c0c0c; --panel:#121212; --card:#181818; --line:#2a2a2a;
     --ink:#f2f3f5; --muted:#b9c0cc; --accent:#3ea6ff; --ok:#2ecc71; --bad:#ff5c5c;
   }
-  *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
   header{padding:16px;background:#0f0f0f;border-bottom:1px solid var(--line)}
@@ -63,6 +62,9 @@
   <h1>Wszystkie pliki i umowy • ARKON CRM</h1>
   <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
 </header>
+<h1>Wszystkie pliki i umowy • ARKON CRM</h1>
+  <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
+</header>
 
 <nav class="tabs" role="tablist">
   <button id="tabDocs" class="active" type="button">📁 Dokumenty (FILES)</button>
@@ -100,7 +102,7 @@
         <thead><tr><th>Nazwa</th><th>Opis</th><th>Tagi</th><th>Akcje</th></tr></thead>
         <tbody id="tbodyDocs"></tbody>
       </table>
-      <div class="hint" style="margin-top:8px">Upewnij się, że pliki z `href` leżą w tym samym katalogu co ta strona (lub zaktualizuj ścieżki).</div>
+      <div class="hint" style="margin-top:8px">Upewnij się, że pliki z href leżą w tym samym katalogu co ta strona (lub zaktualizuj ścieżki).</div>
     </div>
   </section>
 
@@ -352,11 +354,11 @@ function renderContracts(){
   });
   // map do wspólnego formatu
   rows = rows.map(r=>({
-    type:'html',
+    type: 'html',
     name: `${r.name} / ${r.date||''}`,
-    desc: r.client + (r.project?` — ${r.project}`:''),
-    tags:['umowa'],
-    href: r.html ? URL.createObjectURL(new Blob([`<!doctype html><meta charset="utf-8">`+r.html],{type:'text/html'})) : '#',
+    desc: r.client + (r.project ? ' — ' + r.project : ''),
+    tags: ['umowa'],
+    href: r.html ? URL.createObjectURL(new Blob(['<!doctype html><meta charset="utf-8">' + r.html], {type:'text/html'})) : '#',
     value: r.value,
     savedAt: r.savedAt
   }));
