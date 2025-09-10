@@ -1,633 +1,803 @@
 <!doctype html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Konfigurator pieców — Ferroli / DEFRO / Stalmark / LAZAR</title>
-  <style>
-    :root{--bg:#f6fff7;--panel:#fff;--line:#d9f5df;--text:#083c1c;--muted:#3e7a52;--accent:#22c55e;--accent-2:#16a34a;--accent-soft:#d9fbe5;--chip-bg:#eafcf1;--danger:#ef4444;--warn:#f59e0b}
-    *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1100px;margin:18px auto 48px;padding:0 16px}header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    h1{font-size:22px;margin:0}.sub{font-size:12px;color:var(--muted)}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}.panel h3{margin:0 0 8px;font-size:16px}
-    .btn{background:var(--accent);color:#052e16;border:1px solid var(--accent-2);padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}.btn.ghost{background:var(--chip-bg);border:1px dashed var(--line);color:var(--text)}
-    .btn.warn{background:#fff4d7;border-color:#fcd34d;color:#7a4a00}.btn.danger{background:#ffe5e5;border-color:#fecaca;color:#7a0000}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1060px){.grid{grid-template-columns:1fr .95fr}}label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
-    select,input[type=text],input[type=number]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fbfffc}select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}.col{grid-column:span 12}@media(min-width:720px){.col{grid-column:span 4}.col.wide{grid-column:span 8}}
-    .muted{color:var(--muted)}.sep{height:1px;background:var(--line);margin:10px 0}.bundle-grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:960px){.bundle-grid{grid-template-columns:1fr 1fr}}
-    .card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}.card h4{margin:0 0 8px;font-size:15px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#e8fff0;border:1px solid #c7f6d4;font-size:11px;font-weight:800;margin-right:6px}
-    ul.clean{margin:6px 0 0;padding-left:18px}ul.clean li{margin:3px 0}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:8px 10px}thead th{background:#f2fff5;text-align:left}.right{text-align:right;white-space:nowrap}
-    .price-preview{font-weight:800;font-size:18px;margin-top:6px}
-    nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-    nav a{color:#064e3b;text-decoration:none;border:1px solid var(--line);background:var(--chip-bg);padding:6px 10px;border-radius:999px}
-    nav a:hover{background:#eefdf3}
-    .mini{font-size:12px;color:var(--muted)}
-    .bridge-note{background:#f2fff7;border:1px dashed var(--line);padding:8px;border-radius:12px;margin-top:8px}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARKON — Komponenty • Piece / Kotły</title>
+<meta name="description" content="Katalog kotłów (gaz, pellet, drewno, olej, elektryczne) z mostkiem do konfiguratorów, kalkulatorem mocy i wymaganiami zestawu.">
+<style>
+  :root{
+    --bg:#0b1020; --ink:#e8edff; --muted:#aeb8da; --line:#263168; --card:#0f1636;
+    --chip:#1a244d; --accent:#4cc9f0; --ok:#2fbf71; --bad:#ff6b6b; --warn:#ffb84d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:16px;background:#11183a;border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:22px}
+  nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+  nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
+  nav a:hover{background:#223160}
+  .wrap{max-width:1400px;margin:auto;padding:16px}
+  .card{background:linear-gradient(180deg,#10173c,#111b48);border:1px solid #2b3a77;border-radius:12px;padding:14px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .right{display:flex;gap:8px;justify-content:flex-end;margin-left:auto}
+  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
+  input::placeholder{color:#aeb8da99}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .btn.ok{background:#194d34;border-color:#2f9e44}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
+  .muted{color:#aeb8da;font-size:13px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .tab{padding:6px 10px;border-radius:999px;border:1px solid #2a3a75;cursor:pointer}
+  .tab[aria-selected="true"]{background:#1b2550;border-color:#67a1ff}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:8px 6px;border-bottom:1px solid #2a3a77;text-align:left;vertical-align:top}
+  th{font-size:12px;color:#aeb8da}
+  .scroll{overflow:auto}
+  .chip{display:inline-block;background:var(--chip);border:1px solid #2b3a77;border-radius:999px;padding:4px 8px;font-size:12px}
+  .price{white-space:nowrap}
+  .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#101735;border:1px solid #2a3777;padding:2px 6px;border-radius:6px;color:#cfe0ff}
+  .wide{min-width:200px}
+  .sticky-foot{position:sticky;bottom:0;background:#0f1636;border-top:1px solid #2b3a77;padding:10px;border-bottom-left-radius:12px;border-bottom-right-radius:12px}
+  @media (max-width:1100px){ .hide-sm{display:none} }
+  @media print{ nav,.toolbar,.sticky-foot{display:none!important} }
+
+  /* Bridge (mostek) + kalkulator mocy + wymagania */
+  .bridge{display:grid;grid-template-columns:1.2fr 1.8fr 1.2fr;gap:14px}
+  @media (max-width:1280px){ .bridge{grid-template-columns:1fr} }
+  .panel{background:linear-gradient(180deg,#0f1636,#0f1a44);border:1px solid #2b3a77;border-radius:12px;padding:12px}
+  .panel h3{margin:0 0 8px;font-size:16px}
+  .list{max-height:360px;overflow:auto;border:1px solid #2b3a77;border-radius:10px}
+  .list table{width:100%;border-collapse:collapse}
+  .list th,.list td{border-bottom:1px solid #243167;padding:8px 10px}
+  .list tr:hover{background:#152056}
+  .list tr[aria-selected="true"]{background:#19286a}
+  .tip{font-size:12px;color:#aeb8da}
+  .okBadge{display:inline-block;padding:2px 6px;border-radius:6px;background:#133a2b;border:1px solid #2f9e44;color:#c8ffd8;font-size:11px;margin-left:6px}
+  .req-list{margin:8px 0 0 16px}
+  .req-list li{margin:4px 0}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Konfigurator pieców — Ferroli / DEFRO / Stalmark / LAZAR</h1>
-        <div class="sub">
-          Zestaw = kocioł + zasobnik CWU + montaż (+ opcje). Grzejniki (montaż): <b>750 PLN/szt.</b> • Wkład kominowy: <b>650 PLN/mb</b>.
-          Dostępne marki: <b>Ferroli</b> (gaz/kondens.), <b>DEFRO</b> (pellet), <b>Stalmark</b> (pellet), <b>LAZAR</b> (zgazowujące drewno).
-        </div>
-        <nav>
-          <a href="komponenty-piece.html" target="_blank" id="goArkon">Komponenty • Piece</a>
-          <a href="ferroli_konfigurator.html" target="_blank">Ferroli — konfigurator</a>
-          <a href="defro_piece.html" target="_blank">DEFRO (pellet) — konfigurator</a>
-          <a href="stalmark_pellet.html" target="_blank">Stalmark (pellet) — konfigurator</a>
-          <a href="lazar_zgazowujace.html" target="_blank">LAZAR (zgazowujące) — konfigurator</a>
-        </nav>
-      </div>
-      <div class="bar">
-        <button class="btn" id="exportQuote">Eksport koszyka (XLSX)</button>
-        <button class="btn ghost" id="copyQuote">Kopiuj ofertę</button>
-        <button class="btn ghost" id="print">Drukuj / PDF</button>
-      </div>
-    </header>
 
-    <div class="grid">
+<header>
+  <h1>Komponenty • Piece / Kotły</h1>
+  <div class="muted">Gaz • Kondensacyjne • Na pellet • Na drewno (w tym zgazowujące) • Olejowe • Elektryczne — katalog + mostek do konfiguratorów + kalkulator mocy + wymagania zestawu.</div>
+</header>
+
+<nav>
+  <a href="index.html">Pulpit</a>
+  <a href="klienci.html">Klienci</a>
+  <a href="kalkulator.html">Kalkulator</a>
+  <a href="komponenty-pompy.html">Pompy ciepła</a>
+  <a href="komponenty-piece.html" aria-current="page">Piece</a>
+  <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
+  <a href="komponenty-ocieplenie.html">Ocieplenie</a>
+  <a href="komponenty-stolarka.html">Stolarka</a>
+  <a href="dokumenty.html">Dokumenty</a>
+  <a href="upload.html">Przesył plików</a>
+  <a href="chat.html">Komunikator</a>
+  <a href="ustawienia.html">Ustawienia</a>
+  <a href="lidy.html">Lidy</a>
+</nav>
+
+<div class="wrap">
+  <!-- ===== MOSTEK + KALKULATOR + WYMAGANIA ===== -->
+  <div class="card">
+    <div class="bridge">
+      <!-- 1) Mostek z wyborem modeli -->
       <div class="panel">
-        <h3>Dobierz parametry</h3>
+        <h3>Mostek do konfiguratorów</h3>
         <div class="row">
-          <div class="col">
-            <label>Marka</label>
-            <select id="brand">
-              <option value="Ferroli">Ferroli (gaz/kondens.)</option>
-              <option value="DEFRO">DEFRO (pellet)</option>
-              <option value="Stalmark">Stalmark (pellet)</option>
-              <option value="LAZAR">LAZAR (zgazowujące drewno)</option>
-            </select>
-          </div>
-          <div class="col wide">
-            <label>Model kotła (lokalna lista dla wybranej marki)</label>
-            <select id="boiler"></select>
-          </div>
-          <div class="col">
-            <label>Moc [kW]</label>
-            <input id="power" type="text" readonly>
-          </div>
-          <div class="col">
-            <label>Typ/paliwo</label>
-            <input id="type" type="text" readonly>
-          </div>
-          <div class="col">
-            <label>Cena kotła [PLN]</label>
-            <input id="boilerPrice" type="text" readonly>
-          </div>
-          <div class="col">
-            <label>Zasobnik CWU [l]</label>
-            <select id="tank"></select>
-          </div>
-          <div class="col">
-            <label>Cena zbiornika [PLN]</label>
-            <input id="tankPrice" type="text" readonly>
-          </div>
-          <div class="col">
-            <label>Liczba grzejników (montaż)</label>
-            <input id="rads" type="number" min="0" step="1" value="0">
-            <div class="mini">750 PLN/szt.</div>
-          </div>
-          <div class="col">
-            <label>Wkład kominowy [m]</label>
-            <input id="chimneyM" type="number" min="0" step="0.1" value="0">
-            <div class="mini">650 PLN/mb</div>
-          </div>
-          <div class="col">
-            <label>VAT</label>
-            <select id="vat">
-              <option value="0.08">8%</option>
-              <option value="0.23">23%</option>
-            </select>
-          </div>
-          <div class="col wide">
-            <div class="muted">Aktualna cena zestawu (wg wyboru):</div>
-            <div id="pricePreview" class="price-preview">—</div>
-          </div>
+          <select id="brBrand" title="Marka">
+            <option value="Ferroli">Ferroli (gaz-kondens.)</option>
+            <option value="DEFRO">DEFRO (pellet)</option>
+            <option value="Stalmark">Stalmark (pellet)</option>
+            <option value="LAZAR">LAZAR (drewno / zgazowujący)</option>
+          </select>
+          <input id="brQ" placeholder="Szukaj modelu…" style="min-width:220px">
+          <input id="brPmin" type="number" step="0.1" placeholder="Moc min [kW]" style="width:130px">
+          <input id="brPmax" type="number" step="0.1" placeholder="Moc max [kW]" style="width:130px">
+          <select id="brSort" title="Sortowanie">
+            <option value="power">Sortuj: moc</option>
+            <option value="price">Sortuj: cena</option>
+            <option value="model">Sortuj: model</option>
+          </select>
         </div>
-
-        <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Piece (ograniczony do Ferroli/DEFRO/Stalmark/LAZAR) ▼▼▼ -->
-        <div class="sep"></div>
-        <h3 style="margin-top:0">Mostek ARKON — Komponenty • Piece</h3>
         <div class="row">
-          <div class="col">
-            <label>Marka (z katalogu)</label>
-            <select id="arkonBrand"></select>
-          </div>
-          <div class="col">
-            <label>Paliwo / typ</label>
-            <select id="arkonFuel">
-              <option value="">— dowolne —</option>
-              <option value="gaz">gaz</option>
-              <option value="gaz-kondensacyjny">gaz-kondensacyjny</option>
-              <option value="pellet">pellet</option>
-              <option value="drewno">drewno</option>
-            </select>
-          </div>
-          <div class="col">
-            <label>Min moc [kW]</label>
-            <input id="arkonMin" type="number" step="0.1" placeholder="np. 10">
-          </div>
-          <div class="col">
-            <label>Max moc [kW]</label>
-            <input id="arkonMax" type="number" step="0.1" placeholder="np. 25">
-          </div>
-          <div class="col wide">
-            <label>Model (z „Komponenty • Piece”)</label>
-            <select id="arkonModel" disabled></select>
-          </div>
-          <div class="col">
-            <label>Akcje</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn ghost" id="useArkon">Użyj tego kotła</button>
-              <button class="btn ghost" id="openArkon">Otwórz katalog (nowa karta)</button>
-            </div>
-          </div>
-          <div class="col wide">
-            <div id="arkonPreview" class="bridge-note">Brak wyboru z katalogu. Ograniczamy do Ferroli / DEFRO / Stalmark / LAZAR.</div>
-          </div>
+          <button class="btn" id="brSend">Wyślij model do konfiguratora</button>
+          <button class="btn ghost" id="brOpen">Otwórz sam konfigurator</button>
+          <span class="pill">Wybrane ID: <b id="brSel">—</b></span>
         </div>
-        <div class="sub">
-          Źródło: <code>localStorage["arkon_components_boilers_v2"]</code>. Filtrujemy tylko: <b>Ferroli</b>, <b>DEFRO</b>, <b>Stalmark</b>, <b>LAZAR</b>.
-          Preferencje przekazujemy przez <code>arkon_return_to</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>.
-          Wybór przyjmujemy przez <code>arkon_selected_boiler_id</code> lub <code>postMessage</code> (<code>type:"ARKON_BOILER_SELECTED"</code>).
+        <div class="tip" style="margin-top:6px">
+          Dwuklik w wiersz wysyła model i otwiera odpowiedni konfigurator.  
+          Używane klucze: <code>arkon_components_boilers_v2</code>, <code>arkon_selected_boiler_id</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>, <code>arkon_return_to</code>, <code>arkon_boilers_updated</code>.
         </div>
-        <!-- ▲▲▲ KONIEC MOSTKA ▲▲▲ -->
-
-        <div class="sep"></div>
-        <div class="row">
-          <div class="col"><button class="btn" id="addPack">Dodaj: Zestaw (kocioł + CWU + montaż)</button></div>
-          <div class="col"><button class="btn warn" id="addBoilerOnly">Dodaj: Sam kocioł</button></div>
+        <div id="brandStats" class="row" style="margin-top:8px">
+          <span class="pill">Ferroli: <b id="cntFerroli">0</b></span>
+          <span class="pill">DEFRO: <b id="cntDEFRO">0</b></span>
+          <span class="pill">Stalmark: <b id="cntStalmark">0</b></span>
+          <span class="pill">LAZAR: <b id="cntLazar">0</b></span>
+        </div>
+        <div class="list" style="margin-top:8px">
+          <table>
+            <thead><tr><th>Model</th><th>Moc [kW]</th><th>Typ</th><th class="price">Cena</th><th>ID</th></tr></thead>
+            <tbody id="brList"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="panel" id="mustHavePanel">
-        <h3>Skład zestawu (must-have)</h3>
-        <div id="mustHaveList" class="muted">Wybierz markę, model i zasobnik — pokażę skład.</div>
-      </div>
-
+      <!-- 2) Kalkulator proponowanej mocy -->
       <div class="panel">
-        <h3>Koszyk</h3>
-        <table id="basket">
-          <thead><tr><th>Pozycja</th><th>Ilość</th><th class="right">Cena</th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <div class="sep"></div>
+        <h3>Dobór mocy budynku</h3>
         <div class="row">
-          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" style="font-weight:800;font-size:22px;"></div></div>
-          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" style="font-weight:800;font-size:22px;"></div></div>
+          <input id="calcArea" type="number" min="30" step="1" placeholder="Powierzchnia [m²]" style="width:160px">
+          <select id="calcInsul" title="Izolacja">
+            <option value="new">Nowy/energooszczędny</option>
+            <option value="std" selected>Średnia izolacja</option>
+            <option value="old">Stary/słaba izolacja</option>
+          </select>
+          <select id="calcZone" title="Strefa klimatyczna">
+            <option value="mild">Łagodna</option>
+            <option value="normal" selected>Typowa</option>
+            <option value="cold">Chłodna</option>
+          </select>
+          <input id="calcCWU" type="number" min="0" step="1" placeholder="Osób CWU" style="width:120px">
+          <input id="calcMargin" type="number" min="0" step="1" value="15" placeholder="Margines [%]" style="width:130px">
         </div>
+        <div class="row" style="margin-top:6px">
+          <span class="pill">Proponowana moc: <b id="calcOut">— kW</b></span>
+          <button class="btn ghost" id="calcApply">Zastosuj do filtrów</button>
+        </div>
+        <div class="tip">Algorytm orientacyjny (straty ciepła × strefa + CWU + margines). Użyj jako punkt startowy.</div>
       </div>
-    </div>
 
-    <div class="panel">
-      <h3>Akcesoria (opcjonalnie)</h3>
-      <div class="bundle-grid" id="addons"></div>
-      <div class="sep"></div>
-      <button class="btn ghost" id="addSelectedAddons">Dodaj wybrane</button>
-      <div class="sub" style="margin-top:6px">Grzejniki i wkład kominowy wliczasz polami powyżej.</div>
+      <!-- 3) Wymagania zestawu (auto, z uwzględnieniem zgazowujących) -->
+      <div class="panel">
+        <h3>Wymagania zestawu (auto)</h3>
+        <div class="tip">Wybierz model w mostku lub zaznacz w tabeli poniżej — pokażę „must-have”: zbiorniki, komin, bufor (dla zgazowujących), armaturę itd. Jeśli konfigurator danej marki zapisał domyślne mapy do <code>arkon_cfg_defaults</code>, użyję ich.</div>
+        <div id="reqSummary" style="margin-top:8px"></div>
+      </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script>
-    /* ================== MODELE „NA SZTYWNO” — tylko nasze marki ================== */
-    // Uwaga: wartości możesz dalej podmieniać pod swój cennik/netto/brutto. DEFRO/Stalmark/LAZAR mają już ceny skalkulowane (np. o +5000 względem minimum — jak w poprzednich plikach).
-    const FERROLI = [
-      { model:'Divacondens E 20 (2F)',             power:20, fuel:'gaz-kondensacyjny', type:'2F', price: 8400 },
-      { model:'Divacondens E 24 (2F)',             power:24, fuel:'gaz-kondensacyjny', type:'2F', price: 8800 },
-      { model:'Bluehelix Tech RRT 14C (2F)',       power:14, fuel:'gaz-kondensacyjny', type:'2F', price: 9200 },
-      { model:'Bluehelix Tech RRT 18C (2F)',       power:18, fuel:'gaz-kondensacyjny', type:'2F', price: 9600 },
-      { model:'Bluehelix Tech RRT 24S (1F)',       power:24, fuel:'gaz-kondensacyjny', type:'1F', price: 9200 },
-      { model:'Bluehelix Tech RRT 24C (2F)',       power:24, fuel:'gaz-kondensacyjny', type:'2F', price: 9800 },
-      { model:'Bluehelix Tech RRT 28C (2F)',       power:28, fuel:'gaz-kondensacyjny', type:'2F', price:10500 },
-      { model:'Bluehelix Maxima 30C (2F)',         power:30, fuel:'gaz-kondensacyjny', type:'2F', price:14500 }
-    ];
-    const DEFRO = [
-      { model:'Delta EkoPell 10 kW',   power:10, fuel:'pellet', price:21632.00 },
-      { model:'Delta EkoPell 12 kW',   power:12, fuel:'pellet', price:21890.00 },
-      { model:'Delta EkoPell 15 kW',   power:15, fuel:'pellet', price:21078.55 },
-      { model:'Delta EkoPell 20 kW',   power:20, fuel:'pellet', price:22290.00 },
-      { model:'Delta EkoPell 25 kW',   power:25, fuel:'pellet', price:23990.00 },
-      { model:'Smart EkoPell 12 kW',   power:12, fuel:'pellet', price:22515.20 },
-      { model:'Komfort EkoPell 14 kW', power:14, fuel:'pellet', price:18498.99 },
-      { model:'Komfort EkoPell 20 kW', power:20, fuel:'pellet', price:18745.25 },
-      { model:'Komfort EkoPell 25 kW', power:25, fuel:'pellet', price:19993.99 },
-      { model:'SIGMA E 35 kW',         power:35, fuel:'pellet', price:27550.79 },
-      { model:'SIGMA E 48 kW',         power:48, fuel:'pellet', price:29550.79 }
-    ];
-    const STALMARK = [
-      { model:'Eko Silver 12 kW',   power:12, fuel:'pellet', price:19300 },
-      { model:'Eko Silver 16 kW',   power:16, fuel:'pellet', price:20400 },
-      { model:'Eko Silver 20 kW',   power:20, fuel:'pellet', price:21900 },
-      { model:'Eko Silver 24 kW',   power:24, fuel:'pellet', price:23400 },
-      { model:'Eko Silver 30 kW',   power:30, fuel:'pellet', price:25700 }
-    ];
-    const LAZAR = [
-      { model:'Holz Master 20 kW', power:20, fuel:'drewno', price:20358.02 },
-      { model:'Holz Master 30 kW', power:30, fuel:'drewno', price:23290.00 },
-      { model:'DS 10 kW',          power:10, fuel:'drewno', price:15947.00 },
-      { model:'DS 20 kW',          power:20, fuel:'drewno', price:16137.02 },
-      { model:'DS 30 kW',          power:30, fuel:'drewno', price:18990.00 },
-      { model:'DSpell 20 kW',      power:20, fuel:'drewno', price:26279.00 },
-      { model:'DSpell 30 kW',      power:30, fuel:'drewno', price:28990.00 }
-    ];
+  <!-- ===== TOOLBAR ===== -->
+  <div class="card">
+    <div class="row toolbar">
+      <button id="add" class="btn ok">+ Dodaj kocioł</button>
+      <button id="dupSel" class="btn">Duplikuj zaznaczone</button>
+      <button id="delSel" class="btn bad">Usuń zaznaczone</button>
+      <span class="pill">Razem: <b id="countAll">0</b></span>
+      <span class="pill">Widocznych: <b id="countVis">0</b></span>
+      <span class="pill">Zaznaczonych: <b id="countSel">0</b></span>
+      <div class="right">
+        <button id="expJSON" class="btn ghost">Eksport JSON</button>
+        <label class="btn ghost">Import JSON <input id="impJSON" type="file" accept="application/json" hidden></label>
+        <button id="expCSV" class="btn ghost">Eksport CSV</button>
+      </div>
+    </div>
+  </div>
 
-    // Zasobniki CWU i akcesoria
-    const TANKS = { '120':2100, '150':2450, '200':2900, '300':3800 };
-    const ACCESSORY_BASE = {
-      "Zawór 3-drogowy przełączający 1\"":470,
-      "Grupa bezpieczeństwa CO 3 bar":150,
-      "Filtr siatkowy Y 1\"":180,
-      "Separator magnetyczny / odmulacz 5/4\"":840,
-      "Naczynie przeponowe CO 18 l":460,
-      "Pompa obiegowa CO 25-60":1440
-    };
+  <!-- ===== FILTRY ===== -->
+  <div class="card">
+    <div class="row">
+      <input id="q" placeholder="🔎 Szukaj: marka, model, cecha…" class="wide">
+      <select id="fFuel">
+        <option value="">Paliwo / typ</option>
+        <option>gaz</option><option>gaz-kondensacyjny</option>
+        <option>pellet</option><option>drewno</option><option>olej</option><option>elektryczny</option>
+      </select>
+      <select id="fPhase">
+        <option value="">Zasilanie (fazy)</option>
+        <option value="1F">1F</option><option value="3F">3F</option>
+      </select>
+      <select id="fChimney">
+        <option value="">Wymóg komina</option>
+        <option value="TAK">TAK</option><option value="NIE">NIE</option>
+      </select>
+      <input id="fPowMin" type="number" step="0.1" placeholder="Moc min [kW]" style="width:130px">
+      <input id="fPowMax" type="number" step="0.1" placeholder="Moc max [kW]" style="width:130px">
+      <input id="fCenaMin" type="number" step="1" placeholder="Cena min [zł]" style="width:130px">
+      <input id="fCenaMax" type="number" step="1" placeholder="Cena max [zł]" style="width:130px">
+      <label class="pill"><input id="fCond" type="checkbox" style="margin-right:6px">Kondensacyjny</label>
+      <button id="clearFilters" class="btn ghost">Wyczyść filtry</button>
+      <span class="right"><span class="muted">Skróty: <span class="kbd">Alt+N</span> nowy • <span class="kbd">/</span> szukaj</span></span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Kategorie paliw">
+      <button class="tab" data-tab="" aria-selected="true">Wszystkie</button>
+      <button class="tab" data-tab="gaz">Gaz</button>
+      <button class="tab" data-tab="gaz-kondensacyjny">Gaz (kondens.)</button>
+      <button class="tab" data-tab="pellet">Pellet</button>
+      <button class="tab" data-tab="drewno">Drewno</button>
+      <button class="tab" data-tab="olej">Olej</button>
+      <button class="tab" data-tab="elektryczny">Elektryczne</button>
+    </div>
+  </div>
 
-    // Stałe biznesowe
-    const RAD_PRICE = 750;
-    const CHIMNEY_PRICE = 650;
+  <!-- ===== TABELA ===== -->
+  <div class="card" style="padding:0">
+    <div class="scroll">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th class="hide-sm"><input type="checkbox" id="chkAll"></th>
+            <th>Marka</th>
+            <th>Model</th>
+            <th>Typ/paliwo</th>
+            <th>Moc [kW] (min–max)</th>
+            <th>Sprawność</th>
+            <th>Modulacja</th>
+            <th>Klasa emisji</th>
+            <th>Zasobnik [l]</th>
+            <th>Sterowanie</th>
+            <th>Zasilanie</th>
+            <th>Hałas [dB]</th>
+            <th>Wymiary [mm]</th>
+            <th>Waga [kg]</th>
+            <th>Gwarancja [lata]</th>
+            <th>Komin</th>
+            <th>Spalin Ø [mm]</th>
+            <th>Akcesoria</th>
+            <th class="price">Cena [zł]</th>
+            <th class="price">Montaż [zł]</th>
+            <th class="price">Serwis [zł]</th>
+            <th class="wide">Uwagi</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="sticky-foot row">
+      <div class="muted">Kliknij komórkę by edytować. Enter — potwierdź, Esc — anuluj. Dwuklik w wierszu otwiera właściwy konfigurator i wysyła model.</div>
+      <div class="right">
+        <button id="seed" class="btn ghost">Załaduj przykładowe</button>
+        <button id="wipe" class="btn bad">Wyczyść wszystko</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-    // Dla Ferroli wcześniej prosiłeś o +5000 dla „Tylko kocioł” — cicho, bez informacji w UI:
-    const BOILER_ONLY_SURCHARGES = { 'Ferroli': 5000, 'DEFRO': 0, 'Stalmark': 0, 'LAZAR': 0 };
+<script>
+'use strict';
 
-    // Baza montażowa wg paliwa (zestaw) — zgodnie z wcześniejszymi stronami
-    const INSTALL_BASE = {
-      'gaz': 15000, 'gaz-kondensacyjny': 15000,
-      'pellet': 18000,
-      'drewno': 18000
-    };
+/* ===== helpers ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const INT0 = new Intl.NumberFormat('pl-PL', {maximumFractionDigits:0});
+const INT2 = new Intl.NumberFormat('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2});
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function toNum(v){ const n=Number(v); return Number.isFinite(n)?n:0; }
+function csvEsc(v){ let s=(v==null?'':String(v)); if(/[;\\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; }
+const UID = ()=>'PC_'+Math.random().toString(36).slice(2)+'_'+Date.now().toString(36);
 
-    const state = {
-      brand:'Ferroli',
-      vat:0.08, basket:[],
-      selectedBoiler:null, selectedTank:null,
-      rads:0, chimneyM:0,
-      arkon:{ list:[], byBrand:{}, selected:null }
-    };
+/* ===== storage & bridge keys ===== */
+const LS_KEY='arkon_components_boilers_v2';
+const PING_KEY='arkon_boilers_updated';
+const SEL_KEY='arkon_selected_boiler_id';
+const PREF_BRAND='arkon_pref_brand';
+const PREF_FUEL='arkon_pref_fuel';
+const RETURN_KEY='arkon_return_to';
+const CFG_DEFAULTS_KEY='arkon_cfg_defaults'; // opcjonalne domyślne mapy z konfiguratorów
 
-    const q = s=>document.querySelector(s);
-    const INT = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const fmt = n => INT.format(Number(n)||0);
+/* ===== mapowanie marek → pliki konfiguratorów ===== */
+const BRAND_FILES = JSON.parse(localStorage.getItem('arkon_brand_files')||'{}');
+function confFile(brand){
+  const b=(brand||'').toLowerCase();
+  return BRAND_FILES[b] ||
+    (b==='ferroli' ? 'ferroli_konfigurator.html' :
+     b==='defro'   ? 'defro_piece.html' :
+     b==='stalmark'? 'stalmark_pellet.html' :
+     b==='lazar'   ? 'lazar_zgazowujace.html' : 'ferroli_konfigurator.html');
+}
+function brandFuel(brand){
+  const b=(brand||'').toLowerCase();
+  if(b==='defro'||b==='stalmark') return 'pellet';
+  if(b==='lazar') return 'drewno';
+  return 'gaz-kondensacyjny';
+}
+function openConfigurator(brand){
+  try{
+    localStorage.setItem(RETURN_KEY, location.href);
+    localStorage.setItem(PREF_BRAND, brand);
+    localStorage.setItem(PREF_FUEL, brandFuel(brand));
+  }catch{}
+  window.open(confFile(brand), '_blank', 'noopener');
+}
+function sendToConfigurator(id, brand){
+  if(!id){ alert('Wybierz model.'); return; }
+  try{
+    localStorage.setItem(SEL_KEY, id);
+    localStorage.setItem(PREF_BRAND, brand);
+    localStorage.setItem(PREF_FUEL, brandFuel(brand));
+    localStorage.setItem(RETURN_KEY, location.href);
+    localStorage.setItem(PING_KEY, String(Date.now()));
+  }catch{}
+  openConfigurator(brand);
+}
 
-    /* ===== Helpers ===== */
-    function modelsForBrand(b){
-      if(b==='Ferroli') return FERROLI;
-      if(b==='DEFRO') return DEFRO;
-      if(b==='Stalmark') return STALMARK;
-      if(b==='LAZAR') return LAZAR;
-      return [];
+/* ===== stan ===== */
+let rows = loadRows();
+let filter = { q:'', fuel:'', phase:'', chimney:'', powMin:'', powMax:'', priceMin:'', priceMax:'', cond:false };
+let selected = new Set();
+let brSelectedId = null;
+let proposedKW = null;
+
+function loadRows(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch{ return []; } }
+function saveRows(){ localStorage.setItem(LS_KEY, JSON.stringify(rows)); localStorage.setItem(PING_KEY, String(Date.now())); render(); fillBridgeList(); updateReqPanel(); updateBrandStats(); }
+
+/* ===== kalkulator mocy ===== */
+function calcKW(area, insul, zone, cwu, margin){
+  const qWm2 =
+    insul==='new'? 35 :
+    insul==='old'? 70 : 50; // std
+  const zoneK =
+    zone==='mild'? 0.9 :
+    zone==='cold'? 1.15 : 1.0;
+  const base = area*qWm2*zoneK; // W
+  const baseKW = base/1000;
+  const cwuKW = Math.min(6, Math.max(0, (cwu||0)*0.25)); // ~0.25 kW/os. (orientacyjnie, cap 6 kW)
+  const out = (baseKW + cwuKW)*(1+(margin||0)/100);
+  return Math.max(3, Math.round(out*10)/10); // min 3 kW, 0.1
+}
+
+/* ===== domyślne mapy (fallback) + ewentualne nadpisania z konfiguratorów ===== */
+const FALLBACK_CFG = {
+  common: {
+    tanks: {'120':2100,'150':2450,'200':2900,'300':3800},
+    radPrice:750, chimneyPrice:650, packInstall:18000
+  },
+  LAZAR: { bufferPerKW_min:50, bufferPerKW_rec:70 },
+  DEFRO: {},
+  Stalmark: {},
+  Ferroli: {}
+};
+function cfgBrand(brand){
+  let cfg={...FALLBACK_CFG.common};
+  try{
+    const raw = JSON.parse(localStorage.getItem(CFG_DEFAULTS_KEY)||'{}');
+    if(raw && raw.common){ cfg = {...cfg, ...raw.common}; }
+    if(raw && raw[brand]){ cfg = {...cfg, ...raw[brand]}; }
+  }catch{}
+  return cfg;
+}
+
+/* ===== panel wymagań ===== */
+function asKW(r){ const lo=Number(r.powMin)||0, hi=Number(r.powMax)||0; return hi||lo||null; }
+function reqFor(row){
+  if(!row) return {title:'—', items:[], notes:[]};
+  const brand=row.brand||'';
+  const fuel=(row.fuel||'').toLowerCase();
+  const cfg=cfgBrand(brand);
+  const kw=asKW(row);
+  const items=[], notes=[];
+  // wspólne
+  if(fuel.includes('pellet')){
+    items.push('Zasobnik pelletu + podajnik (zgodnie z modelem)');
+    items.push('Zapalarka + automatyczne czyszczenie (jeśli w modelu)');
+  }
+  items.push('Grupa bezpieczeństwa CO 3 bar');
+  items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
+  items.push('Naczynie przeponowe CO (dobór do instalacji)');
+  // komin i średnica
+  if(String(row.chimney||'').toUpperCase()==='TAK'){
+    const fl = row.flue ? ` • zalec. Ø ${row.flue} mm` : '';
+    items.push(`Wkład kominowy (stal kwasoodporna): ${cfg.chimneyPrice||FALLBACK_CFG.common.chimneyPrice} PLN/mb${fl}`);
+  }else{
+    notes.push('Model nie wymaga tradycyjnego komina (sprawdź system pow.-spalinowy).');
+  }
+  // CWU
+  items.push('Zasobnik CWU: 120/150/200/300 l (wg doboru)');
+  // zgazowujące drewno → bufor
+  if(fuel.includes('drewno')){
+    const minL = kw ? Math.ceil((kw*(cfg.bufferPerKW_min||50))/100)*100 : null;
+    const recL = kw ? Math.ceil((kw*(cfg.bufferPerKW_rec||70))/100)*100 : null;
+    items.push(`Bufor ciepła: min ~${minL?INT0.format(minL):'50·l/kW'}, rekom. ~${recL?INT0.format(recL):'70·l/kW'}`);
+    items.push('Zawór mieszający ochrony powrotu / układ typu Laddomat');
+    items.push('Zawór bezpieczeństwa termiczny (wężownica schładzająca, jeżeli wymagana)');
+    notes.push('Bufor jest wymagany przy kotłach zgazowujących — poprawia sprawność i bezpieczeństwo.');
+  }
+  // dopiski wg sterowania
+  if((row.ctrl||'').toLowerCase().includes('opentherm')) items.push('Sterownik pokojowy OpenTherm / pogodowy');
+  return {
+    title:`${row.brand||''} ${row.model||''} ${kw?`• ${kw} kW`:''}`,
+    kw, items, notes,
+    tanks: cfg.tanks || FALLBACK_CFG.common.tanks,
+    radPrice: cfg.radPrice || FALLBACK_CFG.common.radPrice,
+    chimneyPrice: cfg.chimneyPrice || FALLBACK_CFG.common.chimneyPrice
+  };
+}
+function renderReqBox(data){
+  const box = $('#reqSummary');
+  if(!data || !data.title){ box.innerHTML = '<div class="muted">Wybierz model w mostku albo zaznacz w tabeli.</div>'; return; }
+  const tankList = Object.keys(data.tanks||{}).map(s=>`${s} l — ${INT2.format((data.tanks||{})[s])} PLN`).join(', ');
+  box.innerHTML = `
+    <div><b>${esc(data.title)}</b></div>
+    ${data.kw?`<div class="muted" style="margin-top:4px">Moc bazowa do wymagań: ${INT2.format(data.kw)} kW</div>`:''}
+    <ul class="req-list">
+      ${data.items.map(it=>`<li>${esc(it)}</li>`).join('')}
+    </ul>
+    <div class="muted" style="margin-top:6px">Przykładowe ceny: grzejnik (montaż) ~ ${INT0.format(data.radPrice)} PLN/szt., wkład kominowy ~ ${INT0.format(data.chimneyPrice)} PLN/mb.</div>
+    <div class="muted">Zasobniki CWU: ${tankList||'—'}</div>
+    ${data.notes?.length? `<div class="tip" style="margin-top:6px">${data.notes.map(n=>`• ${esc(n)}`).join('<br>')}</div>`:''}
+  `;
+}
+function currentRowById(id){ return rows.find(r=>r.id===id); }
+function updateReqPanel(){
+  const src = brSelectedId ? currentRowById(brSelectedId)
+             : (selected.size ? currentRowById(Array.from(selected)[0]) : null);
+  renderReqBox(reqFor(src));
+}
+
+/* ===== seed (przykłady) ===== */
+function seed(){
+  rows = [
+    // FERROLI — gaz-kondensacyjny
+    {id:UID(),brand:'Ferroli',model:'Divacondens E 24 (2F)',fuel:'gaz-kondensacyjny',powMin:3.0,powMax:24,eff:0.98,mod:'1:8',emiss:'ErP A',tank:0,ctrl:'OpenTherm,pogodowe',phase:'1F',noise:47,dim:'700×400×330',weight:33,warr:5,chimney:'NIE',flue:60,acc:'czujnik zewn.,moduł internetowy',price:8800,install:2800,service:450,notes:'Model 2F'},
+    {id:UID(),brand:'Ferroli',model:'Bluehelix Tech RRT 24C (2F)',fuel:'gaz-kondensacyjny',powMin:3.0,powMax:24,eff:0.99,mod:'1:10',emiss:'ErP A',tank:0,ctrl:'OpenTherm,Wi-Fi',phase:'1F',noise:46,dim:'740×420×330',weight:34,warr:5,chimney:'NIE',flue:60,acc:'zestaw montażowy',price:9800,install:3000,service:500,notes:''},
+    // DEFRO — pellet
+    {id:UID(),brand:'DEFRO',model:'Delta EkoPell 16',fuel:'pellet',powMin:4,powMax:16,eff:0.91,mod:'PID',emiss:'Klasa 5/Ecodesign',tank:150,ctrl:'PID,pogodowe',phase:'1F',noise:52,dim:'1300×600×900',weight:210,warr:5,chimney:'TAK',flue:130,acc:'podajnik,zapalarka',price:20900,install:4200,service:650,notes:'Autom. czyszczenie wymiennika'},
+    // STALMARK — pellet
+    {id:UID(),brand:'Stalmark',model:'Eko Silver 20',fuel:'pellet',powMin:5,powMax:20,eff:0.91,mod:'PID',emiss:'Klasa 5',tank:150,ctrl:'ecoMAX,pogodowe',phase:'1F',noise:53,dim:'1250×560×960',weight:210,warr:4,chimney:'TAK',flue:130,acc:'—',price:19900,install:4300,service:650,notes:''},
+    // LAZAR — zgazowujące drewno (ważne do bufora)
+    {id:UID(),brand:'LAZAR',model:'Holz Master 20',fuel:'drewno',powMin:6,powMax:20,eff:0.89,mod:'—',emiss:'Ecodesign',tank:0,ctrl:'mechaniczny',phase:'1F',noise:55,dim:'1210×580×1050',weight:220,warr:3,chimney:'TAK',flue:150,acc:'wentylator',price:20358,install:3800,service:600,notes:'Zalecany bufor 1000l'}
+  ];
+  saveRows();
+}
+
+/* ===== kolumny ===== */
+const COLS = [
+  {key:'brand',label:'Marka',type:'text'},
+  {key:'model',label:'Model',type:'text'},
+  {key:'fuel',label:'Typ/paliwo',type:'select',opts:['gaz','gaz-kondensacyjny','pellet','drewno','ekogroszek','olej','elektryczny']},
+  {key:'powMin',label:'Moc min [kW]',type:'number',step:'0.1'},
+  {key:'powMax',label:'Moc max [kW]',type:'number',step:'0.1'},
+  {key:'eff',label:'Sprawność',type:'number',step:'0.01'},
+  {key:'mod',label:'Modulacja',type:'text'},
+  {key:'emiss',label:'Klasa emisji',type:'text'},
+  {key:'tank',label:'Zasobnik [l]',type:'number'},
+  {key:'ctrl',label:'Sterowanie',type:'text'},
+  {key:'phase',label:'Zasilanie',type:'select',opts:['1F','3F']},
+  {key:'noise',label:'Hałas [dB]',type:'number'},
+  {key:'dim',label:'Wymiary [mm]',type:'text'},
+  {key:'weight',label:'Waga [kg]',type:'number'},
+  {key:'warr',label:'Gwarancja [lata]',type:'number'},
+  {key:'chimney',label:'Komin',type:'select',opts:['TAK','NIE']},
+  {key:'flue',label:'Spalin Ø [mm]',type:'number'},
+  {key:'acc',label:'Akcesoria',type:'text'},
+  {key:'price',label:'Cena [zł]',type:'number'},
+  {key:'install',label:'Montaż [zł]',type:'number'},
+  {key:'service',label:'Serwis [zł]',type:'number'},
+  {key:'notes',label:'Uwagi',type:'text'},
+];
+
+/* ===== render tabeli ===== */
+function render(){
+  const qtxt=(filter.q||'').toLowerCase();
+  let data=rows.filter(r=>{
+    if(filter.fuel && r.fuel!==filter.fuel) return false;
+    if(filter.phase && r.phase!==filter.phase) return false;
+    if(filter.chimney && r.chimney!==filter.chimney) return false;
+    if(filter.cond && r.fuel!=='gaz-kondensacyjny') return false;
+    if(filter.powMin!=='' && Number(r.powMax)<Number(filter.powMin)) return false;
+    if(filter.powMax!=='' && Number(r.powMin)>Number(filter.powMax)) return false;
+    if(filter.priceMin!=='' && Number(r.price)<Number(filter.priceMin)) return false;
+    if(filter.priceMax!=='' && Number(r.price)>Number(filter.priceMax)) return false;
+    if(qtxt){
+      const hay=[r.brand,r.model,r.fuel,r.mod,r.emiss,r.ctrl,r.dim,r.acc,r.notes].join(' ').toLowerCase();
+      if(!hay.includes(qtxt)) return false;
     }
-    function fuelOfBrand(b){
-      if(b==='Ferroli') return 'gaz-kondensacyjny';
-      if(b==='DEFRO') return 'pellet';
-      if(b==='Stalmark') return 'pellet';
-      if(b==='LAZAR') return 'drewno';
-      return '';
-    }
+    return true;
+  });
 
-    function pricePack(boiler, tank, rads, chimneyM){
-      const fuel = boiler?.fuel || fuelOfBrand(state.brand);
-      const base = INSTALL_BASE[fuel] || 0;
-      // pellet/drewno: pełna suma + montaż; gaz: również doliczamy wkład jeśli chcesz (ustawiasz metry)
-      return (Number(boiler?.price)||0)
-           + (Number(tank)||0)
-           + base
-           + (Number(rads)||0)*RAD_PRICE
-           + (Number(chimneyM)||0)*CHIMNEY_PRICE;
-    }
+  $('#countAll').textContent=rows.length;
+  $('#countVis').textContent=data.length;
+  $('#countSel').textContent=selected.size;
 
-    function addToBasket(name, finalPrice, qty=1){
-      const i = state.basket.findIndex(x=>x.name===name && Math.abs(x.final-finalPrice)<0.01);
-      if(i>=0) state.basket[i].qty += qty; else state.basket.push({name, final:finalPrice, qty});
-      renderBasket();
-    }
-
-    function renderBasket(){
-      const tb=q('#basket tbody'); tb.innerHTML=''; let sum=0;
-      state.basket.forEach((it,i)=>{
-        sum += it.final*it.qty;
-        const tr=document.createElement('tr');
-        tr.innerHTML = `
-          <td>${it.name}</td>
-          <td><input type="number" data-qty-basket="${i}" value="${it.qty}" min="1" style="width:70px; padding:6px 8px; border:1px solid var(--line); border-radius:10px;"></td>
-          <td class="right">${fmt(it.final)} PLN</td>
-          <td class="right"><button class="btn danger" data-del="${i}">Usuń</button></td>`;
-        tb.appendChild(tr);
-      });
-      q('#sumFinal').textContent  = fmt(sum) + ' PLN';
-      q('#sumBrutto').textContent = fmt(sum*(1+state.vat)) + ' PLN';
-    }
-
-    function activeBoiler(){
-      if(state.arkon.selected){
-        return {
-          model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
-          power: state.arkon.selected.powMax || state.arkon.selected.powMin || '',
-          fuel:  (state.arkon.selected.fuel || '').toLowerCase(),
-          type:  state.arkon.selected.type || '',
-          price: Number(state.arkon.selected.price)||0,
-          flue:  state.arkon.selected.flue || ''
-        };
-      }
-      return state.selectedBoiler;
-    }
-
-    function renderMustHave(){
-      const box=q('#mustHaveList');
-      const b=activeBoiler(), t=state.selectedTank;
-      if(!b||!t){ box.textContent='Wybierz markę, model i zasobnik — pokażę skład.'; return; }
-      const items = [];
-      const labelFuel = (b.fuel||fuelOfBrand(state.brand));
-      items.push(`Kocioł — ${b.model}${b.power ? ` (${b.power} kW)` : ''} • ${labelFuel}`);
-      items.push(`Zasobnik CWU — ${t} l`);
-      items.push('Armatura: zawór 3D CWU/CO, grupa bezpieczeństwa CO, zawór zwrotny');
-      items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
-      items.push('Naczynie przeponowe CO, odpowietrzniki automatyczne');
-      const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${RAD_PRICE} PLN/szt.`);
-      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${CHIMNEY_PRICE} PLN/mb${b.flue ? ` • zalec. Ø ${b.flue} mm` : ''}`);
-      items.push('Montaż, uruchomienie, konfiguracja sterowania');
-      box.innerHTML = '<ul class="clean">' + items.map(t => `<li>${t}</li>`).join('') + '</ul>';
-    }
-
-    function renderPreview(){
-      const b = activeBoiler();
-      const t = state.selectedTank;
-      const r = Number(state.rads)||0;
-      const m = Number(state.chimneyM)||0;
-      if(!b || !t){ q('#pricePreview').textContent='—'; return; }
-      const sum = pricePack(b, TANKS[t], r, m);
-      q('#pricePreview').textContent = fmt(sum) + ' PLN netto (brutto: ' + fmt(sum*(1+state.vat)) + ' PLN)';
-    }
-
-    /* ====== UI fill ====== */
-    function fillBrands(){
-      const brandSel = q('#brand'); brandSel.value = state.brand;
-      brandSel.addEventListener('change', ()=>{
-        state.brand = brandSel.value; state.arkon.selected=null;
-        fillBoilers(); renderPreview(); renderMustHave(); fillArkonDefaults();
-      });
-    }
-    function fillBoilers(){
-      const s=q('#boiler'); const list=modelsForBrand(state.brand).slice().sort((a,b)=> a.power-b.power || a.price-b.price );
-      s.innerHTML = list.map((b,i) => `<option value="${i}">${b.model} • ${b.power} kW • ${fmt(b.price)} PLN</option>`).join('');
-      s.value="0"; state.selectedBoiler = normalizeLocalModel(list[0]);
-      applyBoilerToUi();
-      s.addEventListener('change', ()=>{
-        const idx=Number(s.value)||0; state.selectedBoiler=normalizeLocalModel(list[idx]); applyBoilerToUi();
-      });
-    }
-    function normalizeLocalModel(b){
-      if(!b) return null;
-      return {
-        model: `${state.brand} ${b.model}`,
-        power: b.power || '',
-        fuel: b.fuel || fuelOfBrand(state.brand),
-        type: b.type || '',
-        price: Number(b.price)||0
-      };
-    }
-    function applyBoilerToUi(){
-      const b=activeBoiler(); if(!b) return;
-      q('#power').value = b.power? (b.power+' kW') : '';
-      q('#type').value  = b.type? b.type : (b.fuel||'');
-      q('#boilerPrice').value = fmt(b.price) + ' PLN';
-      renderPreview(); renderMustHave();
-    }
-    function fillTanks(){
-      const s=q('#tank'); const sizes=Object.keys(TANKS).map(Number).sort((a,b)=>a-b);
-      s.innerHTML = sizes.map(v => `<option value="${v}">${v} l • ${fmt(TANKS[v])} PLN</option>`).join('');
-      s.value=String(sizes[0]); state.selectedTank=s.value;
-      q('#tankPrice').value = fmt(TANKS[state.selectedTank]) + ' PLN';
-      s.addEventListener('change', ()=>{ state.selectedTank=s.value; q('#tankPrice').value=fmt(TANKS[state.selectedTank])+' PLN'; renderPreview(); renderMustHave(); });
-    }
-    function fillAddons(){
-      const box=q('#addons'); box.innerHTML='';
-      Object.keys(ACCESSORY_BASE).forEach((name,i)=>{
-        const price=ACCESSORY_BASE[name];
-        const card=document.createElement('div'); card.className='card';
-        card.innerHTML = `
-          <h4>${name}</h4>
-          <div class="muted">Cena: ${fmt(price)} PLN</div>
-          <div style="margin-top:8px;">
-            <label>Ilość</label>
-            <input type="number" min="1" step="1" value="1" data-qty="${i}">
-          </div>
-          <div style="margin-top:10px;"><button class="btn ghost" data-addon="${i}">Dodaj</button></div>`;
-        box.appendChild(card);
-      });
-    }
-
-    /* ====== MOSTEK ARKON: tylko 4 nasze marki ====== */
-    const ARKON_LS_KEY = 'arkon_components_boilers_v2';
-    const ARKON_PING_KEY = 'arkon_boilers_updated';
-    const ARKON_SELECTED_KEY = 'arkon_selected_boiler_id';
-    const ARKON_RETURN_KEY = 'arkon_return_to';
-    const ARKON_PREF_BRAND = 'arkon_pref_brand';
-    const ARKON_PREF_FUEL  = 'arkon_pref_fuel';
-    const ALLOWED_BRANDS = ['Ferroli','DEFRO','Stalmark','LAZAR'];
-
-    function loadArkon(){
+  const tb=$('#tbody'); tb.innerHTML='';
+  data.forEach(r=>{
+    const tr=document.createElement('tr');
+    const kwOk = matchProposedKW(r);
+    tr.innerHTML = `
+      <td class="hide-sm"><input type="checkbox" data-id="${r.id}" ${selected.has(r.id)?'checked':''}></td>
+      <td data-k="brand">${esc(r.brand||'')}</td>
+      <td data-k="model">${esc(r.model||'')}${kwOk?'<span class="okBadge">pasuje do mocy</span>':''}</td>
+      <td data-k="fuel">${esc(r.fuel||'')}</td>
+      <td data-k="powMin">${esc(r.powMin)} – <span data-k="powMax">${esc(r.powMax)}</span></td>
+      <td data-k="eff">${esc(r.eff)}</td>
+      <td data-k="mod">${esc(r.mod||'')}</td>
+      <td data-k="emiss">${esc(r.emiss||'')}</td>
+      <td data-k="tank">${esc(r.tank||0)}</td>
+      <td data-k="ctrl">${esc(r.ctrl||'')}</td>
+      <td data-k="phase">${esc(r.phase||'')}</td>
+      <td data-k="noise">${esc(r.noise||'')}</td>
+      <td data-k="dim">${esc(r.dim||'')}</td>
+      <td data-k="weight">${esc(r.weight||'')}</td>
+      <td data-k="warr">${esc(r.warr||'')}</td>
+      <td data-k="chimney">${esc(r.chimney||'')}</td>
+      <td data-k="flue">${esc(r.flue||'')}</td>
+      <td data-k="acc" class="wide">${esc(r.acc||'')}</td>
+      <td data-k="price" class="price">${INT0.format(r.price||0)}</td>
+      <td data-k="install" class="price">${INT0.format(r.install||0)}</td>
+      <td data-k="service" class="price">${INT0.format(r.service||0)}</td>
+      <td data-k="notes" class="wide">${esc(r.notes||'')}</td>
+      <td>
+        <button class="btn" data-conf="${r.id}">Konfigurator</button>
+        <button class="btn ghost" data-sendrow="${r.id}">Wyślij</button>
+        <button class="btn bad" data-act="del" data-id="${r.id}">Usuń</button>
+      </td>
+    `;
+    // dwuklik -> wejdź do konfiguratora + ustaw brSelectedId
+    tr.addEventListener('dblclick', ()=>{
       try{
-        const raw = localStorage.getItem(ARKON_LS_KEY); if(!raw) return;
-        const list = JSON.parse(raw); if(!Array.isArray(list)) return;
-        state.arkon.list = list
-          .filter(r => ALLOWED_BRANDS.includes(String(r.brand||'').trim()))
-          .map(r=>({
-            id:r.id, brand:r.brand||'', model:r.model||'',
-            price:Number(r.price)||0,
-            powMin:Number(r.powMin)||null, powMax:Number(r.powMax)||null,
-            fuel:(r.fuel||r.type||'').toString().toLowerCase(),
-            type:r.type||'',
-            flue:r.flue || r['Spalin Ø [mm]'] || ''
-          }));
-        state.arkon.byBrand = state.arkon.list.reduce((a,b)=>{ (a[b.brand]??=[]).push(b); return a; },{});
+        localStorage.setItem(SEL_KEY, r.id);
+        localStorage.setItem(PREF_BRAND, r.brand||'');
+        localStorage.setItem(PREF_FUEL, brandFuel(r.brand||''));
+        localStorage.setItem(RETURN_KEY, location.href);
+        localStorage.setItem(PING_KEY, String(Date.now()));
       }catch{}
+      brSelectedId = r.id; updateReqPanel();
+      openConfigurator(r.brand||'');
+    });
+
+    tr.querySelectorAll('input[type="checkbox"]').forEach(chk=>{
+      chk.addEventListener('change', ()=>{
+        if(chk.checked) selected.add(r.id); else selected.delete(r.id);
+        $('#countSel').textContent=selected.size;
+        updateReqPanel();
+      });
+    });
+    tr.querySelectorAll('[data-act="del"]').forEach(b=>{
+      b.addEventListener('click', ()=>{ if(confirm('Usunąć?')){ rows=rows.filter(x=>x.id!==r.id); saveRows(); }});
+    });
+    tr.querySelectorAll('[data-conf]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const row=rows.find(x=>x.id===b.dataset.conf); if(!row) return;
+        brSelectedId=row.id; updateReqPanel();
+        sendToConfigurator(row.id, row.brand||'');
+      });
+    });
+    tr.querySelectorAll('[data-sendrow]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const row=rows.find(x=>x.id===b.dataset.sendrow); if(!row) return;
+        brSelectedId=row.id; updateReqPanel();
+        sendToConfigurator(row.id, row.brand||'');
+      });
+    });
+
+    tb.appendChild(tr);
+  });
+}
+
+/* ===== bridge list ===== */
+function fillBridgeList(){
+  const brand = $('#brBrand').value || 'Ferroli';
+  const qtxt = ($('#brQ').value||'').toLowerCase();
+  const pmin = Number($('#brPmin').value)||null;
+  const pmax = Number($('#brPmax').value)||null;
+  const sort = $('#brSort').value||'power';
+
+  let list = rows.filter(r => (r.brand||'').toLowerCase()===brand.toLowerCase());
+  list = list.filter(r=>{
+    if(qtxt){
+      const hay=[r.model,r.fuel,r.notes].join(' ').toLowerCase();
+      if(!hay.includes(qtxt)) return false;
     }
-    function fillArkonDefaults(){
-      // ustaw preferencje zgodnie z wybraną marką
-      try{
-        localStorage.setItem(ARKON_RETURN_KEY, location.href);
-        localStorage.setItem(ARKON_PREF_BRAND, state.brand);
-        localStorage.setItem(ARKON_PREF_FUEL,  fuelOfBrand(state.brand));
-      }catch{}
-      fillArkonBrands(); fillArkonModels();
-    }
-    function fillArkonBrands(){
-      const sel=q('#arkonBrand');
-      const brands=Object.keys(state.arkon.byBrand).filter(b=>ALLOWED_BRANDS.includes(b)).sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
-      sel.innerHTML = brands.length
-        ? brands.map(b => `<option ${b===state.brand ? 'selected' : ''}>${b}</option>`).join('')
-        : '<option value="">— brak danych —</option>';
-      q('#arkonFuel').value = fuelOfBrand(state.brand) || '';
-    }
-    function currentArkonFiltered(){
-      const brand=q('#arkonBrand').value;
-      const fuel=(q('#arkonFuel').value||'').toLowerCase();
-      const mn=Number(q('#arkonMin').value), mx=Number(q('#arkonMax').value);
-      let list = (state.arkon.byBrand[brand]||[]).slice();
-      if(fuel) list = list.filter(x=> (x.fuel||'').includes(fuel));
-      return list.filter(x=>{
-        const lo = Number(x.powMin||x.power||0) || 0;
-        const hi = Number(x.powMax||x.power||0) || lo;
-        if(!isNaN(mn) && mn>0 && hi < mn) return false;
-        if(!isNaN(mx) && mx>0 && lo > mx) return false;
-        return true;
-      }).sort((a,b)=> (a.powMax||a.powMin||0) - (b.powMax||b.powMin||0) );
-    }
-    function fillArkonModels(){
-      const ms=q('#arkonModel'); const list=currentArkonFiltered();
-      ms.disabled = list.length===0;
-      ms.innerHTML = list.length? '<option value="">— wybierz model —</option>' : '<option value="">— brak modeli —</option>';
-      if(!list.length){ q('#arkonPreview').textContent='Brak modeli dla filtrów.'; return; }
-      ms.innerHTML += list.map(x => `<option value="${x.id}">${x.model}${(x.powMax||x.powMin) ? ` • ${x.powMin||''}-${x.powMax||''} kW` : ''} • ${fmt(x.price)} PLN</option>`).join('');
-      q('#arkonPreview').textContent='Wybierz model, aby zobaczyć szczegóły.';
-    }
-    function renderArkonPreview(){
-      const p=state.arkon.selected, box=q('#arkonPreview');
-      if(!p){ box.textContent='Brak wyboru z katalogu.'; return; }
-      const pow = (p.powMin||'') + (p.powMax ? `–${p.powMax}` : '');
-      box.innerHTML = `<b>${p.brand} ${p.model}</b><br>
-        Moc: ${pow||'—'} kW • Paliwo: ${p.fuel||'—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue?` • Spalin Ø: ${p.flue} mm`:''}`;
-    }
-    function selectArkonById(id){
-      if(!id) return;
-      loadArkon();
-      const found = (state.arkon.list||[]).find(x=>x.id===id);
-      if(!found) return;
-      const bSel = q('#arkonBrand'); if(bSel){ bSel.value = found.brand || ''; }
-      q('#arkonFuel').value = found.fuel || '';
-      fillArkonModels();
-      const mSel = q('#arkonModel'); if(mSel){ mSel.value = found.id; }
-      state.arkon.selected = found;
-      renderArkonPreview();
-      // wpisz do pól głównych
-      state.selectedBoiler = {
-        model: `${found.brand} ${found.model}`,
-        power: found.powMax||found.powMin||'',
-        fuel: found.fuel||'',
-        type: found.type||'',
-        price: Number(found.price)||0,
-        flue: found.flue||''
-      };
-      applyBoilerToUi();
-    }
+    const lo=Number(r.powMin)||0, hi=Number(r.powMax)||lo;
+    if(pmin!=null && pmin>0 && hi<pmin) return false;
+    if(pmax!=null && pmax>0 && lo>pmax) return false;
+    return true;
+  });
+  list.sort((a,b)=>{
+    if(sort==='price') return (a.price||0)-(b.price||0);
+    if(sort==='model') return String(a.model||'').localeCompare(b.model||'','pl',{sensitivity:'base'});
+    // power
+    return ((a.powMax||a.powMin||0)-(b.powMax||b.powMin||0));
+  });
 
-    document.addEventListener('change', (e)=>{
-      if(e.target.id==='arkonBrand' || e.target.id==='arkonFuel' || e.target.id==='arkonMin' || e.target.id==='arkonMax'){
-        state.arkon.selected=null; fillArkonModels(); renderArkonPreview(); renderPreview();
-      }
-      if(e.target.id==='arkonModel'){
-        const id=e.target.value;
-        state.arkon.selected = (state.arkon.list||[]).find(x=>x.id===id) || null;
-        if(state.arkon.selected){
-          state.selectedBoiler = {
-            model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
-            power: state.arkon.selected.powMax||state.arkon.selected.powMin||'',
-            fuel: state.arkon.selected.fuel||'',
-            type: state.arkon.selected.type||'',
-            price: Number(state.arkon.selected.price)||0,
-            flue: state.arkon.selected.flue||''
-          };
-          applyBoilerToUi();
-        }
-        renderArkonPreview(); renderPreview(); renderMustHave();
-      }
-      if(e.target.id==='rads'){ state.rads=Math.max(0, Number(e.target.value)||0); renderPreview(); renderMustHave(); }
-      if(e.target.id==='chimneyM'){ state.chimneyM=Math.max(0, Number(e.target.value)||0); renderPreview(); renderMustHave(); }
-      if(e.target.id==='vat'){ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); }
+  const tb=$('#brList'); tb.innerHTML='';
+  list.forEach(r=>{
+    const kwOk = matchProposedKW(r);
+    const tr=document.createElement('tr');
+    tr.setAttribute('data-id', r.id);
+    tr.setAttribute('tabindex','0');
+    tr.innerHTML = `
+      <td>${esc(r.model||'')}${kwOk?'<span class="okBadge">pasuje</span>':''}</td>
+      <td>${esc(r.powMin)}–${esc(r.powMax||r.powMin)}</td>
+      <td>${esc(r.fuel||'')}</td>
+      <td class="price">${INT0.format(r.price||0)}</td>
+      <td class="muted">${esc(r.id.slice(0,10))}…</td>
+    `;
+    tr.addEventListener('click', ()=>{
+      brSelectedId = r.id;
+      $('#brSel').textContent = r.id;
+      tb.querySelectorAll('tr').forEach(x=>x.removeAttribute('aria-selected'));
+      tr.setAttribute('aria-selected','true');
+      updateReqPanel();
     });
+    tr.addEventListener('dblclick', ()=>{
+      brSelectedId = r.id;
+      $('#brSel').textContent = r.id;
+      updateReqPanel();
+      sendToConfigurator(r.id, r.brand||'');
+    });
+    tb.appendChild(tr);
+  });
 
-    document.getElementById('useArkon').addEventListener('click', ()=>{
-      if(!state.arkon.selected) return alert('Wybierz model w mostku ARKON.');
-      applyBoilerToUi(); renderPreview(); renderMustHave();
-    });
-    document.getElementById('openArkon').addEventListener('click', ()=>{
-      try{
-        localStorage.setItem(ARKON_RETURN_KEY, location.href);
-        localStorage.setItem(ARKON_PREF_BRAND, state.brand);
-        localStorage.setItem(ARKON_PREF_FUEL,  fuelOfBrand(state.brand));
-      }catch{}
-      window.open('komponenty-piece.html', '_blank', 'noopener');
-    });
-    document.getElementById('goArkon').addEventListener('click', ()=>{
-      try{
-        localStorage.setItem(ARKON_RETURN_KEY, location.href);
-        localStorage.setItem(ARKON_PREF_BRAND, state.brand);
-        localStorage.setItem(ARKON_PREF_FUEL,  fuelOfBrand(state.brand));
-      }catch{}
-    });
+  updateBrandStats();
+  // jeśli obecny wybór nie istnieje w aktualnym filtrze
+  if(brSelectedId && !rows.find(x=>x.id===brSelectedId)) { brSelectedId=null; $('#brSel').textContent='—'; updateReqPanel(); }
+}
+function updateBrandStats(){
+  const cnt = (b)=> rows.filter(r=>(r.brand||'').toLowerCase()===b.toLowerCase()).length;
+  $('#cntFerroli').textContent = cnt('Ferroli');
+  $('#cntDEFRO').textContent   = cnt('DEFRO');
+  $('#cntStalmark').textContent= cnt('Stalmark');
+  $('#cntLazar').textContent   = cnt('LAZAR');
+}
 
-    window.addEventListener('storage', (e)=>{
-      if(e.key===ARKON_PING_KEY || e.key===ARKON_LS_KEY){
-        const curId = state.arkon.selected?.id;
-        loadArkon(); fillArkonDefaults();
-        if(curId) selectArkonById(curId); else { state.arkon.selected=null; renderArkonPreview(); renderPreview(); renderMustHave(); }
-      }
-      if(e.key===ARKON_SELECTED_KEY && e.newValue){
-        selectArkonById(e.newValue);
-      }
-    });
-    window.addEventListener('message', (ev)=>{
-      if(ev.data && ev.data.type==='ARKON_BOILER_SELECTED'){ selectArkonById(ev.data.id); }
-    });
-    window.addEventListener('focus', ()=>{
-      try{ const selId = localStorage.getItem(ARKON_SELECTED_KEY); if(selId) selectArkonById(selId); }catch{}
-    });
+/* ===== proponowana moc → highlight modeli ===== */
+function matchProposedKW(r){
+  if(!proposedKW) return false;
+  const lo = Number(r.powMin)||0, hi=Number(r.powMax)||lo;
+  const band = {min: proposedKW*0.8, max: proposedKW*1.2};
+  return hi>=band.min && lo<=band.max;
+}
 
-    /* ====== Kliknięcia / koszyk ====== */
-    document.addEventListener('click', (e)=>{
-      const del=e.target.getAttribute('data-del');
-      if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); return; }
+/* ===== edycja in-line ===== */
+function editorFor(col,val){
+  if(col.type==='select'){
+    const sel=document.createElement('select');
+    (col.opts||[]).forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;if(o===val)op.selected=true;sel.appendChild(op);});
+    return sel;
+  }
+  const inp=document.createElement('input');
+  inp.type=col.type||'text'; if(col.step) inp.step=col.step;
+  inp.value=val==null?'':val; inp.style.width='100%'; return inp;
+}
+function editCell(id,key,cell){
+  const col=COLS.find(c=>c.key===key);
+  if(key==='powMin' || key==='powMax'){
+    const row=rows.find(x=>x.id===id); const valMin=row.powMin??''; const valMax=row.powMax??'';
+    const wrap=document.createElement('div');
+    wrap.innerHTML=`<div class="card" style="position:absolute;z-index:5;padding:10px;transform:translateY(-10px)">
+      <div class="row"><input type="number" step="0.1" id="edMin" value="${valMin}" style="width:120px">
+      <input type="number" step="0.1" id="edMax" value="${valMax}" style="width:120px">
+      <button id="ok" class="btn ok">OK</button><button id="cx" class="btn ghost">Anuluj</button></div></div>`;
+    cell.appendChild(wrap);
+    const done=(apply)=>{ if(apply){ row.powMin=toNum(wrap.querySelector('#edMin').value); row.powMax=toNum(wrap.querySelector('#edMax').value); saveRows(); } cell.removeChild(wrap); };
+    wrap.querySelector('#ok').onclick=()=>done(true); wrap.querySelector('#cx').onclick=()=>done(false);
+    return;
+  }
+  const row=rows.find(x=>x.id===id); const start=row[key];
+  const ed=editorFor(col||{type:'text'},start); const orig=cell.innerHTML;
+  cell.innerHTML=''; cell.appendChild(ed); ed.focus(); if(ed.select) ed.select();
+  const commit=(apply)=>{ if(apply){ let v=ed.value; if((col||{}).type==='number') v=toNum(v); row[key]=v; saveRows(); } else { cell.innerHTML=orig; } };
+  ed.addEventListener('keydown',e=>{ if(e.key==='Enter') commit(true); if(e.key==='Escape') commit(false); });
+  ed.addEventListener('blur',()=>commit(true));
+}
 
-      const addId=e.target.getAttribute('data-addon');
-      if(addId!=null){
-        const i=Number(addId); const name=Object.keys(ACCESSORY_BASE)[i];
-        const qty=Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`)?.value)||1);
-        addToBasket(name, ACCESSORY_BASE[name], qty); return;
-      }
+/* ===== toolbar actions ===== */
+$('#add').addEventListener('click', ()=>{
+  const blank={id:UID(),brand:'',model:'',fuel:'gaz',powMin:0,powMax:0,eff:0.9,mod:'',emiss:'',tank:0,ctrl:'',phase:'1F',noise:0,dim:'',weight:0,warr:2,chimney:'NIE',flue:60,acc:'',price:0,install:0,service:0,notes:''};
+  rows.unshift(blank); saveRows();
+});
+$('#dupSel').addEventListener('click', ()=>{
+  if(!selected.size) return;
+  Array.from(selected).forEach(id=>{ const s=rows.find(x=>x.id===id); if(!s) return; const c=JSON.parse(JSON.stringify(s)); c.id=UID(); c.model=(c.model||'')+' (kopia)'; rows.unshift(c); });
+  saveRows();
+});
+$('#delSel').addEventListener('click', ()=>{
+  if(!selected.size) return;
+  if(confirm('Usunąć zaznaczone pozycje?')){ rows=rows.filter(r=>!selected.has(r.id)); selected.clear(); saveRows(); }
+});
+$('#expJSON').addEventListener('click', ()=>{
+  const blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='komponenty_piece.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+$('#impJSON').addEventListener('change', async (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const txt=await f.text(); const arr=JSON.parse(txt); if(!Array.isArray(arr)) throw 0; rows=arr.map(r=>({id:r.id||UID(),...r})); saveRows(); }
+  catch{ alert('Zły plik JSON'); } e.target.value='';
+});
+$('#expCSV').addEventListener('click', ()=>{
+  const cols=COLS.map(c=>c.key); const head=cols.join(';');
+  const body=rows.map(r=>cols.map(k=>csvEsc(r[k])).join(';')).join('\n');
+  const blob=new Blob([head+'\n'+body],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='komponenty_piece.csv'; a.click(); URL.revokeObjectURL(a.href);
+});
+$('#seed').addEventListener('click', ()=>{ if(confirm('Załadować przykładowe pozycje?')) seed(); });
+$('#wipe').addEventListener('click', ()=>{ if(confirm('Wyczyścić wszystkie pozycje?')){ rows=[]; saveRows(); }});
 
-      if(e.target.id==='addPack'){
-        const b=activeBoiler(), t=state.selectedTank; if(!b||!t) return alert('Wybierz kocioł i zasobnik.');
-        const price = pricePack(b, TANKS[t], Number(state.rads)||0, Number(state.chimneyM)||0);
-        const rlabel = state.rads?` + grzejniki x${state.rads}`:'';
-        const mlabel = (Number(state.chimneyM)||0)>0 ? ` + wkład ${state.chimneyM} m` : '';
-        addToBasket(`Zestaw: ${b.model} + CWU ${t} l + montaż${rlabel}${mlabel}`, price, 1); return;
-      }
+/* ===== filtry ===== */
+$('#q').addEventListener('input', e=>{ filter.q=e.target.value.trim(); render(); fillBridgeList(); });
+$('#fFuel').addEventListener('change', e=>{ filter.fuel=e.target.value; render(); fillBridgeList(); });
+$('#fPhase').addEventListener('change', e=>{ filter.phase=e.target.value; render(); });
+$('#fChimney').addEventListener('change', e=>{ filter.chimney=e.target.value; render(); });
+$('#fPowMin').addEventListener('input', e=>{ filter.powMin=e.target.value; render(); fillBridgeList(); });
+$('#fPowMax').addEventListener('input', e=>{ filter.powMax=e.target.value; render(); fillBridgeList(); });
+$('#fCenaMin').addEventListener('input', e=>{ filter.priceMin=e.target.value; render(); });
+$('#fCenaMax').addEventListener('input', e=>{ filter.priceMax=e.target.value; render(); });
+$('#fCond').addEventListener('change', e=>{ filter.cond=e.target.checked; render(); });
 
-      if(e.target.id==='addBoilerOnly'){
-        const b=activeBoiler(); if(!b) return alert('Wybierz kocioł.');
-        const surcharge = BOILER_ONLY_SURCHARGES[state.brand]||0;
-        addToBasket(`Kocioł: ${b.model} — tylko urządzenie`, (Number(b.price)||0)+surcharge, 1); return;
-      }
-    });
+/* tabs -> skrót do filtra paliwa */
+$$('.tab').forEach(b=> b.addEventListener('click', ()=>{
+  $$('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  const v=b.dataset.tab||''; $('#fFuel').value=v; filter.fuel=v; render(); fillBridgeList();
+}));
 
-    // Eksport / kopiuj / drukuj
-    document.getElementById('exportQuote').addEventListener('click', ()=>{
-      const ws = XLSX.utils.json_to_sheet(state.basket.map(it => ({ Pozycja: it.name, Ilość: it.qty, Cena: it.final })));
-      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
-      XLSX.writeFile(wb, 'Koszyk_piece_master.xlsx');
-    });
-    document.getElementById('copyQuote').addEventListener('click', ()=>{
-      const vat=Number(document.getElementById('vat').value)||0.08;
-      const sum=state.basket.reduce((a,b)=>a+b.final*b.qty,0);
-      let txt = 'Oferta — Konfigurator pieców (master)\\n\\n';
-      state.basket.forEach(it=>{ txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\\n`; });
-      txt += `\\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
-      navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
-    });
-    document.getElementById('print').addEventListener('click', ()=> window.print());
+/* ===== bridge bindy ===== */
+['brBrand','brQ','brPmin','brPmax','brSort'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', fillBridgeList);
+  document.getElementById(id).addEventListener('change', fillBridgeList);
+});
+$('#brOpen').addEventListener('click', ()=> openConfigurator($('#brBrand').value||''));
+$('#brSend').addEventListener('click', ()=>{
+  if(!brSelectedId){ alert('Wybierz model z listy.'); return; }
+  const row=currentRowById(brSelectedId); if(!row){ alert('Model nie istnieje.'); return; }
+  sendToConfigurator(brSelectedId, row.brand||'');
+});
 
-    // INIT
-    function init(){
-      fillBrands(); fillBoilers(); fillTanks(); fillAddons();
-      loadArkon(); fillArkonDefaults();
-      renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
-    }
-    init();
-  </script>
+/* ===== kalkulator mocy → podpowiedź + filtry ===== */
+function updateCalc(){
+  const area=toNum($('#calcArea').value)||0;
+  const insu=$('#calcInsul').value||'std';
+  const zone=$('#calcZone').value||'normal';
+  const cwu=toNum($('#calcCWU').value)||0;
+  const margin=toNum($('#calcMargin').value)||15;
+  if(area>0){
+    proposedKW = calcKW(area,insu,zone,cwu,margin);
+    $('#calcOut').textContent = INT2.format(proposedKW)+' kW';
+  }else{
+    proposedKW = null;
+    $('#calcOut').textContent = '— kW';
+  }
+  render(); fillBridgeList();
+}
+['calcArea','calcInsul','calcZone','calcCWU','calcMargin'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateCalc);
+  document.getElementById(id).addEventListener('change', updateCalc);
+});
+$('#calcApply').addEventListener('click', ()=>{
+  if(!proposedKW) return;
+  const mn = Math.round(proposedKW*0.8*10)/10;
+  const mx = Math.round(proposedKW*1.2*10)/10;
+  $('#fPowMin').value = mn; $('#fPowMax').value = mx;
+  filter.powMin=String(mn); filter.powMax=String(mx);
+  render(); fillBridgeList();
+});
+
+/* ===== skróty ===== */
+window.addEventListener('keydown', (e)=>{
+  if(e.altKey && (e.key==='n'||e.key==='N')){ e.preventDefault(); $('#add').click(); }
+  if(e.key==='/'){ e.preventDefault(); $('#q').focus(); }
+});
+
+/* ===== checkbox „select all” ===== */
+$('#chkAll').addEventListener('change', (e)=>{
+  const on=e.target.checked; selected.clear(); if(on) rows.forEach(r=>selected.add(r.id)); render(); updateReqPanel();
+});
+
+/* ===== nasłuch z innych kart ===== */
+window.addEventListener('storage', (e)=>{
+  if(e.key===LS_KEY || e.key===PING_KEY){
+    rows = loadRows(); render(); fillBridgeList(); updateReqPanel(); updateBrandStats();
+  }
+  if(e.key===CFG_DEFAULTS_KEY){
+    // odśwież wymagania, bo mogły wpaść nowe mapy (np. TANKS, ceny)
+    updateReqPanel();
+  }
+});
+
+/* ===== init ===== */
+(function init(){
+  if(!rows.length) seed();
+  render(); fillBridgeList(); updateReqPanel(); updateBrandStats();
+})();
+</script>
 </body>
 </html>
+
