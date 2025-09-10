@@ -1,18 +1,21 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UMOWA – PW ARKON • umowa2.html</title>
-<meta name="description" content="Edytowalny szablon umowy PW ARKON z tabelami komponentów (pompa ciepła, piec, PV, ocieplenie, stolarka/dodatki), polami do wypełnienia, RODO, reklamacje, odstąpienie, OWU.">
+<meta name="description" content="Edytowalny szablon umowy PW ARKON z komponentami (PC, piec, PV, ocieplenie, stolarka/dodatki), polami do wypełnienia oraz auto-obliczeniami netto/VAT/brutto.">
 <style>
   :root{
-    --bg:#0b1020; --card:#0f1636; --ink:#e8edff; --muted:#aeb8da; --line:#263168; --accent:#4cc9f0;
-    --ok:#2b8a57; --warn:#b37a1a; --bad:#a93a4b; --paper:#0e1433;
+    --bg:#0b1020; --card:#0f1636; --ink:#e8edff; --muted:#aeb8da; --accent:#4cc9f0;
+    --line:#263168; --ok:#2b8a57; --warn:#b37a1a; --bad:#a93a4b; --paper:#0e1433;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+
+  /* Nav + layout */
   nav{position:sticky;top:0;z-index:10;background:#10183b;border-bottom:1px solid #223065;padding:10px 14px;display:flex;gap:10px;flex-wrap:wrap}
   nav a{color:#cfe1ff;text-decoration:none;padding:6px 10px;border:1px solid #2a3a75;border-radius:999px}
   nav a:hover{background:#223160}
@@ -21,38 +24,41 @@
   .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
   .btn.ok{background:#194d34;border-color:#2b8a57}
-  .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .card{background:linear-gradient(180deg,#111a3e,#121f4a);border:1px solid #2b3a77;border-radius:14px;padding:16px}
   .doc{background:var(--paper);border:1px solid #2b3a77;border-radius:12px;padding:22px}
-  .muted{color:var(--muted)}
-  .small{font-size:13px;color:var(--muted)}
+
+  /* Typografia i kolory */
+  .muted{color:var(--muted)} .small{font-size:13px;color:var(--muted)}
   h1,h2,h3{margin:0 0 10px}
-  h1{font-size:22px}
-  h2{font-size:18px;margin-top:16px}
+  h1{font-size:22px} h2{font-size:18px;margin-top:16px} h3{font-size:15px;margin-top:10px}
+
+  /* Tabele */
   table{width:100%;border-collapse:separate;border-spacing:0}
   th,td{border:1px solid #31417f;padding:8px;vertical-align:top}
   th{background:#121e49;color:#cfe1ff;text-align:left;font-weight:600}
   tr:nth-child(even) td{background:#0f1a44}
 
-  /* Pola do uzupełnienia (podkreślone linie) */
+  /* Pola do uzupełnienia */
   .fill{
-    display:inline-block;
-    min-width:var(--w, 20ch);
-    border-bottom:1px solid #4a5bb6;
-    padding:1px 2px;
-    line-height:1.6;
+    display:inline-block; min-width:var(--w,20ch);
+    border-bottom:1px solid #4a5bb6; padding:1px 2px; line-height:1.6;
   }
   [contenteditable="true"] .fill{outline-offset:2px}
+
+  /* Wiersze, podpisy, ramki */
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .right{display:flex;gap:8px;justify-content:flex-end}
   .center{text-align:center}
-  .signRow{display:flex;justify-content:space-between;gap:40px;margin-top:26px}
+  .signRow{display:flex;justify-content:space-between;gap:40px;margin-top:22px}
   .sign{width:44%;text-align:center}
   .box{border:1px dashed #3a4ca3;padding:10px;border-radius:10px;background:#0f1740}
   [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:6px;padding:4px}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:4px 8px;color:#aeb8da;font-size:12px}
 
-  /* Stopka do druku z numeracją stron (Chrome/Edge) */
+  /* Kwota VAT przy polu VAT% */
+  .vat-amt-out{ margin-left:.5rem; font-size:11px; opacity:.85 }
+
+  /* Stopka do druku (Chrome/Edge) */
   .print-footer{
     position:fixed; left:0; right:0; bottom:0;
     font-size:12px; color:#777; padding:6px 12px;
@@ -61,52 +67,51 @@
   .print-footer .line{display:flex;justify-content:space-between;gap:12px}
   .print-footer .pnum::after{content:"Strona " counter(page) " / " counter(pages);}
 
-  /* ===== DRUK: kompakt ===== */
-  @page{ size:A4; margin:10mm; }
+  /* ===== Wydruk: skrócony i czytelny ===== */
+  @page{ size:A4; margin:8mm; }
   @media print{
+    /* ukryj UI */
     nav,.card.toolbar{display:none!important}
 
-    /* białe tło + czarnia typografia */
+    /* białe tło + czarna typografia */
     html,body{background:#fff!important}
-    body{color:#000!important; font-size:12px; line-height:1.25}
+    body{color:#000!important; font-size:11.5px; line-height:1.22}
 
-    .wrap{max-width:none;margin:0 auto;padding:0 0}
+    .wrap{max-width:none;margin:0 auto;padding:0}
     .doc{background:#fff!important;border:0!important;padding:0!important;color:#000!important}
 
     /* nagłówki ciaśniej */
-    h1{font-size:18px;margin:0 0 6px}
-    h2{font-size:15px;margin:12px 0 6px}
-    h3{font-size:13px;margin:8px 0 4px}
+    h1{font-size:17px;margin:0 0 4px}
+    h2{font-size:14px;margin:10px 0 4px}
+    h3{font-size:12.5px;margin:6px 0 3px}
+    .small{font-size:10.5px}
 
     /* listy ciaśniej */
-    ol,ul{margin:6px 0 6px 18px}
-    .small{font-size:11px}
+    ol,ul{margin:4px 0 6px 16px}
 
-    /* tabele ciaśniej i bez kolorów */
+    /* tabele kompaktowe */
     table{border-collapse:collapse;border-spacing:0; page-break-inside:auto}
-    th,td{border:1px solid #000!important;padding:4px 6px;color:#000!important;background:#fff!important}
+    th,td{border:1px solid #000!important;padding:3.5px 5px;color:#000!important;background:#fff!important}
     tr{page-break-inside:avoid;page-break-after:auto}
 
-    /* skrócenie linii do uzupełnienia (ok. 70% oryginału) */
+    /* .fill krótsze o ~35% w druku */
     .fill{
       border-bottom:1px solid #000!important;
-      min-width:calc(var(--w, 20ch) * 0.7) !important;
-      line-height:1.25;
+      min-width:calc(var(--w, 20ch) * 0.65) !important;
+      line-height:1.2;
     }
 
     /* ramki i podpisy ciaśniej */
     .box{border-color:#000!important;background:#fff!important;padding:6px}
-    .signRow{gap:24px;margin-top:16px}
-    .sign{font-size:12px}
-
-    /* nie wymuszamy podziałów stron na nagłówkach */
-    h2,h3{page-break-before:auto}
+    .signRow{gap:18px;margin-top:12px}
+    .sign{font-size:11.5px}
 
     /* linki neutralne */
     a{color:#000!important;text-decoration:none!important}
 
-    /* stopka z numerem stron */
+    /* pokaż stopkę z numerem stron */
     .print-footer{display:block}
+    .vat-amt-out{ color:#000!important }
   }
 </style>
 </head>
@@ -305,7 +310,13 @@
 
       <h2>§4. Wynagrodzenie i warunki płatności</h2>
       <ol>
-        <li>Wynagrodzenie łączone za przedmiot umowy (netto): <b><span id="sumNet" class="fill" style="--w:24ch"></span></b> zł; stawka VAT (średnia ważona): <b><span id="sumVatPct" class="fill" style="--w:6ch"></span></b> %; wartość brutto: <b><span id="sumGross" class="fill" style="--w:24ch"></span></b> zł.</li>
+        <li>
+          Wynagrodzenie łączone za przedmiot umowy (netto):
+          <b><span id="sumNet" class="fill" style="--w:24ch"></span></b> zł;
+          kwota VAT łącznie: <b><span id="sumVatAmt" class="fill" style="--w:16ch"></span></b> zł;
+          stawka VAT (średnia ważona): <b><span id="sumVatPct" class="fill" style="--w:6ch"></span></b> %;
+          wartość brutto: <b><span id="sumGross" class="fill" style="--w:24ch"></span></b> zł.
+        </li>
         <li>Zaliczka: <span class="fill" style="--w:16ch"></span> zł, płatna do dnia: <span class="fill" style="--w:14ch"></span>, na rachunek: <span class="fill" style="--w:36ch"></span>.</li>
         <li>Harmonogram płatności (jeśli dotyczy): I etap <span class="fill" style="--w:8ch"></span>% do dnia <span class="fill" style="--w:12ch"></span>; II etap <span class="fill" style="--w:8ch"></span>% do dnia <span class="fill" style="--w:12ch"></span>; końcowa <span class="fill" style="--w:8ch"></span>% po odbiorze.</li>
         <li>Jeżeli Zamawiający korzysta z dofinansowania (np. „Czyste Powietrze”), strony uzgadniają, że: <span class="fill" style="--w:68ch"></span></li>
@@ -372,14 +383,6 @@
         <li>Umowę sporządzono w <span class="fill" style="--w:8ch"></span> jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
       </ol>
 
-      <h2>Załączniki</h2>
-      <ul>
-        <li>Załącznik nr 1 – Specyfikacja/Oferta szczegółowa.</li>
-        <li>Załącznik nr 2 – Protokół odbioru.</li>
-        <li>Załącznik nr 3 – OWU (Ogólne Warunki Umowy).</li>
-        <li>Załącznik nr 4 – Karta gwarancyjna/Instrukcje producentów.</li>
-      </ul>
-
       <div class="signRow">
         <div class="sign">
           ..................................................<br>
@@ -409,7 +412,7 @@
 
 <script>
 (function(){
-  // wyświetl czas otwarcia
+  // znacznik czasu
   const now = new Date();
   document.getElementById('now').textContent = now.toLocaleString('pl-PL');
   document.getElementById('printDate').textContent = now.toLocaleDateString('pl-PL');
@@ -421,24 +424,22 @@
     doc.setAttribute('contenteditable', on ? 'false' : 'true');
   });
 
-  // prosta funkcja do param z URL
+  // parametry URL
   function params(){ try{ return Object.fromEntries(new URL(location.href).searchParams.entries()); }catch{ return {}; } }
 
-  // wczytaj klientów z localStorage
+  // klienci z localStorage
   function loadClients(){
-    try{ return JSON.parse(localStorage.getItem('arkon_clients_v2')||'[]'); }catch(e){ return []; }
+    try{ return JSON.parse(localStorage.getItem('arkon_clients_v2')||'[]'); }catch{ return []; }
   }
 
-  // wstaw wartość do elementów z data-bind
+  // wstawianie danych do pól data-bind
   function setDot(selector, value){
     document.querySelectorAll('[data-bind="'+selector+'"]').forEach(el=>{
-      if(value && String(value).trim()){
-        el.textContent = String(value);
-      }
+      if(value && String(value).trim()){ el.textContent = String(value); }
     });
   }
 
-  // wstaw dane jeśli jest clientId
+  // merge z klientem
   const p = params();
   if(p.clientId){
     const clients = loadClients();
@@ -459,30 +460,35 @@
     document.getElementById('mergeState').textContent = 'brak clientId';
   }
 
-  /* ====== SUMOWANIE §3 → §4 ====== */
-  const fmt = new Intl.NumberFormat('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2});
-
+  /* ====== SUMOWANIE §3 → §4 z VAT ====== */
+  const fmt2 = new Intl.NumberFormat('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2});
   function parseMoney(s){
     if(!s) return NaN;
     s = String(s).replace(/\s/g,'').replace(/zł|PLN/ig,'');
-    const lastComma = s.lastIndexOf(',');
-    const lastDot   = s.lastIndexOf('.');
-    if(lastComma>lastDot){
-      s = s.replace(/\./g,'').replace(',','.');
-    }else{
-      s = s.replace(/,/g,'');
-    }
+    const lastComma = s.lastIndexOf(','), lastDot = s.lastIndexOf('.');
+    if(lastComma>lastDot){ s = s.replace(/\./g,'').replace(',','.'); } else { s = s.replace(/,/g,''); }
     const n = parseFloat(s);
     return isFinite(n)? n : NaN;
   }
+  function getText(el){ return (el?.textContent||'').trim(); }
+  function setText(el, val){ if(el) el.textContent = val; }
 
-  function getText(el){ return (el.textContent||'').trim(); }
-  function setText(el, val){ el.textContent = val; }
+  function ensureVatOut(el){
+    if(!el) return null;
+    const host = el.classList?.contains('fill') ? el.parentElement : el;
+    if(!host) return null;
+    let out = host.querySelector('.vat-amt-out');
+    if(!out){
+      out = document.createElement('span');
+      out.className = 'vat-amt-out';
+      host.appendChild(out);
+    }
+    return out;
+  }
 
-  // Dla każdej tabeli "component" spróbuj policzyć netto/vat/brutto
   function recalc(){
     const tables = document.querySelectorAll('table.component');
-    let sumNet = 0, sumGross = 0, vatBase = 0, vatAmount = 0;
+    let sumNet = 0, sumGross = 0, sumVatAmt = 0, vatBase = 0, vatAmount = 0;
 
     tables.forEach(tb=>{
       const nettoWrap  = tb.querySelector('.sum-netto .fill, .sum-netto');
@@ -491,29 +497,45 @@
 
       if(!nettoWrap && !vatWrap && !bruttoWrap) return;
 
-      let nettoEl  = nettoWrap?.classList?.contains('fill') ? nettoWrap : tb.querySelector('.sum-netto');
-      let vatEl    = vatWrap?.classList?.contains('fill')   ? vatWrap   : tb.querySelector('.sum-vat');
-      let bruttoEl = bruttoWrap?.classList?.contains('fill')? bruttoWrap: tb.querySelector('.sum-brutto');
+      let nettoEl  = nettoWrap?.classList?.contains('fill')  ? nettoWrap  : tb.querySelector('.sum-netto');
+      let vatEl    = vatWrap?.classList?.contains('fill')    ? vatWrap    : tb.querySelector('.sum-vat');
+      let bruttoEl = bruttoWrap?.classList?.contains('fill') ? bruttoWrap : tb.querySelector('.sum-brutto');
 
       let netto  = parseMoney(getText(nettoEl));
       let vatPct = parseMoney(getText(vatEl));
       let brutto = parseMoney(getText(bruttoEl));
 
+      // wyprowadź brakujące wartości
+      if(isNaN(vatPct) && !isNaN(netto) && !isNaN(brutto) && netto>0){
+        vatPct = (brutto/netto - 1) * 100;
+        setText(vatEl, fmt2.format(vatPct));
+      }
       if(isNaN(brutto) && !isNaN(netto) && !isNaN(vatPct)){
         brutto = netto * (1 + vatPct/100);
-        if(bruttoEl) setText(bruttoEl, fmt.format(brutto));
+        setText(bruttoEl, fmt2.format(brutto));
       }
       if(isNaN(netto) && !isNaN(brutto) && !isNaN(vatPct) && vatPct!==0){
         netto = brutto / (1 + vatPct/100);
-        if(nettoEl) setText(nettoEl, fmt.format(netto));
-      }
-      if(isNaN(vatPct) && !isNaN(netto) && !isNaN(brutto) && netto>0){
-        vatPct = (brutto/netto - 1)*100;
-        if(vatEl) setText(vatEl, fmt.format(vatPct));
+        setText(nettoEl, fmt2.format(netto));
       }
 
+      // kwota VAT komponentu
+      let vatAmt = NaN;
+      if(!isNaN(netto) && !isNaN(vatPct)){ vatAmt = netto * (vatPct/100); }
+      if(!isNaN(netto) && !isNaN(brutto)){ vatAmt = brutto - netto; }
+
+      // pokaż „(kwota: X,XX zł)” przy polu VAT
+      const vatOut = ensureVatOut(vatEl);
+      if(vatOut && !isNaN(vatAmt) && vatAmt>=0){
+        vatOut.textContent = ` (kwota: ${fmt2.format(vatAmt)} zł)`;
+      }else if(vatOut){
+        vatOut.textContent = '';
+      }
+
+      // sumowanie
       if(!isNaN(netto))  sumNet   += netto;
       if(!isNaN(brutto)) sumGross += brutto;
+      if(!isNaN(vatAmt)) sumVatAmt += vatAmt;
       if(!isNaN(netto) && !isNaN(brutto)){
         vatBase   += netto;
         vatAmount += (brutto - netto);
@@ -522,23 +544,15 @@
 
     const vatPctWeighted = vatBase>0 ? (vatAmount/vatBase*100) : 0;
 
-    const sumNetEl   = document.getElementById('sumNet');
-    const sumGrossEl = document.getElementById('sumGross');
-    const sumVatPctEl= document.getElementById('sumVatPct');
-
-    if(sumNetEl && sumNet>0)    sumNetEl.textContent    = fmt.format(sumNet);
-    if(sumGrossEl && sumGross>0)sumGrossEl.textContent  = fmt.format(sumGross);
-    if(sumVatPctEl && isFinite(vatPctWeighted) && vatPctWeighted>0) sumVatPctEl.textContent = fmt.format(vatPctWeighted);
+    // wpisy do §4
+    setText(document.getElementById('sumNet'),    sumNet>0 ? fmt2.format(sumNet) : '');
+    setText(document.getElementById('sumGross'),  sumGross>0 ? fmt2.format(sumGross) : '');
+    setText(document.getElementById('sumVatAmt'), sumVatAmt>0 ? fmt2.format(sumVatAmt) : '');
+    setText(document.getElementById('sumVatPct'), (isFinite(vatPctWeighted) && vatPctWeighted>0) ? fmt2.format(vatPctWeighted) : '');
   }
 
   document.getElementById('btnRecalc').addEventListener('click', recalc);
-
-  let t;
-  document.getElementById('doc').addEventListener('input', ()=>{
-    clearTimeout(t);
-    t = setTimeout(recalc, 400);
-  });
-
+  let t; document.getElementById('doc').addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(recalc, 350); });
   recalc();
 })();
 </script>
