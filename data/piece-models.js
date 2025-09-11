@@ -41,6 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loadBrandModels("ferroli");
 });
 
+function setActiveBrand(activeBtn) {
+  if (!brandButtons) return;
+  brandButtons.forEach(b => b.classList.remove("active"));
+  if (activeBtn) activeBtn.classList.add("active");
+}
+
 async function loadBrandModels(brand) {
   try {
     const url = BRAND_FILES[brand];
@@ -70,10 +76,4 @@ async function loadBrandModels(brand) {
     if (modelSelect) modelSelect.innerHTML = "<option>Brak danych dla tej marki</option>";
     if (priceEl) priceEl.textContent = "—";
   }
-}
-
-function setActiveBrand(activeBtn) {
-  if (!brandButtons) return;
-  brandButtons.forEach(b => b.classList.remove("active"));
-  if (activeBtn) activeBtn.classList.add("active");
 }
