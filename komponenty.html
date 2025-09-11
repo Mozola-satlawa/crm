@@ -15,10 +15,12 @@
   nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
   nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
   nav a:hover{background:#223160}
+  nav a.active{background:#223160}
   .wrap{max-width:1200px;margin:auto;padding:16px}
   .grid{display:grid;gap:14px}
   @media(min-width:900px){ .cols-3{grid-template-columns:repeat(3,1fr)}}
   .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card.spaced{margin-top:16px}
   .tile{display:block;padding:16px;border:1px solid #2b3a77;border-radius:12px;text-decoration:none;color:#e8edff;background:#0d1530;transition:.15s}
   .tile h3{margin:0 0 6px}
   .tile:hover{transform:translateY(-2px);box-shadow:0 6px 18px #0006;background:#0f1b46}
@@ -31,17 +33,18 @@
   <h1>Komponenty • Hub</h1>
   <div class="muted">Wybierz kategorię. Dane każdej kategorii zapisują się lokalnie w przeglądarce i mają własny import/eksport.</div>
 </header>
-<nav>
-  <a href="index.html">Pulpit</a>
-  <a href="kalkulator.html">Kalkulator</a>
-  <a href="komponenty.html" style="background:#223160">Komponenty</a>
-  <a href="komponenty-pompy.html">Pompy</a>
-  <a href="komponenty-piece.html">Piece</a>
-  <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
-  <a href="komponenty-ocieplenie.html">Ocieplenie</a>
-  <a href="komponenty-stolarka.html">Stolarka</a>
-  <a href="komponenty-hydraulika.html">Hydraulika</a>
-</nav>
+  <nav>
+    <a href="index.html">Pulpit</a>
+    <a href="kalkulator.html">Kalkulator</a>
+    <a href="komponenty.html" class="active">Komponenty</a>
+    <a href="komponenty-pompy.html">Pompy</a>
+    <a href="komponenty-pompy.html">Pompy</a>
+    <a href="komponenty-piece.html">Piece</a>
+    <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
+    <a href="komponenty-ocieplenie.html">Ocieplenie</a>
+    <a href="komponenty-stolarka.html">Stolarka</a>
+    <a href="komponenty-hydraulika.html">Hydraulika</a>
+  </nav>
 
 <div class="wrap">
   <div class="grid cols-3">
@@ -65,17 +68,17 @@
       <h3>Stolarka</h3>
       <div class="muted">Okna, drzwi, bramy, rolety</div>
     </a>
-    <a class="tile" href="komponenty-hydraulika.html">
+    <a class="tile" href="komponenty-hydraulika.html" title="Hydraulika">
       <h3>Hydraulika</h3>
       <div class="muted">Rury/kształtki, zawory, filtry, pompy, grupy, rozdzielacze</div>
     </a>
   </div>
 
-  <div class="card" style="margin-top:16px">
+  <div class="card spaced">
     <div class="row">
       <div class="muted">Tip: Jeżeli dodałeś już plik <code>komponenty-hydraulika.html</code>, powyższa karta otworzy rozbudowany moduł Hydraulika (z edycją, filtrowaniem, koszykiem i eksportem CSV/JSON).</div>
     </div>
   </div>
-</div>
+  </div>
 </body>
 </html>

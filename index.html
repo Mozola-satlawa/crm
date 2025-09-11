@@ -82,6 +82,22 @@
   .avatar{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;background:#133; border:1px solid #2a3a75;font-weight:700}
   .online{width:8px;height:8px;border-radius:50%;background:#2fbf71;border:1px solid #0b1}
   .link-like{background:transparent;border:0;color:#cfe0ff;text-decoration:underline;cursor:pointer}
+
+  /* utility classes to avoid inline styles */
+  .mt-8{margin-top:8px}
+  .mt-6{margin-top:6px}
+  .m-8-0{margin:8px 0}
+  .gap-10{gap:10px}
+  .gap-6{gap:6px}
+  .gap-8{gap:8px}
+  .form-grid{display:grid;gap:8px;margin-top:6px}
+  .grid-cols-1fr-auto{display:grid;grid-template-columns:1fr auto;gap:6px}
+  .note-field{width:100%;min-height:100px;margin-top:8px}
+  .label-row{display:flex;align-items:center;gap:6px}
+  .center{text-align:center}
+  .muted-85{opacity:.85}
+  .overflow-auto{overflow:auto}
+
 </style>
 </head>
 <body>
@@ -116,134 +132,44 @@
 </nav>
 
 <div class="wrap grid cols-2" id="panel">
-  <!-- LEWA KOLUMNA -->
-  <section class="grid">
-    <!-- KPI -->
-    <div class="grid cols-3">
-      <div class="card">
-        <div class="kpi"><div>👥</div><div><div class="small">Klienci</div><div id="kpiClients" class="n">0</div></div></div>
-      </div>
-      <div class="card">
-        <div class="kpi"><div>🧲</div><div><div class="small">Lidy</div><div id="kpiLeads" class="n">0</div></div></div>
-      </div>
-      <div class="card">
-        <div class="kpi"><div>🧩</div><div><div class="small">Komponenty</div><div id="kpiComp" class="n">0</div></div></div>
-      </div>
-    </div>
 
-    <!-- Skróty -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between">
-        <div><b>Skróty</b></div>
-        <div class="small">Tip: <span class="kbd">/</span> — szukaj klienta • <span class="kbd">Alt+N</span> — nowy klient</div>
-      </div>
-      <div class="row" style="margin-top:6px">
-        <a class="btn ok" href="klienci.html">+ Nowy klient</a>
-        <a class="btn" href="lidy.html">+ Nowy lead</a>
-        <a class="btn ghost" href="komponenty.html">Dodaj komponent</a>
-        <a class="btn ghost" href="upload.html">Wyślij pliki</a>
-        <a class="btn" href="kalkulator.html" target="_blank" rel="noopener">Kalkulator ↗️</a>
-      </div>
-    </div>
-
-    <!-- Ostatni klienci -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between"><b>Ostatnio dodani klienci</b><a class="small" href="klienci.html">Zobacz wszystkich →</a></div>
-      <div style="overflow:auto;margin-top:6px">
-        <table id="tblClients">
-          <thead><tr><th>Nazwa</th><th>Status</th><th>Kontakt</th><th>Tagi</th><th>Dodano</th></tr></thead>
-        <tbody></tbody></table>
-      </div>
-    </div>
-
-    <!-- Ostatnie lidy -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between"><b>Ostatnie lidy</b><a class="small" href="lidy.html">Zobacz wszystkie →</a></div>
-      <div style="overflow:auto;margin-top:6px">
-        <table id="tblLeads">
-          <thead><tr><th>Tytuł</th><th>Źródło</th><th>Status</th><th>Data</th></tr></thead>
-        <tbody></tbody></table>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRAWA KOLUMNA -->
-  <aside class="grid">
-    <!-- Moduły -->
-    <div class="card">
-      <b>Moduły</b>
-      <div class="apps" style="margin-top:8px">
-        <a class="app" href="klienci.html"><b>Klienci</b><span class="small">Lista, edycja, projekty, dokumenty, pola własne.</span></a>
-        <a class="app" href="lidy.html"><b>Lidy</b><span class="small">Zbieranie i kwalifikacja leadów.</span></a>
-        <a class="app" href="komponenty.html"><b>Komponenty</b><span class="small">Pompy, piece, PV, ocieplenie, bramy.</span></a>
-        <a class="app" href="upload.html"><b>Przesył plików</b><span class="small">Pliki w IndexedDB, przypisania do klienta i kategorii.</span></a>
-        <a class="app" href="dokumenty.html"><b>Dokumenty</b><span class="small">Wzory umów i szablony.</span></a>
-        <a class="app" href="chat.html"><b>Komunikator</b><span class="small">Zespołowy czat + załączniki.</span></a>
-        <a class="app" href="ustawienia.html"><b>Ustawienia</b><span class="small">Preferencje, wydruk do PDF.</span></a>
-        <a class="app" href="baza.html"><b>Baza</b><span class="small">Podgląd pamięci lokalnej.</span></a>
-        <a class="app" href="kalkulator.html" target="_blank" rel="noopener"><b>Kalkulator</b><span class="small">Symulacje i kosztorysy.</span></a>
-        <!-- NOWY MODUŁ -->
-        <a class="app" href="kalendarz-montaze.html"><b>Kalendarz montaży</b><span class="small">Planowanie ekip, klientów i terminów.</span></a>
-      </div>
-    </div>
-
-    <!-- Statystyki komponentów -->
-    <div class="card">
-      <b>Komponenty — szybki podgląd</b>
-      <div class="grid-2 small" style="margin-top:6px">
-        <div>Pompy: <b id="cmp_pumps">0</b></div>
-        <div>Piece/Kotły: <b id="cmp_boilers">0</b></div>
-        <div>Fotowoltaika: <b id="cmp_pv">0</b></div>
-        <div>Ocieplenie: <b id="cmp_insul">0</b></div>
-        <div>Bramy: <b id="cmp_garage">0</b></div>
-      </div>
-      <div class="right" style="margin-top:8px">
-        <a class="btn ghost" href="komponenty.html">Otwórz komponenty</a>
-      </div>
-    </div>
-
-    <!-- Notatki -->
-    <div class="card">
-      <b>Szybka notatka</b>
-      <textarea id="note" placeholder="Twoja notatka (zapisuje się lokalnie)" style="width:100%;min-height:100px;margin-top:8px"></textarea>
-      <div class="right" style="margin-top:8px"><button id="btnClearNote" class="btn ghost">Wyczyść</button></div>
-      <div class="small" style="margin-top:6px">Przechowywane w <code>localStorage</code> (klucz: <code>arkon_note</code>).</div>
-    </div>
-  </aside>
-</div>
-
-<!-- ===== LOCK / LOGIN (tylko dla pulpitu) ===== -->
-<div id="lock" class="open" aria-modal="true" role="dialog">
-  <form id="loginForm" class="login-panel" autocomplete="off">
-    <h2>🔒 ARKON CRM — logowanie</h2>
-    <div class="muted">Zabezpieczony dostęp do pulpitu (pozostałe moduły bez hasła).</div>
-    <div class="row" style="gap:10px;align-items:center;margin:8px 0">
+<aside>
+  <div class="card">
+    <div class="row gap-10 m-8-0">
       <div class="avatar" id="lpAvatar" aria-hidden="true">A</div>
       <div class="small" id="lpWelcome">Witaj! Zaloguj się, aby przejść do panelu.</div>
     </div>
-    <div style="display:grid;gap:8px;margin-top:6px">
+
+    <form id="loginForm" class="form-grid">
       <label class="small">Użytkownik</label>
       <input id="loginUser" class="field" inputmode="email" placeholder="np. użytkownik" aria-label="Użytkownik" required>
       <label class="small">Hasło</label>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:6px">
+      <div class="grid-cols-1fr-auto">
         <input id="loginPass" class="field" type="password" placeholder="••••••••" aria-label="Hasło" required>
         <button type="button" id="togglePass" class="btn ghost" aria-label="Pokaż/ukryj hasło">👁</button>
       </div>
+
       <div class="row-sb">
-        <label class="small" style="display:flex;align-items:center;gap:6px">
+        <label class="small label-row">
           <input id="rememberMe" type="checkbox"> Pamiętaj mnie (7 dni)
         </label>
         <button type="button" id="forgot" class="link-like">Zapomniałeś hasła?</button>
       </div>
+
       <div id="err" class="err"></div>
       <button class="btn ok" type="submit">Zaloguj</button>
-      <div class="small" style="text-align:center;opacity:.85">lub</div>
+      <div class="small center muted-85">lub</div>
       <div class="social">
         <button type="button" id="loginGoogle" class="btn icon g">G Zaloguj przez Google</button>
         <button type="button" id="loginFacebook" class="btn icon f">f Zaloguj przez Facebook</button>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
+
+  <div class="right mt-8">
+    <a class="btn ghost" href="komponenty.html">Otwórz komponenty</a>
+  </div>
+</aside>
 </div>
 
 <script>

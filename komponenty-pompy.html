@@ -3,74 +3,127 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Komponenty • Pompy ciepła — Midea, Panasonic & Galmet (proporcjonalna wycena — ceny na sztywno)</title>
+<title>Komponenty • Pompy ciepła — Midea, Panasonic & Galmet (ceny na sztywno)</title>
 <style>
-  :root{--bg:#0b1020;--p1:#121a34;--p2:#172142;--ink:#e8edff;--muted:#aeb8da;--accent:#4cc9f0;--ok:#2fbf71;--warn:#ffb84d;--bad:#ff6b6b;--grid:#243059;--card:#0f1533;--line:#1c2750}
+  :root{
+    --bg:#0b1020;--p1:#121a34;--p2:#172142;--ink:#e8edff;--muted:#aeb8da;
+    --accent:#4cc9f0;--ok:#2fbf71;--warn:#ffb84d;--bad:#ff6b6b;
+    --grid:#243059;--card:#0f1533;--line:#1c2750
+  }
   *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);
+       font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
   header{padding:16px;background:#11183a;border-bottom:1px solid var(--line)}
-  header h1{margin:0;font-size:22px}
+  header h1{margin:6px 0 0;font-size:22px}
   .wrap{max-width:1500px;margin:auto;padding:16px}
   .grid{display:grid;gap:12px}
   @media(min-width:1100px){.cols-2{grid-template-columns:1.55fr 1fr}}
-  .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);
+        border-radius:14px;padding:14px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .row.spaced{justify-content:space-between}
   .right{margin-left:auto;display:flex;gap:8px}
-  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;
+       padding:8px 12px;cursor:pointer;text-decoration:none}
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
   .btn.ok{background:#194d34;border-color:#2f9762}
   .btn.warn{background:#3a2a19;border-color:#9d7a33}
   .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .tiny{font-size:12px}
-  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;font:inherit;color:#e8edff}
+  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;
+       padding:8px 10px;font:inherit;color:#e8edff}
   input::placeholder{color:#aeb8da99}
-  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;
+        padding:6px 10px;color:#aeb8da;font-size:13px}
   .muted{color:var(--muted);font-size:13px}
   table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px;border-bottom:1px solid #243059;vertical-align:top;text-align:left}
+  th,td{padding:10px;border-bottom:1px solid var(--grid);vertical-align:top;text-align:left}
   th{font-size:12px;color:#aeb8da;position:sticky;top:0;background:#151d46;z-index:1}
   tbody tr:hover{background:#0d153033}
   .small{font-size:12px;color:#aeb8da}
-  .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
+  .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;
+       border-radius:999px;font-size:12px}
   .sep{height:1px;background:#243059;margin:10px 0}
   .okline{padding:8px;border-radius:10px;background:#0f2a22;border:1px solid #155a41;color:#b4ffdd}
+  .warnline{padding:8px;border-radius:10px;background:#3a2a19;border:1px dashed #9d7a33;color:#ffdda1}
+  .search{min-width:260px}
+  .card.scroll{overflow:auto;max-height:70vh}
+  .top-link{margin-top:8px}
+  .hide{display:none}
+  .flex1{flex:1}
+  .minw280{min-width:280px}
+  .minw240{min-width:240px}
+  .centerBox{text-align:center;margin:20px}
+  .list-offset{margin:6px 0 0 18px}
+  .mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt12{margin-top:12px}
+  .summary-value,.price-preview{font-weight:800;font-size:18px}
+  .w70{width:70px}.w80{width:80px}.w110{width:110px}.w120{width:120px}.w130{width:130px}.w180{width:180px}
+  .cap{color:#aeb8da;font-size:12px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .chip{user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
+  .chip.active{background:#233261}
+  .chip .x{opacity:.7;margin-left:6px}
+  .filterline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi .box{background:#0d1530;border:1px solid #28356c;border-radius:12px;padding:10px}
+  .kpi .val{font-weight:800;font-size:18px}
+  .footnote{font-size:12px;color:#aeb8da99}
+  .right-align{text-align:right}
+</style>
 
-  /* helper classes moved from inline styles */
-  .search { min-width:240px; }
-  .card.scroll { overflow:auto; }
-  .row.spaced { justify-content:space-between; }
-  .mt8 { margin-top:8px; }
-  .mt6 { margin-top:6px; }
-  .w110 { width:110px; }
-  .w80 { width:80px; }
-  .w130 { width:130px; }
-  .flex-1 { flex:1; }
-  .price-preview { font-weight:800; font-size:18px; }
-    .type-hint { display:none; margin-top:6px; }
-  </style>
-  </head>
-  <body>
-  <div class="wrap">
-  <div class="grid cols-2">
-  <section>
-          <input id="q" class="search" placeholder="🔎 Szukaj: marka, model, czynnik…" aria-label="Szukaj" />
-          <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
-          <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
-          <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
-          <select id="fPhase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
-          <select id="sort">
-            <option value="brand.asc">Sort: Marka ↑</option>
-            <option value="brand.desc">Sort: Marka ↓</option>
-            <option value="p.asc">Sort: Moc ↑</option>
-            <option value="p.desc">Sort: Moc ↓</option>
-            <option value="price.asc">Sort: Cena urządzenia ↑</option>
-            <option value="price.desc">Sort: Cena urządzenia ↓</option>
-          </select>
-          <button id="btnClear" class="btn ghost">Wyczyść</button>
-          <span class="pill">Łącznie: <b id="cntAll">0</b></span>
-          <span class="pill">Widocznych: <b id="cntVis">0</b></span>
-  
-      <div class="card scroll">
+<!-- XLSX do eksportu -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="row spaced">
+      <a href="index.html" class="btn ghost top-link">← Powrót do pulpitu</a>
+      <div class="right">
+        <button id="btnToContractTop" class="btn ghost" title="Zapisz draft i przejdź do umowy">Wyślij do umowy →</button>
+      </div>
+    </div>
+    <h1>Komponenty • Pompy ciepła — Midea, Panasonic &amp; Galmet</h1>
+    <div class="muted">
+      Ceny wpisane <b>na sztywno</b>. Model proporcjonalny: najtańszy pakiet (pompa + bufor min + CWU min) =
+      <b>38&nbsp;000 PLN netto</b>. Każdy droższy element podnosi cenę o <b>różnicę</b>.
+    </div>
+  </header>
+
+<div class="wrap grid cols-2">
+  <!-- LEWA: Katalog + filtry -->
+  <section class="grid">
+    <div class="card">
+      <div class="filterline">
+        <input id="q" class="search" placeholder="🔎 Szukaj: marka, model, czynnik, tag… oraz po mocy: '10 kW', '8-12', '>=12'" aria-label="Szukaj">
+        <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
+        <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
+        <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
+        <select id="fPhase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
+        <select id="sort" title="Sortowanie">
+          <option value="brand.asc">Marka ↑</option>
+          <option value="brand.desc">Marka ↓</option>
+          <option value="p.asc">Moc ↑</option>
+          <option value="p.desc">Moc ↓</option>
+          <option value="price.asc">Cena urządzenia ↑</option>
+          <option value="price.desc">Cena urządzenia ↓</option>
+        </select>
+        <button id="btnClear" class="btn ghost">Wyczyść</button>
+      </div>
+      <div class="row mt6">
+        <div class="chips" id="chips">
+          <!-- wypełniane JS -->
+        </div>
+        <label class="small" style="margin-left:auto">
+          <input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi
+        </label>
+      </div>
+      <div class="row mt6">
+        <span class="pill">Łącznie: <b id="cntAll">0</b></span>
+        <span class="pill">Widocznych: <b id="cntVis">0</b></span>
+      </div>
+    </div>
+
+    <div class="card scroll">
       <table>
         <thead>
           <tr>
@@ -82,12 +135,12 @@
             <th>Czynnik</th>
             <th>Fazy</th>
             <th>Hałas [dB(A)]</th>
-            <th>Cena urządzenia [PLN]</th>
             <th>Uwagi</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
+      <div class="footnote mt6">Uwaga: <i>ceny urządzeń</i> nie są pokazywane w tabeli (do wyceny służy konfigurator po prawej).</div>
     </div>
   </section>
 
@@ -98,7 +151,7 @@
         <b>Konfigurator zestawu</b>
         <div class="right">
           <button id="btnAddPack" class="btn ok">+ Dodaj ZESTAW</button>
-          <button id="btnAddHp" class="btn warn">+ Sama pompa (+4 000)</button>
+          <button id="btnAddHp" class="btn warn">+ Sama pompa</button>
         </div>
       </div>
 
@@ -112,23 +165,38 @@
           <select id="selBufor"></select>
         </div>
         <div>
+          <label class="small">Typ zasobnika CWU</label>
+          <select id="selCwuType">
+            <option value="single" selected>pojedyncza wężownica</option>
+            <option value="dual">dwuwężownicowy (np. solary)</option>
+          </select>
+        </div>
+        <div>
           <label class="small">Zasobnik CWU [l]</label>
           <select id="selCwu"></select>
+        </div>
+        <div>
+          <label class="small">Cel użycia CWU</label>
+          <select id="selCwuUse" title="Sugeruje pojemność">
+            <option value="2-3">2–3 osoby (200–250 l)</option>
+            <option value="4-5" selected>4–5 osób (250–300 l)</option>
+            <option value="6+">6+ osób (300 l +)</option>
+          </select>
         </div>
         <div>
           <label class="small">VAT</label>
           <select id="selVat"><option value="0.08">8%</option><option value="0.23">23%</option></select>
         </div>
-        <div>
-          <label class="small" for="inpRads">Grzejniki (montaż)</label>
-          <input id="inpRads" type="number" value="0" min="0" class="w110" placeholder="0" aria-label="Ilość grzejników" />
-          <div class="small muted">750 PLN/szt.</div>
-        </div>
       </div>
 
       <div class="row mt8">
         <div>
-          <label class="small">Zawór 3‑drogowy</label>
+          <label class="small" for="inpRads">Grzejniki (montaż)</label>
+          <input id="inpRads" type="number" value="0" min="0" class="w110" placeholder="0" aria-label="Ilość grzejników">
+          <div class="small muted">750 PLN/szt.</div>
+        </div>
+        <div>
+          <label class="small">Zawór 3-drogowy</label>
           <select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select>
         </div>
         <div>
@@ -137,7 +205,11 @@
         </div>
         <div>
           <label class="small">Hydraulika (rozdzielacze)</label>
-          <select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select>
+          <select id="selHydro">
+            <option value="0">podstawowa</option>
+            <option value="1800">+1 obieg (1800)</option>
+            <option value="3200">dwa obiegi (3200)</option>
+          </select>
         </div>
         <div>
           <label class="small">Glikol (monoblok)</label>
@@ -145,18 +217,75 @@
         </div>
       </div>
 
+      <!-- NOWE: Dobór mocy (wariant szybki, dokładnie jak prosiłaś) -->
+      <div class="sep"></div>
+      <b>Dobór mocy – wariant prosty</b>
+      <div class="row mt8">
+        <div>
+          <label class="small">Powierzchnia domu [m²]</label>
+          <input id="inpArea" type="number" min="0" step="1" value="0" class="w110" placeholder="np. 120">
+        </div>
+        <div>
+          <label class="small">Straty ciepła [W/m²]</label>
+          <select id="selWperm2" class="w130" title="Wybierz standard budynku">
+            <option value="35">Nowy, energooszcz. — 35</option>
+            <option value="45">Nowszy (dobra izolacja) — 45</option>
+            <option value="50" selected>Modernizacja — 50</option>
+            <option value="60">Starszy (słabsza izolacja) — 60</option>
+            <option value="70">Bardzo stary — 70</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Proponowana moc [kW]</label>
+          <input id="outHeatKw" type="text" class="w110" value="0.00" readonly>
+          <div class="small muted">Liczone: m² × W/m² ÷ 1000, z marginesem 10%.</div>
+        </div>
+      </div>
+
+      <!-- Dobór mocy – wariant rozbudowany + KPI i rekomendacje -->
+      <div class="sep"></div>
+      <b>Dobór mocy – wariant rozbudowany</b>
+      <div class="row mt8">
+        <div>
+          <label class="small">Standard budynku</label>
+          <select id="selStd">
+            <option value="35">Nowy / NZEB (~35 W/m²)</option>
+            <option value="50" selected>Modernizacja (~50 W/m²)</option>
+            <option value="80">Stary nieocieplony (~80 W/m²)</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Powierzchnia [m²]</label>
+          <input id="areaAdv" type="number" min="30" step="1" class="w110" placeholder="np. 120" />
+        </div>
+        <div>
+          <label class="small">Straty [W/m²]</label>
+          <input id="lossWm2" type="number" value="70" min="10" step="5" class="w110" placeholder="np. 70" title="Straty [W/m²] — wpisz wartość">
+        </div>
+      </div>
+      <div id="lossWarn" class="warnline mt6 hide">&gt; 140 W/m² — niezalecane</div>
+
+      <div class="kpi mt8">
+        <div class="box"><div class="small">Obciążenie projektowe</div><div id="heatLoad" class="val">—</div></div>
+        <div class="box"><div class="small">Zapas 15%</div><div id="heatTarget" class="val">—</div></div>
+        <div class="box"><div class="small">Pow. pokrywana wybraną pompą</div><div id="areaByHp" class="val">—</div></div>
+      </div>
+      <div id="areaHint" class="small muted mt6"></div>
+      <div id="recSummary" class="okline mt6 hide"></div>
+      <div id="typeHint" class="okline mt6 hide"></div>
+
       <div class="sep"></div>
       <div class="row">
-        <div class="flex-1">
+        <div class="flex1">
           <div class="muted">Cena zestawu (netto) wg modelu proporcjonalnego</div>
           <div id="pricePreview" class="price-preview">—</div>
-          <div id="typeHint" class="okline type-hint"></div>
+          <div id="typeHint_inline" class="okline mt6 hide"></div>
         </div>
         <div class="minw240">
           <label class="small">Prowizja handlowca</label>
           <div class="row">
-            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" class="w80" aria-label="Prowizja procentowa">
-            <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" class="w130" aria-label="Prowizja kwotowa">
+            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" class="w80" aria-label="Prowizja %">
+            <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" class="w130" aria-label="Prowizja PLN">
           </div>
           <div class="small muted">Możesz wpisać % i/lub PLN (sumują się).</div>
         </div>
@@ -164,7 +293,7 @@
     </div>
 
     <div class="card">
-      <b>Skład zestawu (must‑have)</b>
+      <b>Skład zestawu (must-have)</b>
       <div id="mustHave" class="muted mt6">Wybierz pompę, bufor i zasobnik — pokażę skład.</div>
     </div>
 
@@ -176,137 +305,270 @@
       </table>
       <div class="sep"></div>
       <div class="row">
-        <div><span class="muted">Suma netto</span><div id="sumNet" class="summary-value"></div></div>
-        <div><span class="muted">Prowizja</span><div id="sumProv" class="summary-value"></div></div>
-        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" class="summary-value"></div></div>
+        <div><span class="muted">Suma netto</span><div id="sumNet" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Prowizja</span><div id="sumProv" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" class="summary-value">0,00 PLN</div></div>
         <div class="right">
           <button id="btnCopy" class="btn ghost">Kopiuj ofertę</button>
           <button id="btnPrint" class="btn ghost">Drukuj / PDF</button>
           <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
+          <button id="btnExportJson" class="btn ghost">Eksport JSON</button>
+          <button id="btnImportJson" class="btn ghost">Import JSON</button>
         </div>
       </div>
     </div>
+
+    <div class="card">
+      <b>Baza klientów</b>
+      <div class="row mt6">
+        <div>
+          <label class="small">Imię i nazwisko / Firma</label>
+          <input id="clName" class="w180" placeholder="np. Jan Kowalski">
+        </div>
+        <div>
+          <label class="small">E-mail</label>
+          <input id="clEmail" class="w180" placeholder="np. jan@firma.pl">
+        </div>
+        <div>
+          <label class="small">Telefon</label>
+          <input id="clPhone" class="w130" placeholder="np. 600123123">
+        </div>
+        <div>
+          <label class="small">NIP (opcjonalnie)</label>
+          <input id="clNip" class="w130" placeholder="NIP">
+        </div>
+        <div>
+          <label class="small">Adres</label>
+          <input id="clAddr" class="w180" placeholder="ulica, miasto">
+        </div>
+      </div>
+
+      <div class="row mt6">
+        <button id="btnSaveClient" class="btn ok">Zapisz klienta do bazy</button>
+        <select id="selClient" class="w180"><option value="">— wybierz z bazy —</option></select>
+        <button id="btnLoadClient" class="btn ghost">Wczytaj</button>
+        <button id="btnToContract" class="btn">Wyślij do umowy</button>
+        <button id="btnMailTo" class="btn ghost">Wyślij ofertę e-mailem</button>
+      </div>
+      <div class="footnote mt6">Dane klientów i projekty umów są przechowywane lokalnie w przeglądarce (local/sessionStorage).</div>
+    </div>
   </aside>
 </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 'use strict';
 
-/* ====== CENY NA SZTYWNO ======
-   Wszystkie wartości poniżej są wpisane ręcznie i używane 1:1. */
+/* ===================== DANE NA SZTYWNO ===================== */
 const HEATPUMPS = [
-  // MIDEA — M‑Thermal / Arctic
-  {brand:'Midea', model:'M‑Thermal Arctic 4.5 kW Monoblok MHC‑V4WD2N7‑E30 (R290)', kind:'monoblok', phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M‑Thermal PRO 6 kW Monoblok',                            kind:'monoblok', phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
-  {brand:'Midea', model:'M‑Thermal Arctic 8.4 kW Monoblok MHC‑V8W/D2N8‑BE30',      kind:'monoblok', phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
-  {brand:'Midea', model:'M‑Thermal PRO 8 kW Split',                                kind:'split',    phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
-  {brand:'Midea', model:'M‑Thermal PRO 8 kW Monoblok',                             kind:'monoblok', phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
-  {brand:'Midea', model:'M‑Thermal 9 kW Monoblok (R32)',                           kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
-  {brand:'Midea', model:'M‑Thermal 10 kW Monoblok MHC‑V10W/D2N8‑B',                kind:'monoblok', phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
-  {brand:'Midea', model:'M‑Thermal 12 kW Monoblok (R32)',                          kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
-  {brand:'Midea', model:'M‑Thermal 12 kW Monoblok 3F',                             kind:'monoblok', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
-  {brand:'Midea', model:'M‑Thermal Arctic 12 kW Monoblok MHC‑V12WD2RN7‑E30',       kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M‑Thermal Arctic 14 kW Monoblok MHC‑V14WD2RN7‑E30',       kind:'monoblok', phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
-  {brand:'Midea', model:'M‑Thermal 16 kW Monoblok (R32) M‑Thermal‑16W/D2N8‑BE30',  kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:20516, tags:['3F']},
-  {brand:'Midea', model:'M‑Thermal 26 kW Monoblok MHC‑V26W/D2RN8‑B',               kind:'monoblok', phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
-  {brand:'Midea', model:'M‑Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok', phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
-  // ===== DODATKOWE MIDEA (rozszerzenie) =====
-  {brand:'Midea', model:'M‑Thermal Arctic 6.3 kW Monoblok MHC‑V6W/D2N8‑E30', kind:'monoblok', phase:'1F', pA7:6.3, scop:5.0, ref:'R290', noise:55, price:11890, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M‑Thermal Arctic 10 kW Monoblok MHC‑V10WD2RN7‑E30',  kind:'monoblok', phase:'1F', pA7:10.0,scop:4.9, ref:'R290', noise:56, price:13990, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M‑Thermal PRO 10 kW Split',                          kind:'split',     phase:'1F', pA7:10.0,scop:4.9, ref:'R32',  noise:54, price:16980, tags:['PRO','split']},
-  {brand:'Midea', model:'M‑Thermal PRO 12 kW Split 3F',                        kind:'split',     phase:'3F', pA7:12.0,scop:4.8, ref:'R32',  noise:55, price:18950, tags:['PRO','split','3F']},
-  {brand:'Midea', model:'M‑Thermal PRO 14 kW Split 3F',                        kind:'split',     phase:'3F', pA7:14.0,scop:4.7, ref:'R32',  noise:56, price:21990, tags:['PRO','split','3F']},
-  {brand:'Midea', model:'M‑Thermal PRO 16 kW Monoblok 3F',                     kind:'monoblok',  phase:'3F', pA7:16.0,scop:4.6, ref:'R32',  noise:57, price:23490, tags:['PRO','3F']},
-  {brand:'Midea', model:'M‑Thermal All‑in‑One 8 kW (R32)',                     kind:'all-in-one',phase:'1F', pA7:8.0, scop:4.8, ref:'R32',  noise:53, price:18490, tags:['AIO']},
-  {brand:'Midea', model:'M‑Thermal All‑in‑One 12 kW 3F (R32)',                 kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.7, ref:'R32',  noise:54, price:22990, tags:['AIO','3F']},
+  // ===== MIDEA =====
+  {brand:'Midea', model:'M-Thermal Arctic 4.5 kW Monoblok MHC-V4WD2N7-E30', kind:'monoblok', phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal PRO 6 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
+  {brand:'Midea', model:'M-Thermal Arctic 6.3 kW Monoblok MHC-V6W/D2N8-E30',  kind:'monoblok', phase:'1F', pA7:6.3, scop:5.0, ref:'R290', noise:55, price:11890, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 8.4 kW Monoblok MHC-V8W/D2N8-BE30', kind:'monoblok', phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Split',                           kind:'split',    phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
+  {brand:'Midea', model:'M-Thermal 9 kW Monoblok (R32)',                      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
+  {brand:'Midea', model:'M-Thermal 10 kW Monoblok MHC-V10W/D2N8-B',           kind:'monoblok', phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
+  {brand:'Midea', model:'M-Thermal Arctic 10 kW Monoblok MHC-V10WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:10.0,scop:4.9, ref:'R290', noise:56, price:13990, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok (R32)',                     kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok 3F',                        kind:'monoblok', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
+  {brand:'Midea', model:'M-Thermal Arctic 12 kW Monoblok MHC-V12WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 14 kW Monoblok MHC-V14WD2RN7-E30',  kind:'monoblok', phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 10 kW Split',                          kind:'split',    phase:'1F', pA7:10.0,scop:4.9, ref:'R32', noise:54, price:16980, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 12 kW Split 3F',                       kind:'split',    phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:55, price:18950, tags:['PRO','split','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 14 kW Split 3F',                       kind:'split',    phase:'3F', pA7:14.0,scop:4.7, ref:'R32', noise:56, price:21990, tags:['PRO','split','3F']},
+  {brand:'Midea', model:'M-Thermal 16 kW Monoblok (R32) M-Thermal-16W/D2N8-BE30', kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:20516, tags:['3F']},
+  {brand:'Midea', model:'M-Thermal PRO 16 kW Monoblok 3F',                    kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:23490, tags:['PRO','3F']},
+  {brand:'Midea', model:'M-Thermal 26 kW Monoblok MHC-V26W/D2RN8-B',          kind:'monoblok', phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
+  {brand:'Midea', model:'M-Thermal All-in-One 8 kW (R32)',                    kind:'all-in-one', phase:'1F', pA7:8.0, scop:4.8, ref:'R32', noise:53, price:18490, tags:['AIO']},
+  {brand:'Midea', model:'M-Thermal All-in-One 12 kW 3F (R32)',                kind:'all-in-one', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:54, price:22990, tags:['AIO','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok', phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
 
-  // PANASONIC — Aquarea
-  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH‑MDC05J3E5',                  kind:'monoblok', phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J‑gen']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH‑MDC07J3E5',                  kind:'monoblok', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J‑gen']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH‑MXC09J3E5 (T‑CAP)',          kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T‑CAP']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH‑MDC09H3E5',                  kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH‑MDC12H6E5',                 kind:'monoblok', phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
-  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT‑ADC07K3E5 (All‑in‑One)',       kind:'all-in-one', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
-  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT‑WC09K3E5',                     kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
-  {brand:'Panasonic', model:'Aquarea All‑in‑One 9 kW 3F',                          kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
-  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                              kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
-  {brand:'Panasonic', model:'Aquarea T‑CAP 16 kW 3F Quiet',                  kind:'split',    phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T‑CAP','3F']},
-  // ===== DODATKOWE PANASONIC (rozszerzenie) =====
-  {brand:'Panasonic', model:'Aquarea High Performance 5 kW KIT‑WC05J3E5',    kind:'split',    phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:52, price:13250, tags:['High Perf.','split']},
-  {brand:'Panasonic', model:'Aquarea High Performance 12 kW KIT‑WC12J3E5',   kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:19890, tags:['High Perf.','split']},
-  {brand:'Panasonic', model:'Aquarea T‑CAP 9 kW Split Quiet',                 kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:21490, tags:['T‑CAP','Quiet']},
-  {brand:'Panasonic', model:'Aquarea T‑CAP 12 kW Split 3F',                   kind:'split',    phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:55, price:25490, tags:['T‑CAP','3F']},
-  {brand:'Panasonic', model:'Aquarea T‑CAP 9 kW Monoblok WH‑MXC09H3E5',       kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:21990, tags:['T‑CAP','monoblok']},
-  {brand:'Panasonic', model:'Aquarea K‑Generation 7 kW All‑in‑One 1F',        kind:'all-in-one',phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:52, price:20990, tags:['K‑gen','AIO']},
-  {brand:'Panasonic', model:'Aquarea K‑Generation 12 kW All‑in‑One 3F',       kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:53, price:28990, tags:['K‑gen','AIO','3F']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 16 kW WH‑MXC16J9E8 3F',         kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:58, price:27990, tags:['monoblok','3F']},
+  // ===== PANASONIC =====
+  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH-MDC05J3E5',            kind:'monoblok', phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH-MDC07J3E5',            kind:'monoblok', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MXC09J3E5 (T-CAP)',    kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T-CAP']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MDC09H3E5',            kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH-MDC12H6E5',           kind:'monoblok', phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT-ADC07K3E5 (All-in-One)',  kind:'all-in-one', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
+  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT-WC09K3E5',               kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea All-in-One 9 kW 3F',                    kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                        kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 16 kW 3F Quiet',                  kind:'split',    phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T-CAP','3F']},
 
-  // GALMET — PRIMA (orientacyjnie — na sztywno)
-  {brand:'Galmet', model:'PRIMA 6GT Monoblok',            kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
-  {brand:'Galmet', model:'PRIMA 8GT Monoblok',            kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
-  {brand:'Galmet', model:'PRIMA 10GT Monoblok',           kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
-  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F',        kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']},
+  // ===== Dodatkowe Panasonic =====
+  {brand:'Panasonic', model:'Aquarea High Performance 5 kW KIT-WC05J3E5',    kind:'split',    phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:52, price:13250, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea High Performance 12 kW KIT-WC12J3E5',   kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:19890, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Split Quiet',                kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:21490, tags:['T-CAP','Quiet']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 12 kW Split 3F',                  kind:'split',    phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:55, price:25490, tags:['T-CAP','3F']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Monoblok WH-MXC09H3E5',      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:21990, tags:['T-CAP','monoblok']},
+  {brand:'Panasonic', model:'Aquarea K-Generation 7 kW All-in-One 1F',       kind:'all-in-one',phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:52, price:20990, tags:['K-gen','AIO']},
+  {brand:'Panasonic', model:'Aquarea K-Generation 12 kW All-in-One 3F',      kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:53, price:28990, tags:['K-gen','AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 16 kW WH-MXC16J9E8 3F',        kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:58, price:27990, tags:['monoblok','3F']},
+
+  // ===== GALMET (na sztywno – orientacyjnie) =====
+  {brand:'Galmet', model:'PRIMA 6GT Monoblok',           kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 8GT Monoblok',           kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 10GT Monoblok',          kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F',       kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']},
 ];
 
-// Bufory / CWU — ceny NETTO (na sztywno)
+/* Bufory i CWU – ceny netto */
 const BUFFERS = { '50':1200, '80':1450, '100':1650, '150':2200, '200':2600, '300':3600 };
-const TANKS   = { '150':2450, '200':2900, '250':3400, '300':3800 };
+const TANKS_SINGLE = { '150':2450, '200':2900, '250':3400, '300':3800 };
+const TANKS_DUAL   = { '200':3450, '250':3990, '300':4450 }; // dwuwężownicowe
 
-// Zasady montażu i kalkulacji
-const RAD_PRICE           = 750;     // montaż grzejnika / szt.
-const ONLY_HP_SURCHARGE   = 4000;    // sama pompa = cena urządzenia + 4k
-const PACK_BASE_TARGETNET = 38000;   // najtańszy pakiet = 38k netto
+/* Montaż i model wyceny */
+const RAD_PRICE=750;
+const ONLY_HP_SURCHARGE=4000; // UWAGA: liczona wewnętrznie, ale NIGDZIE nie pokazujemy
+const PACK_BASE_TARGETNET=38000;
 
-/* ====== State ====== */
-const state = {
+/* ===================== STAN APLIKACJI ===================== */
+const state={
   vat:0.08, rads:0, v3d:0, safety:0, hydro:0, glycol:0,
   basket:[],
-  selectedHp:null, selectedBuf:'100', selectedTank:'200',
+  selectedHp:null, selectedBuf:'100', selectedTankType:'single', selectedTank:'200',
   provPct:0, provAbs:0,
+  chipsActive: new Set(),
+  tagsAll: false
 };
 
-/* ====== Helpers ====== */
-const $ = s=>document.querySelector(s); const $$ = s=>Array.from(document.querySelectorAll(s));
-const INT  = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
-const INT0 = new Intl.NumberFormat('pl-PL');
-const fmt = n => INT.format(Number(n)||0);
+/* ===================== HELPERY ===================== */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const INTmoney=new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+const INTint=new Intl.NumberFormat('pl-PL');
+const fmt=n=>INTmoney.format(+n||0);
+
+const SAVE_KEY='kp_state_v2';
+function saveState(){
+  const draft = {
+    state,
+    basket: state.basket,
+  };
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(draft)); }catch(e){}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return;
+    const d=JSON.parse(raw);
+    if(d && d.state){
+      Object.assign(state, d.state);
+      if(Array.isArray(d.basket)) state.basket = d.basket;
+    }
+  }catch(e){}
+}
 
 function cheapest(obj){ return Math.min(...Object.values(obj).map(Number)); }
-function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>Number(h.price)||0)); }
-function computeBaseOffset(){ return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS)); }
+function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>+h.price||0)); }
+function computeBaseOffset(){
+  return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS_SINGLE));
+}
 let BASE_OFFSET = computeBaseOffset();
 
-function soloPrice(hp){ return (Number(hp.price)||0) + ONLY_HP_SURCHARGE; }
-function pricePack(hpPrice, bufPrice, tankPrice, extras) {
-  const core = (+hpPrice || 0) + (+bufPrice || 0) + (+tankPrice || 0);
-  return BASE_OFFSET + core + (+extras || 0);
-}
-function activeHp(){ return state.selectedHp; }
+function soloPrice(hp){ return (+hp.price||0) + ONLY_HP_SURCHARGE; }
 
-/* ====== Katalog ====== */
+function sortedHp(){
+  return HEATPUMPS.slice().sort((a,b)=> a.brand.localeCompare(b.brand,'pl') || a.pA7 - b.pA7);
+}
+
+/* ===================== FILTRY / TAGI / SZUKANIE ===================== */
+const QUICK_TAGS = ['R290','R32','monoblok','split','all-in-one','1F','3F','WiFi','premium','T-CAP','High Perf.','PRIMA'];
+function makeChips(){
+  const box = $('#chips'); if(!box) return;
+  box.innerHTML='';
+  QUICK_TAGS.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='chip'; el.textContent=t;
+    el.dataset.tag=t;
+    el.addEventListener('click', ()=>{
+      if(state.chipsActive.has(t)) state.chipsActive.delete(t);
+      else state.chipsActive.add(t);
+      el.classList.toggle('active');
+      renderTable();
+      saveState();
+    });
+    if(state.chipsActive.has(t)) el.classList.add('active');
+    box.appendChild(el);
+  });
+}
 function fillFilters(){
   const brands=[...new Set(HEATPUMPS.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
-  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>`<option>${b}</option>`).join('');
+  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=><option>${b}</option>).join('');
+  $('#tagsAll').checked = !!state.tagsAll;
 }
-function renderTable(){
-  const q=($('#q').value||'').toLowerCase(); const brand=$('#fBrand').value; const kind=$('#fType').value; const ref=$('#fRef').value; const ph=$('#fPhase').value;
-  let rows=HEATPUMPS.filter(p=>{
-    if(q){ const hit=[p.brand,p.model,p.ref,(p.tags||[]).join(' ')].some(v=> (v||'').toLowerCase().includes(q)); if(!hit) return false; }
-    if(brand && p.brand!==brand) return false; if(kind && p.kind!==kind) return false; if(ref && p.ref!==ref) return false; if(ph && p.phase!==ph) return false; return true;
+function parsePowerQuery(q){
+  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "==10"
+  if(!q) return null;
+  const kw = q.match(/([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(kw){
+    const op=kw[1], val=parseFloat(kw[2]);
+    return p => (op==='>='? p>=val : op==='<= '? p<=val : op==='<'? p<val : op==='>'? p>val : p===val);
+  }
+  const range = q.match(/([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(range){
+    const a=parseFloat(range[1]), b=parseFloat(range[2]); const lo=Math.min(a,b), hi=Math.max(a,b);
+    return p => p>=lo && p<=hi;
+  }
+  const eq = q.match(/([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(eq){
+    const v=parseFloat(eq[1]); const tol=0.6; // tolerancja dopasowania
+    return p => Math.abs(p - v) <= tol;
+  }
+  return null;
+}
+function applyFiltersSort(rows){
+  const q=($('#q')?.value||'').toLowerCase().trim();
+  const brand=$('#fBrand')?.value, kind=$('#fType')?.value, ref=$('#fRef')?.value, ph=$('#fPhase')?.value;
+  const powerPredicate = parsePowerQuery(q);
+
+  rows=rows.filter(p=>{
+    // filtry selectów
+    if(brand && p.brand!==brand) return false;
+    if(kind && p.kind!==kind) return false;
+    if(ref && p.ref!==ref) return false;
+    if(ph && p.phase!==ph) return false;
+
+    // chipsy
+    if(state.chipsActive.size){
+      const tags = new Set([p.kind, p.phase, p.ref, ...(p.tags||[])].filter(Boolean));
+      const hits = [...state.chipsActive].map(t=>tags.has(t));
+      if(state.tagsAll ? hits.some(x=>!x) : !hits.some(Boolean)) return false;
+    }
+
+    // zapytanie tekstowe + moc
+    if(q){
+      let textHit = [p.brand,p.model,p.ref,p.kind,p.phase,(p.tags||[]).join(' ')].some(v=>(v||'').toLowerCase().includes(q));
+      if(powerPredicate){
+        const powerHit = powerPredicate(p.pA7);
+        return textHit || powerHit;
+      }
+      return textHit;
+    }
+    return true;
   });
-  switch($('#sort').value){
+
+  switch($('#sort')?.value){
     case 'brand.asc': rows.sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7); break;
     case 'brand.desc': rows.sort((a,b)=> (b.brand.localeCompare(a.brand,'pl')) || a.pA7-b.pA7); break;
-    case 'p.asc': rows.sort((a,b)=>a.pA7-b.pA7); break; case 'p.desc': rows.sort((a,b)=>b.pA7-a.pA7); break;
-    case 'price.asc': rows.sort((a,b)=>a.price-b.price); break; case 'price.desc': rows.sort((a,b)=>b.price-a.price); break;
+    case 'p.asc': rows.sort((a,b)=>a.pA7-b.pA7); break;
+    case 'p.desc': rows.sort((a,b)=>b.pA7-a.pA7); break;
+    case 'price.asc': rows.sort((a,b)=>a.price-b.price); break;
+    case 'price.desc': rows.sort((a,b)=>b.price-a.price); break;
   }
-  $('#cntAll').textContent = HEATPUMPS.length; $('#cntVis').textContent = rows.length;
+  return rows;
+}
+
+/* ===================== RENDER KATALOGU ===================== */
+function renderTable(){
+  let rows=applyFiltersSort(HEATPUMPS.slice());
+  $('#cntAll').textContent=HEATPUMPS.length;
+  $('#cntVis').textContent=rows.length;
   const tb=$('#tbody'); tb.innerHTML='';
   rows.forEach(p=>{
     const tr=document.createElement('tr');
-    tr.innerHTML = `
+    tr.innerHTML=`
       <td><button class="btn tiny" data-pick="${p.brand}|${p.model}">Wybierz</button></td>
       <td><b>${p.brand}</b><div class="small">${p.model}</div></td>
       <td>${p.kind}</td>
@@ -315,114 +577,466 @@ function renderTable(){
       <td>${p.ref||''}</td>
       <td>${p.phase||''}</td>
       <td>${p.noise||''}</td>
-      <td>${INT0.format(p.price)} PLN</td>
-      <td>${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</td>`;
+      <td>${(p.tags||[]).map(t=><span class="tag">${t}</span>).join('')}</td>
+    `;
     tb.appendChild(tr);
   });
 }
 
-/* ====== Konfigurator ====== */
+/* ===================== SELECTY / PODGLĄD / MUST-HAVE ===================== */
+function optionsForTanks(){
+  const type = state.selectedTankType;
+  const src = type==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  return Object.keys(src);
+}
 function fillSelects(){
-  const s=$('#selHp'); const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7);
-  s.innerHTML = sorted.map((x,i)=>`<option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW • ${INT0.format(x.price)} PLN</option>`).join('');
-  state.selectedHp = sorted[0];
-  const b=$('#selBufor'); b.innerHTML = Object.keys(BUFFERS).map(v=>`<option value="${v}">${v} l • ${INT0.format(BUFFERS[v])} PLN</option>`).join(''); b.value='100'; state.selectedBuf='100';
-  const t=$('#selCwu');   t.innerHTML = Object.keys(TANKS).map(v=>`<option value="${v}">${v} l • ${INT0.format(TANKS[v])} PLN</option>`).join(''); t.value='200'; state.selectedTank='200';
+  const arr=sortedHp();
+  const s=$('#selHp');
+  s.innerHTML = arr.map((x,i)=><option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>).join('');
+  state.selectedHp = state.selectedHp || arr[0] || null;
+
+  const b=$('#selBufor');
+  b.innerHTML = Object.keys(BUFFERS).map(v=><option value="${v}">${v} l • ${INTint.format(BUFFERS[v])} PLN</option>).join('');
+  if(!state.selectedBuf) state.selectedBuf='100'; b.value=state.selectedBuf;
+
+  const t=$('#selCwu');
+  const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  t.innerHTML = Object.keys(src).map(v=><option value="${v}">${v} l • ${INTint.format(src[v])} PLN</option>).join('');
+  if(!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
+  t.value=state.selectedTank;
+
   applyHpToUi();
 }
-function applyHpToUi(){ renderPreview(); renderMustHave(); }
+function activeHp(){ return state.selectedHp; }
+
+function pricePack(hpPrice, bufCost, tankCost, extras){
+  // cena pakietu = cena urządzenia + bufor + zasobnik + dodatki + offset
+  return (+hpPrice||0) + (+bufCost||0) + (+tankCost||0) + (+extras||0) + BASE_OFFSET;
+}
 
 function renderPreview(){
   const b=activeHp(); if(!b){ $('#pricePreview').textContent='—'; return; }
-  const bufKey=state.selectedBuf, tankKey=state.selectedTank; const bufCost = BUFFERS[bufKey]||0; const tankCost = (b.kind==='all-in-one') ? 0 : (TANKS[tankKey]||0);
-  const extras = Number(state.v3d||0) + Number(state.safety||0) + Number(state.hydro||0) + Number(state.glycol||0) + (Number(state.rads)||0)*RAD_PRICE;
-  const sum = pricePack(b.price, bufCost, tankCost, extras);
-  $('#pricePreview').textContent = `${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN)`;
+  const bufKey=state.selectedBuf;
+  const tankKey=state.selectedTank;
+  const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  const bufCost=BUFFERS[bufKey]||0;
+  const tankCost=(b.kind==='all-in-one')?0:(tankSrc[tankKey]||0);
+  const extras=(+state.v3d||0)+(+state.safety||0)+(+state.hydro||0)+(+state.glycol||0)+((+state.rads||0)*RAD_PRICE);
+  const sum=pricePack(b.price,bufCost,tankCost,extras);
+  $('#pricePreview').textContent = ${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN);
+
   const hint=$('#typeHint'); hint.style.display='block';
-  if(b.kind==='monoblok') hint.textContent='Monoblok: pamiętaj o ochronie p/zimie (glikol) na odcinku zewnętrznym — jeśli potrzebny.';
-  else if(b.kind==='all-in-one') hint.textContent='All‑in‑One: wbudowany zasobnik CWU — dodatkowy zwykle zbędny.';
+  if(b.kind==='monoblok') hint.textContent='Monoblok: w razie ryzyka zamarzania — glikol na odcinku zewnętrznym.';
+  else if(b.kind==='all-in-one') hint.textContent='All-in-One: wbudowany zasobnik CWU — zewnętrzny zwykle zbędny.';
   else hint.textContent='Split: glikol nie dotyczy (obieg chłodniczy).';
+
+  // Powierzchnia pokrywana wybraną pompą (dla wybranego standardu)
+  const stdW = +($('#selStd')?.value||50);
+  const margin=1.15;
+  const areaCover = Math.floor((b.pA7*1000)/(stdW*margin));
+  $('#areaByHp').textContent = areaCover>0 ? ${areaCover} m² : '—';
 }
 
 function renderMustHave(){
   const b=activeHp(); const buf=state.selectedBuf; const t=state.selectedTank; const box=$('#mustHave');
   if(!b||!buf||!t){ box.textContent='Wybierz pompę, bufor i zasobnik — pokażę skład.'; return; }
   const items=[];
-  items.push(`Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'})`);
-  items.push(`Bufor — ${buf} l`);
-  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : `Zasobnik CWU — ${t} l`);
+  items.push(Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'}));
+  items.push(Bufor — ${buf} l);
+  const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  const tankLabel = state.selectedTankType==='dual' ? 'dwuwężownicowy' : 'pojedyncza wężownica';
+  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : Zasobnik CWU — ${state.selectedTank} l (${tankLabel}));
   items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
-  if(Number(state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
+  if((+state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
   items.push('Rozdzielacz(e) / hydraulika wg wyboru');
-  const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN`);
+  const r=+state.rads||0; if(r>0) items.push(Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN);
   items.push('Montaż, uruchomienie, konfiguracja sterowania, szkolenie użytkownika');
-  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">' + items.map(tt=>`<li>${tt}</li>`).join('') + '</ul>';
+  box.innerHTML = '<ul class="small list-offset">'+items.map(t=><li>${t}</li>).join('')+'</ul>';
 }
 
-/* ====== Koszyk ====== */
-function addToBasket(name, price, qty=1){ const i=state.basket.findIndex(x=>x.name===name && Math.abs(x.price-price)<0.01); if(i>=0) state.basket[i].qty += qty; else state.basket.push({name, price, qty}); renderBasket(); }
+/* ===================== DOBÓR MOCY ===================== */
+function quickSuggest(){
+  const area = +($('#inpArea')?.value||0);
+  const wpm2 = +($('#selWperm2')?.value||0);
+  if(area>0 && wpm2>0){
+    const kw = (area*wpm2)/1000 * 1.10;
+    $('#outHeatKw').value = kw.toFixed(2);
+  }else{
+    $('#outHeatKw').value = '0.00';
+  }
+}
+function recomputeAdvanced(){
+  const area = +($('#areaAdv')?.value||0);
+  const wpm2 = +($('#lossWm2')?.value||0);
+  const warn = $('#lossWarn');
+  warn.style.display = (wpm2>140)?'block':'none';
+  if(area<=0 || wpm2<=0){
+    $('#heatLoad').textContent='—'; $('#heatTarget').textContent='—';
+    $('#recSummary').classList.add('hide'); $('#areaHint').textContent='';
+    return;
+  }
+  const req_kw = (area*wpm2)/1000;
+  const margin = 1.15;
+  const target = req_kw*margin;
+  $('#heatLoad').textContent = ${req_kw.toFixed(2)} kW;
+  $('#heatTarget').textContent = ${target.toFixed(2)} kW;
+
+  // Propozycje najbardziej zbliżone
+  const candidates = HEATPUMPS
+    .filter(h=>h.pA7>=target*0.9)
+    .slice()
+    .sort((a,b)=>Math.abs(a.pA7-target)-Math.abs(b.pA7-target))
+    .slice(0,3);
+
+  const parts = [
+    Szac. zapotrzebowanie (A7): <b>${req_kw.toFixed(2)} kW</b>,
+    Z zapasem 15%: <b>${target.toFixed(2)} kW</b>
+  ];
+  if(candidates.length){
+    parts.push('Propozycje: ' + candidates.map(h=>${h.brand} ${h.model} <span class="cap">(A7 ${h.pA7} kW)</span>).join(' • '));
+  }else{
+    parts.push('<span class="cap" style="color:#ff9">Brak oczywistego dopasowania — rozważ wyższą moc lub inny model.</span>');
+  }
+  const box=$('#recSummary'); box.innerHTML = parts.join('<br>'); box.classList.remove('hide');
+
+  // Sugerowana pojemność CWU wg osób (podpowiedź)
+  const use = $('#selCwuUse').value;
+  let suggest = (use==='2-3'?'200–250 l':use==='4-5'?'250–300 l':'300 l +');
+  $('#areaHint').textContent = Sugerowana pojemność CWU dla ${use} osób: ${suggest}.;
+}
+
+/* ===================== KOSZYK ===================== */
+function addToBasket(name, price, qty=1){
+  const i=state.basket.findIndex(x=>x.name===name && Math.abs(x.price-price)<0.01);
+  if(i>=0) state.basket[i].qty += qty;
+  else state.basket.push({name, price, qty});
+  renderBasket(); saveState();
+}
 function renderBasket(){
   const tb=$('#basket tbody'); tb.innerHTML=''; let sumNet=0;
-  state.basket.forEach((it,i)=>{ sumNet += it.price*it.qty; const tr=document.createElement('tr');
+  state.basket.forEach((it,i)=>{
+    sumNet += it.price*it.qty;
+    const tr=document.createElement('tr');
     tr.innerHTML = `
       <td>${it.name}</td>
-      <td><input type="number" min="1" value="${it.qty}" data-qty="${i}" style="width:70px;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:6px 8px;color:#e8edff"></td>
+      <td class="right-align"><input type="number" min="1" value="${it.qty}" data-qty="${i}" class="w70" style="background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:6px 8px;color:#e8edff"></td>
       <td class="right">${fmt(it.price)} PLN</td>
       <td class="right"><button class="btn bad tiny" data-del="${i}">Usuń</button></td>`;
     tb.appendChild(tr);
   });
-  const prov = sumNet*(Number(state.provPct)||0)/100 + (Number(state.provAbs)||0);
-  $('#sumNet').textContent   = fmt(sumNet) + ' PLN';
-  $('#sumProv').textContent  = fmt(prov)   + ' PLN';
+  const prov = sumNet*(+state.provPct||0)/100 + (+state.provAbs||0);
+  $('#sumNet').textContent = fmt(sumNet) + ' PLN';
+  $('#sumProv').textContent = fmt(prov) + ' PLN';
   $('#sumGross').textContent = fmt( (sumNet+prov) * (1+state.vat) ) + ' PLN';
 }
 
-/* ====== Events ====== */
-['q','fBrand','fType','fRef','fPhase','sort'].forEach(id=>{
-  const el=document.getElementById(id); el.addEventListener('input', renderTable); el.addEventListener('change', renderTable);
-});
-$('#btnClear').addEventListener('click', ()=>{ ['q','fBrand','fType','fRef','fPhase'].forEach(id=>document.getElementById(id).value=''); $('#sort').value='brand.asc'; renderTable(); });
+/* ===================== BAZA KLIENTÓW ===================== */
+const DB_CLIENTS_KEY='kp_clients_db';
+function readClients(){
+  try{ return JSON.parse(localStorage.getItem(DB_CLIENTS_KEY)||'[]'); }catch(e){ return []; }
+}
+function writeClients(list){
+  try{ localStorage.setItem(DB_CLIENTS_KEY, JSON.stringify(list)); }catch(e){}
+}
+function populateClientSelect(){
+  const sel=$('#selClient'); const clients=readClients();
+  sel.innerHTML='<option value="">— wybierz z bazy —</option>';
+  clients.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.id; o.textContent=${c.name} • ${c.email||'brak e-mail'};
+    sel.appendChild(o);
+  });
+}
+function collectClientFromForm(){
+  return {
+    id: 'c_'+Date.now(),
+    name: $('#clName').value.trim(),
+    email: $('#clEmail').value.trim(),
+    phone: $('#clPhone').value.trim(),
+    nip: $('#clNip').value.trim(),
+    addr: $('#clAddr').value.trim()
+  };
+}
+function loadClientToForm(c){
+  $('#clName').value = c.name||'';
+  $('#clEmail').value = c.email||'';
+  $('#clPhone').value = c.phone||'';
+  $('#clNip').value = c.nip||'';
+  $('#clAddr').value = c.addr||'';
+}
 
+function saveClient(){
+  const c=collectClientFromForm();
+  if(!c.name){ alert('Wpisz nazwę/imię klienta.'); return; }
+  const list=readClients(); list.push(c); writeClients(list); populateClientSelect();
+  alert('Zapisano klienta do bazy.');
+}
+
+/* ===================== PRZESYŁ DO UMOWY / KONTRAKT ===================== */
+function buildOfferSummary(){
+  const sum = state.basket.reduce((a,b)=>a+b.price*b.qty,0);
+  const prov = sum*(+state.provPct||0)/100 + (+state.provAbs||0);
+  const gross = (sum+prov)*(1+state.vat);
+  const lines = state.basket.map(it=>• ${it.name} × ${it.qty} | ${fmt(it.price)} PLN);
+  return {sum, prov, gross, lines};
+}
+function pushContractDraft(client){
+  const b=activeHp();
+  const heatLoad = $('#heatLoad').textContent;
+  const heatTarget = $('#heatTarget').textContent;
+  const quickKw = $('#outHeatKw').value;
+  const {sum, prov, gross, lines} = buildOfferSummary();
+  const payload = {
+    createdAt: new Date().toISOString(),
+    client,
+    selection:{
+      pump: b? {brand:b.brand, model:b.model, kind:b.kind, phase:b.phase, pA7:b.pA7, ref:b.ref}:null,
+      buffer: state.selectedBuf,
+      tank: {type: state.selectedTankType, vol: state.selectedTank},
+      extras:{
+        v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads
+      },
+      vat: state.vat
+    },
+    sizing:{
+      quickKw,
+      std: $('#selStd').value,
+      areaAdv: $('#areaAdv').value,
+      lossWm2: $('#lossWm2').value,
+      heatLoad, heatTarget,
+      areaByHp: $('#areaByHp').textContent
+    },
+    basket: state.basket,
+    totals:{sum, prov, gross}
+  };
+  try{
+    sessionStorage.setItem('contract_draft', JSON.stringify(payload));
+    // pamiętaj w historii
+    const key='contracts_history';
+    const hist = JSON.parse(localStorage.getItem(key)||'[]'); hist.push(payload);
+    localStorage.setItem(key, JSON.stringify(hist));
+  }catch(e){}
+  return payload;
+}
+function goToContract(){
+  // jeśli jest wybrany klient w selekcie – dołącz
+  const selId = $('#selClient').value;
+  let client=null;
+  if(selId){
+    const c = readClients().find(x=>x.id===selId);
+    if(c) client=c;
+  }else{
+    // z formularza, jeśli coś wpisano
+    const draft = collectClientFromForm();
+    if(draft.name) client=draft;
+  }
+  pushContractDraft(client);
+  location.href='index.html#umowa';
+}
+function mailToClient(){
+  const selId = $('#selClient').value;
+  let client=null;
+  if(selId){
+    client = readClients().find(x=>x.id===selId);
+  }else{
+    const draft = collectClientFromForm();
+    if(draft.email) client=draft;
+  }
+  const {sum, prov, gross, lines} = buildOfferSummary();
+  const subject = Oferta – pompa ciepła / zestaw;
+  const bodyLines = [
+    'Dzień dobry,',
+    '',
+    'Poniżej podsumowanie oferty:',
+    ...lines,
+    '',
+    Suma netto: ${fmt(sum)} PLN,
+    Prowizja: ${fmt(prov)} PLN,
+    Razem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt(gross)} PLN,
+    '',
+    'Szczegóły doboru mocy:',
+    • Szybka propozycja: ${$('#outHeatKw').value} kW,
+    • Obciążenie projektowe: ${$('#heatLoad').textContent} (zapas: ${$('#heatTarget').textContent}),
+    • Powierzchnia pokrywana wybraną pompą: ${$('#areaByHp').textContent},
+    '',
+    'Pozdrawiam'
+  ];
+  const mail = mailto:${client&&client.email?encodeURIComponent(client.email):''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))};
+  location.href = mail;
+}
+
+/* ===================== ZDARZENIA ===================== */
+// Filtry i sort
+['q','fBrand','fType','fRef','fPhase','sort','tagsAll'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', ()=>{ if(id==='tagsAll'){ state.tagsAll=el.checked; } renderTable(); saveState(); });
+  el.addEventListener('change', ()=>{ if(id==='tagsAll'){ state.tagsAll=el.checked; } renderTable(); saveState(); });
+});
+$('#btnClear').addEventListener('click', ()=>{
+  ['q','fBrand','fType','fRef','fPhase'].forEach(id=>document.getElementById(id).value='');
+  state.chipsActive.clear(); makeChips();
+  $('#sort').value='brand.asc';
+  renderTable(); saveState();
+});
+
+// Katalog – wybór pompy
 document.addEventListener('click', (e)=>{
-  const pick=e.target.getAttribute('data-pick'); if(pick){ const [brand,model]=pick.split('|'); const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7 ); const idx=sorted.findIndex(x=>x.brand===brand && x.model===model); if(idx>=0){ $('#selHp').value=String(idx); state.selectedHp=sorted[idx]; applyHpToUi(); window.scrollTo({top:0,behavior:'smooth'});} }
-  const del=e.target.getAttribute('data-del'); if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); }
+  const pick = e.target.getAttribute && e.target.getAttribute('data-pick');
+  if(pick){
+    const [brand,model]=pick.split('|');
+    const arr=sortedHp(); const idx=arr.findIndex(x=>x.brand===brand && x.model===model);
+    if(idx>=0){
+      $('#selHp').value=String(idx);
+      state.selectedHp=arr[idx];
+      applyHpToUi();
+      window.scrollTo({top:0,behavior:'smooth'});
+      saveState();
+    }
+  }
+  const del = e.target.getAttribute && e.target.getAttribute('data-del');
+  if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); saveState(); }
 });
 
-$('#selHp').addEventListener('change', ()=>{ const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7 ); state.selectedHp = sorted[Number($('#selHp').value)||0]; applyHpToUi(); });
-['selBufor','selCwu','selVat'].forEach(id=>document.getElementById(id).addEventListener('change', (e)=>{ if(e.target.id==='selBufor') state.selectedBuf=e.target.value; if(e.target.id==='selCwu') state.selectedTank=e.target.value; if(e.target.id==='selVat') state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); renderMustHave(); }));
-['selV3d','selSafety','selHydro','selGlycol'].forEach(id=>document.getElementById(id).addEventListener('change', (e)=>{ state[e.target.id.replace('sel','').toLowerCase()] = Number(e.target.value)||0; renderPreview(); renderMustHave(); }));
-$('#inpRads').addEventListener('input', e=>{ state.rads=Math.max(0,Number(e.target.value)||0); renderPreview(); renderMustHave(); });
-['provPct','provAbs'].forEach(id=>document.getElementById(id).addEventListener('input', ()=>{ state.provPct=Number($('#provPct').value)||0; state.provAbs=Number($('#provAbs').value)||0; renderBasket(); }));
+// Selecty konfiguratora
+$('#selHp').addEventListener('change', ()=>{
+  const arr=sortedHp(); state.selectedHp = arr[Number($('#selHp').value)||0];
+  applyHpToUi(); saveState();
+});
+$('#selBufor').addEventListener('change', e=>{ state.selectedBuf=e.target.value; renderPreview(); renderBasket(); renderMustHave(); saveState(); });
+$('#selVat').addEventListener('change', e=>{ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); saveState(); });
+$('#selCwuType').addEventListener('change', e=>{
+  state.selectedTankType = e.target.value;
+  fillSelects(); renderPreview(); renderMustHave(); saveState();
+});
+$('#selCwu').addEventListener('change', e=>{ state.selectedTank=e.target.value; renderPreview(); renderMustHave(); saveState(); });
+$('#selCwuUse').addEventListener('change', ()=>{ recomputeAdvanced(); });
 
+['selV3d','selSafety','selHydro','selGlycol'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', (e)=>{
+    state[e.target.id.replace('sel','').toLowerCase()] = Number(e.target.value)||0;
+    renderPreview(); renderMustHave(); saveState();
+  });
+});
+$('#inpRads').addEventListener('input', e=>{
+  state.rads=Math.max(0,Number(e.target.value)||0);
+  renderPreview(); renderMustHave(); saveState();
+});
+['provPct','provAbs'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    state.provPct=Number($('#provPct').value)||0;
+    state.provAbs=Number($('#provAbs').value)||0;
+    renderBasket(); saveState();
+  });
+});
+
+// Koszyk – dodawanie
 $('#btnAddPack').addEventListener('click', ()=>{
   const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
-  const bufKey=state.selectedBuf, tankKey=state.selectedTank; const bufCost = BUFFERS[bufKey]||0; const tankCost = (b.kind==='all-in-one')? 0 : (TANKS[tankKey]||0);
-  const extras = Number(state.v3d||0) + Number(state.safety||0) + Number(state.hydro||0) + Number(state.glycol||0) + (Number(state.rads)||0)*RAD_PRICE;
+  const bufKey=state.selectedBuf;
+  const tankKey=state.selectedTank;
+  const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  const bufCost = BUFFERS[bufKey]||0;
+  const tankCost = (b.kind==='all-in-one')? 0 : (tankSrc[tankKey]||0);
+  const extras = (+state.v3d||0) + (+state.safety||0) + (+state.hydro||0) + (+state.glycol||0) + ((+state.rads||0)*RAD_PRICE);
   const price = pricePack(b.price, bufCost, tankCost, extras);
-  const labels=[]; if(Number(state.v3d)>0) labels.push('zawór 3D'); if(Number(state.safety)>0) labels.push('gr. bezp.'); if(Number(state.hydro)>0) labels.push('hydraulika+'); if(Number(state.glycol)>0 && b.kind==='monoblok') labels.push('glikol'); const rlabel = state.rads? ` + grzejniki x${state.rads}` : ''; const elabel = labels.length? ` + ${labels.join(', ')}` : '';
-  addToBasket(`Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l'))}${rlabel}${elabel}`, price, 1);
+  const labels=[]; if(+state.v3d>0) labels.push('zawór 3D'); if(+state.safety>0) labels.push('gr. bezp.'); if(+state.hydro>0) labels.push('hydraulika+'); if(+state.glycol>0 && b.kind==='monoblok') labels.push('glikol');
+  const rlabel = state.rads? ` + grzejniki x${state.rads}` : ''; const elabel = labels.length? ` + ${labels.join(', ')}` : '';
+  addToBasket(Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l ('+(state.selectedTankType==='dual'?'dual':'single')+')'))}${rlabel}${elabel}, price, 1);
+});
+$('#btnAddHp').addEventListener('click', ()=>{
+  const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
+  // UWAGA: dopłata 4000 liczona wewnętrznie, ale nigdzie nie jest wyświetlana
+  addToBasket(Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie, soloPrice(b), 1);
 });
 
-$('#btnAddHp').addEventListener('click', ()=>{ const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; } addToBasket(`Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie`, soloPrice(b), 1); });
+// Ilości w koszyku – live
+document.addEventListener('input', (e)=>{
+  if(e.target && e.target.matches && e.target.matches('[data-qty]')){
+    const i=Number(e.target.getAttribute('data-qty'));
+    state.basket[i].qty=Math.max(1,Number(e.target.value)||1);
+    renderBasket(); saveState();
+  }
+});
 
-// ilości w koszyku / usuwanie
- document.addEventListener('input', (e)=>{ if(e.target.matches('[data-qty]')){ const i=Number(e.target.getAttribute('data-qty')); state.basket[i].qty=Math.max(1,Number(e.target.value)||1); renderBasket(); } });
-
+// Kopiuj / Drukuj / XLSX / Import-Export JSON
 $('#btnCopy').addEventListener('click', ()=>{
-  const sum = state.basket.reduce((a,b)=>a+b.price*b.qty,0); const prov = sum*(Number(state.provPct)||0)/100 + (Number(state.provAbs)||0);
-  let txt = 'Oferta — Pompy ciepła (zestaw)\n\n';
-  state.basket.forEach(it=>{ txt += `• ${it.name} × ${it.qty} | ${fmt(it.price)} PLN\n`; });
-  txt += `\nSuma netto: ${fmt(sum)} PLN\n`;
-  txt += `Prowizja: ${fmt(prov)} PLN\n`;
-  txt += `Razem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt((sum+prov)*(1+state.vat))} PLN`;
+  const {sum, prov, gross, lines} = buildOfferSummary();
+  let txt = 'Oferta — Pompy ciepła (zestaw)\n\n' + lines.join('\n');
+  txt += \n\nSuma netto: ${fmt(sum)} PLN;
+  txt += \nProwizja: ${fmt(prov)} PLN;
+  txt += \nRazem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt(gross)} PLN;
   navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
 $('#btnXlsx').addEventListener('click', ()=>{
   const rows = state.basket.map(it=>({ Pozycja: it.name, Ilosc: it.qty, Cena_PLN: it.price }));
-  const ws = XLSX.utils.json_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
-  XLSX.writeFile(wb, 'Koszyk_PompyCiepla_rozszerzony.xlsx');
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
+  XLSX.writeFile(wb, 'Koszyk_PompyCiepla.xlsx');
 });
+$('#btnExportJson').addEventListener('click', ()=>{
+  const data = JSON.stringify(state.basket, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='koszyk.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+$('#btnImportJson').addEventListener('click', ()=>{
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+  inp.onchange = e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const arr=JSON.parse(reader.result);
+        if(Array.isArray(arr)){ state.basket = arr; renderBasket(); saveState(); }
+      }catch(err){ alert('Nieprawidłowy plik JSON.'); }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+});
+
+// Klienci – CRUD + wysyłki
+$('#btnSaveClient').addEventListener('click', saveClient);
+$('#btnLoadClient').addEventListener('click', ()=>{
+  const id=$('#selClient').value; if(!id) return;
+  const c=readClients().find(x=>x.id===id); if(c) loadClientToForm(c);
+});
+$('#btnToContract').addEventListener('click', goToContract);
+$('#btnToContractTop').addEventListener('click', goToContract);
+$('#btnMailTo').addEventListener('click', mailToClient);
+
+/* Quick dobór mocy */
+$('#inpArea').addEventListener('input', quickSuggest);
+$('#selWperm2').addEventListener('change', quickSuggest);
+
+/* Advanced dobór mocy */
+['selStd','areaAdv','lossWm2','selCwuUse'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{ recomputeAdvanced(); renderPreview(); });
+  document.getElementById(id).addEventListener('change', ()=>{ recomputeAdvanced(); renderPreview(); });
+});
+
+/* ===================== INIT ===================== */
+function init(){
+  loadState();
+  fillFilters();
+  makeChips();
+  renderTable();
+  fillSelects();
+  renderBasket();
+  quickSuggest();
+  recomputeAdvanced();
+  populateClientSelect();
+  // odtwórz wybory
+  if(state.selectedHp){
+    const arr=sortedHp(); const idx=arr.findIndex(x=>x.brand===state.selectedHp.brand && x.model===state.selectedHp.model);
+    if(idx>=0) $('#selHp').value=String(idx);
+  }
+}
+init();
 </script>
 </body>
 </html>
