@@ -35,11 +35,20 @@
   .loadmore{padding:8px 10px;text-align:center;border:1px dashed #2b3a77;border-radius:10px;cursor:pointer;background:#0d1530}
   .hoverable:hover{background:var(--hover)}
   @media(max-width:1080px){ .wrap{grid-template-columns:1fr} .msg-wrap{height:60vh} }
+
+  /* classes moved from inline styles */
+  .title{display:flex;align-items:center;gap:10px}
+  .mt6{margin-top:6px}
+
+  /* moved inline styles into classes */
+  .panel-main{display:flex;flex-direction:column}
+  .panel-top{justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+
 </style>
 </head>
 <body>
 <header>
-  <h1 style="display:flex;align-items:center;gap:10px">
+  <h1 class="title">
     ARKON – Chat <span class="badge">Netlify + Neon</span>
   </h1>
 </header>
@@ -49,8 +58,8 @@
   <aside class="panel left">
     <div class="section">
       <div class="meta">Pokój</div>
-      <div class="row" style="margin-top:6px">
-        <select id="roomSel" style="flex:1">
+      <div class="row mt6">
+        <select id="roomSel" class="flex-1" title="Wybierz pokój">
           <option value="global">global</option>
           <option value="krolowa">krolowa</option>
           <option value="adrian">adrian</option>
@@ -62,16 +71,16 @@
 
     <div class="section">
       <div class="meta">Ja</div>
-      <div class="row" style="margin-top:6px">
+      <div class="row mt6">
         <input id="meInput" placeholder="Twój podpis (np. Pracownik)">
         <button class="btn ghost" id="btnMe">Zapisz</button>
       </div>
-      <div class="meta" id="conn" style="margin-top:6px">łączenie…</div>
+      <div class="meta mt6" id="conn">łączenie…</div>
     </div>
 
     <div class="section">
       <div class="meta">Szukaj</div>
-      <div class="row" style="margin-top:6px">
+      <div class="row mt6">
         <input id="q" placeholder="fraza…">
         <button class="btn ghost" id="btnFind">Szukaj</button>
       </div>
@@ -79,17 +88,16 @@
 
     <div class="section">
       <div class="meta">Eksport</div>
-      <div class="row" style="margin-top:6px">
+      <div class="row mt6">
         <button class="btn ghost" id="btnCSV">CSV</button>
         <button class="btn ghost" id="btnJSON">JSON</button>
-        <button class="btn ghost" onclick="window.print()">Drukuj</button>
       </div>
     </div>
   </aside>
 
   <!-- PRAWA KOLUMNA -->
-  <main class="panel" style="display:flex;flex-direction:column">
-    <div class="row" style="justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)">
+  <main class="panel panel-main">
+    <div class="row panel-top">
       <div>
         Pokój: <b id="roomTitle">global</b>
         <span id="readBadge" class="badge" title="lokalne potwierdzenia">✓✓</span>

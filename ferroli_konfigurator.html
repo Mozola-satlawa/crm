@@ -46,6 +46,10 @@
     nav a:hover{background:#eefdf3}
     .mini{font-size:12px;color:var(--muted)}
     .bridge-note{background:#f2fff7;border:1px dashed var(--line);padding:8px;border-radius:12px;margin-top:8px}
+    .no-top{margin-top:0}
+    .actions-flex{display:flex;gap:8px;flex-wrap:wrap}
+    .sum-value{font-weight:800;font-size:22px}
+    .mt-6{margin-top:6px}
     @media print{ nav,.toolbar,.sticky{display:none!important} }
   </style>
 </head>
@@ -70,42 +74,43 @@
       </div>
     </header>
 
-    <div class="grid">
-      <div class="panel">
-        <h3>Dobierz parametry</h3>
         <div class="row">
           <div class="col wide">
+            <label for="boiler">Model kotła (Ferroli — lokalna lista)</label>
+            <select id="boiler" aria-label="Model kotła (Ferroli)"></select>
+          </div>
+          <div class="col wide">
             <label>Model kotła (Ferroli — lokalna lista)</label>
-            <select id="boiler"></select>
+            <!-- duplicate select removed; using the first select#boiler (aria-label) above -->
           </div>
           <div class="col">
-            <label>Moc [kW]</label>
-            <input id="power" type="text" readonly placeholder="auto z modelu">
+            <label for="power">Moc [kW]</label>
+            <input id="power" type="text" readonly placeholder="auto z modelu" title="Moc kotła (kW)">
           </div>
           <div class="col">
-            <label>Typ/paliwo</label>
-            <input id="type" type="text" readonly value="gaz-kondensacyjny">
+            <label for="type">Typ/paliwo</label>
+            <input id="type" type="text" readonly value="gaz-kondensacyjny" title="Typ paliwa" placeholder="gaz-kondensacyjny">
           </div>
           <div class="col">
-            <label>Cena kotła [PLN]</label>
-            <input id="boilerPrice" type="text" readonly>
+            <label for="boilerPrice">Cena kotła [PLN]</label>
+            <input id="boilerPrice" type="text" readonly placeholder="—" title="Cena kotła netto">
           </div>
           <div class="col">
-            <label>Zasobnik CWU [l]</label>
-            <select id="tank"></select>
+            <label for="tank">Zasobnik CWU [l]</label>
+            <select id="tank" title="Wybierz pojemność zasobnika"></select>
           </div>
           <div class="col">
-            <label>Cena zbiornika [PLN]</label>
-            <input id="tankPrice" type="text" readonly>
+            <label for="tankPrice">Cena zbiornika [PLN]</label>
+            <input id="tankPrice" type="text" readonly placeholder="—" title="Cena zbiornika netto">
           </div>
           <div class="col">
-            <label>Liczba grzejników</label>
-            <input id="rads" type="number" min="0" step="1" value="0">
+            <label for="rads">Liczba grzejników</label>
+            <input id="rads" type="number" min="0" step="1" value="0" title="Liczba grzejników">
             <div class="mini">750 PLN/szt.</div>
           </div>
           <div class="col">
-            <label>VAT</label>
-            <select id="vat">
+            <label for="vat">VAT</label>
+            <select id="vat" title="Stawka VAT">
               <option value="0.08">8%</option>
               <option value="0.23">23%</option>
             </select>
@@ -118,27 +123,27 @@
 
         <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Piece (Ferroli, gaz-kondensacyjny) ▼▼▼ -->
         <div class="sep"></div>
-        <h3 style="margin-top:0">Mostek ARKON — Piece (Ferroli / gaz-kondensacyjny)</h3>
+        <h3 class="no-top">Mostek ARKON — Piece (Ferroli / gaz-kondensacyjny)</h3>
         <div class="row">
           <div class="col">
-            <label>Marka (z „Komponenty • Piece”)</label>
-            <select id="arkonBrand"></select>
+            <label for="arkonBrand">Marka (z „Komponenty • Piece”)</label>
+            <select id="arkonBrand" title="Wybierz markę z katalogu"></select>
           </div>
           <div class="col">
-            <label>Filtr mocy min [kW]</label>
-            <input id="arkonPowMin" type="number" step="0.1" placeholder="np. 12">
+            <label for="arkonPowMin">Filtr mocy min [kW]</label>
+            <input id="arkonPowMin" type="number" step="0.1" placeholder="np. 12" title="Minimalna moc filtru">
           </div>
           <div class="col">
-            <label>Filtr mocy max [kW]</label>
-            <input id="arkonPowMax" type="number" step="0.1" placeholder="np. 35">
+            <label for="arkonPowMax">Filtr mocy max [kW]</label>
+            <input id="arkonPowMax" type="number" step="0.1" placeholder="np. 35" title="Maksymalna moc filtru">
           </div>
           <div class="col wide">
-            <label>Model (z „Komponenty • Piece”)</label>
-            <select id="arkonModel" disabled></select>
+            <label for="arkonModel">Model (z „Komponenty • Piece”)</label>
+            <select id="arkonModel" disabled title="Wybierz model z katalogu"></select>
           </div>
           <div class="col">
             <label>Akcje</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="actions-flex">
               <button class="btn ghost" id="useArkonBoiler">Użyj tego kotła</button>
               <button class="btn ghost" id="openArkon">Otwórz katalog (nowa karta)</button>
             </div>
@@ -159,7 +164,6 @@
           <div class="col"><button class="btn" id="addPack">Dodaj: Zestaw (kocioł + CWU + montaż)</button></div>
           <div class="col"><button class="btn warn" id="addBoilerOnly">Dodaj: Sam kocioł</button></div>
         </div>
-      </div>
 
       <div class="panel" id="mustHavePanel">
         <h3>Skład zestawu (must-have)</h3>
@@ -174,18 +178,17 @@
         </table>
         <div class="sep"></div>
         <div class="row">
-          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" style="font-weight:800;font-size:22px;"></div></div>
-          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" style="font-weight:800;font-size:22px;"></div></div>
+          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" class="sum-value"></div></div>
+          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" class="sum-value"></div></div>
         </div>
       </div>
-    </div>
 
     <div class="panel">
       <h3>Akcesoria (opcjonalnie)</h3>
       <div class="bundle-grid" id="addons"></div>
       <div class="sep"></div>
       <button class="btn ghost" id="addSelectedAddons">Dodaj wybrane</button>
-      <div class="sub" style="margin-top:6px">Grzejniki dodajesz polem „Liczba grzejników” (750 PLN/szt.).</div>
+      <div class="sub mt-6">Grzejniki dodajesz polem „Liczba grzejników” (750 PLN/szt.).</div>
     </div>
   </div>
 

@@ -116,25 +116,25 @@ exports.handler = async function(event, context) {
       const values = [];
       let idx = 1;
       if (data.title) {
-        fields.push(title = $${idx++});
+        fields.push(`title = $${idx++}`);
         values.push(data.title);
       }
       if (data.content) {
-        fields.push(content = $${idx++});
+        fields.push(`content = $${idx++}`);
         values.push(data.content);
       }
       if (data.status) {
-        fields.push(status = $${idx++});
+        fields.push(`status = $${idx++}`);
         values.push(data.status);
       }
       if (data.parties) {
-        fields.push(parties = $${idx++}::jsonb);
+        fields.push(`parties = $${idx++}::jsonb`);
         values.push(JSON.stringify(data.parties));
       }
       // Always update the updated_at timestamp to current time
-      fields.push(updated_at = NOW());
+      fields.push(`updated_at = NOW()`);
       // Finalize query string
-      const query = UPDATE contracts SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *;
+      const query = `UPDATE contracts SET ${fields.join(", ")} WHERE id = $${idx} RETURNING *`;
       values.push(contractId);
       const result = await sql(query, values);
       if (!result || result.length === 0) {

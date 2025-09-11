@@ -21,6 +21,8 @@
   .chat-input{display:flex;gap:8px;margin-top:8px}
   input,button,select{font:inherit}
   .field{flex:1;background:var(--field);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px}
+  /* limit width of the name input moved from inline style */
+  #chat-name{max-width:200px}
   .btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}
   .btn.ghost{background:transparent;border:1px solid var(--accent);color:#cfe0ff}
   .btn.bad{background:transparent;border:1px solid var(--bad);color:var(--bad)}
@@ -56,10 +58,8 @@
       Upuść pliki tutaj lub kliknij, aby wybrać…
       <input type="file" id="file-input" multiple hidden>
     </div>
-    <div id="pending-files"></div>
-
     <div class="chat-input">
-      <input id="chat-name" class="field" placeholder="Twoje imię (domyślnie: Anon)" style="max-width:200px">
+      <input id="chat-name" class="field" placeholder="Twoje imię (domyślnie: Anon)">
       <input id="chat-text" class="field" placeholder="Napisz wiadomość…">
       <button id="chat-send" class="btn">Wyślij</button>
     </div>
@@ -122,11 +122,11 @@ function renderChat(){
 function appendMsg(m,scroll=true){
   const dt=new Date(m.at||Date.now()); const time=dt.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"});
   const div=document.createElement("div"); div.className="bubble";
-  let html=<div class="meta"><b>${esc(m.user)}</b> • ${time}</div><div>${esc(m.text)}</div>;
+  let html = `<div class="meta"><b>${esc(m.user)}</b> • ${time}</div><div>${esc(m.text)}</div>`;
   if(m.files&&m.files.length){
-    html+="<div>"+m.files.map(f=><a href="#" data-dlid="${f.id}" class="file-pill">📎 ${esc(f.name)} <small>(${bytes(f.size)})</small></a>).join("")+"</div>";
+    html += "<div>"+ m.files.map(f=>`<a href="#" data-dlid="${f.id}" class="file-pill">📎 ${esc(f.name)} <small>(${bytes(f.size)})</small></a>`).join("") +"</div>";
   }
-  html+=<div style="margin-top:4px"><a href="#" data-del="${m.id}" style="font-size:12px;color:#ffb4b4">Usuń</a></div>;
+  html += `<div style="margin-top:4px"><a href="#" data-del="${m.id}" style="font-size:12px;color:#ffb4b4">Usuń</a></div>`;
   div.innerHTML=html; chatBox.appendChild(div);
   div.querySelectorAll("[data-dlid]").forEach(a=>a.addEventListener("click",async e=>{
     e.preventDefault();const id=a.getAttribute("data-dlid");const rec=await dbGet(id);if(!rec){alert("Brak pliku");return;}

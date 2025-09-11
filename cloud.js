@@ -145,7 +145,7 @@ export const cloud = {
   /* ===== Pliki: metadane + Storage ===== */
   async uploadFile({ id, file, category = "upload", clientId = null, clientName = "" }) {
     if (!this.enabled) return null;
-    const path = ${category}/${id}_${file.name};
+    const path = `${category}/${id}_${file.name}`;
     const up = await this.supa.storage.from(this.bucket).upload(path, file, { upsert: false });
     if (up.error) throw up.error;
     const { data: pub } = this.supa.storage.from(this.bucket).getPublicUrl(path);

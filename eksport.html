@@ -63,6 +63,22 @@
   .subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 10px}
   .subtabs .sb{padding:6px 10px;border-radius:999px;border:1px solid #2a3a75;cursor:pointer}
   .subtabs .sb[aria-selected="true"]{background:#1b2550;border-color:#67a1ff}
+
+  /* utility classes to replace inline styles */
+  .mb-6{margin-bottom:6px}
+  .mt-6{margin-top:6px}
+  .mt-8{margin-top:8px}
+  .mt-10{margin-top:10px}
+  .h-8{height:8px}
+  .minw-280{min-width:280px}
+  .minw-260{min-width:260px}
+  .maxw-200{max-width:200px}
+  .maxw-240{max-width:240px}
+  .maxw-320{max-width:320px}
+  .no-pad{padding:0}
+  .is-hidden{display:none}
+  /* small tweaks for tables inside card wrappers */
+  .card.no-pad .scroll{padding:0}
   /* print */
   @media print{
     .nav,.btn,.dropzone,.right,.subtabs{display:none!important}
@@ -90,29 +106,15 @@
     <!-- DASHBOARD -->
     <section id="tab-dashboard" class="grid">
       <h1>Pulpit</h1>
-      <div class="grid cols-3">
-        <div class="card"><div class="small">Przychód (symulacja)</div><h2 id="db-revenue">0 zł</h2></div>
-        <div class="card"><div class="small">Klienci</div><h2 id="db-clients">0</h2></div>
-        <div class="card"><div class="small">Leady</div><h2 id="db-leads">0</h2></div>
-      </div>
-      <div class="card small">
-        Skróty: <span class="kbd">/</span> szukaj w Klientach • <span class="kbd">Alt+N</span> nowy klient •
-        <span class="kbd">Alt+U</span> nowa pozycja (komponenty) • zapisz/odtwórz dane w Eksport/Import.
-      </div>
-    </section>
-
-    <!-- KLIENCI (CRM) -->
-    <section id="tab-clients" class="grid" hidden>
-      <h1>Klienci</h1>
-      <div class="grid cols-2">
-        <div class="card">
-          <div class="row" style="margin-bottom:6px">
-            <input id="cli-q" class="field" placeholder="🔎 Szukaj: nazwa, e-mail, telefon, tag…" style="min-width:280px">
-            <select id="cli-status" class="field" style="max-width:200px">
+      <div class="layout">
+        <div>
+          <div class="row mb-6">
+            <input id="cli-q" class="field minw-280" placeholder="🔎 Szukaj: nazwa, e-mail, telefon, tag…">
+            <select id="cli-status" class="field maxw-200" aria-label="Filtruj status klientów">
               <option value="">Status (wszystkie)</option>
               <option>LEAD</option><option>ZAPYTANIE</option><option>W TOKU</option><option>KLIENT</option><option>UTRACONY</option>
             </select>
-            <select id="cli-sort" class="field" style="max-width:200px">
+            <select id="cli-sort" class="field maxw-200" aria-label="Sortowanie klientów">
               <option value="name.asc">Sort: Nazwa ↑</option>
               <option value="name.desc">Sort: Nazwa ↓</option>
               <option value="created.desc">Sort: Najnowsze</option>
@@ -131,13 +133,14 @@
             </table>
           </div>
         </div>
+
         <aside class="card side">
           <h3>Edycja klienta</h3>
           <div class="small muted">Wybierz klienta z listy, by edytować.</div>
-          <div class="spacer" style="height:8px"></div>
+          <div class="spacer h-8"></div>
           <div class="grid">
             <input id="e_name" class="field" placeholder="Nazwa / Imię i nazwisko">
-            <select id="e_status" class="field">
+            <select id="e_status" class="field" aria-label="Status klienta">
               <option>LEAD</option><option>ZAPYTANIE</option><option>W TOKU</option><option>KLIENT</option><option>UTRACONY</option>
             </select>
             <input id="e_email" class="field" placeholder="email@domena.pl">
@@ -150,7 +153,7 @@
               <button id="cli-del" class="btn bad">Usuń</button>
             </div>
           </div>
-          <div class="small" style="margin-top:8px">Pole „projekty/umowy/dokumenty” dodasz w zakładce <b>Przesył plików</b> (przypisując do klienta).</div>
+          <div class="small mt-8">Pole „projekty/umowy/dokumenty” dodasz w zakładce <b>Przesył plików</b> (przypisując do klienta).</div>
         </aside>
       </div>
     </section>
@@ -160,15 +163,15 @@
       <h1>Komponenty</h1>
       <div class="card">
         <div class="subtabs" role="tablist" aria-label="Kategorie komponentów">
-          <button class="sb" data-sb="pumps" aria-selected="true">Pompy ciepła</button>
-          <button class="sb" data-sb="boilers">Piece / kotły</button>
-          <button class="sb" data-sb="pv">Fotowoltaika</button>
-          <button class="sb" data-sb="insul">Ocieplenie</button>
-          <button class="sb" data-sb="garage">Bramy garażowe</button>
+          <button class="sb" role="tab" tabindex="0" data-sb="pumps" aria-selected="true">Pompy ciepła</button>
+          <button class="sb" role="tab" tabindex="0" data-sb="boilers">Piece / kotły</button>
+          <button class="sb" role="tab" tabindex="0" data-sb="pv">Fotowoltaika</button>
+          <button class="sb" role="tab" tabindex="0" data-sb="insul">Ocieplenie</button>
+          <button class="sb" role="tab" tabindex="0" data-sb="garage">Bramy garażowe</button>
         </div>
         <!-- wspólny toolbar -->
-        <div class="row" style="margin-bottom:6px">
-          <input id="cmp-q" class="field" placeholder="🔎 Szukaj w aktualnej kategorii…" style="min-width:280px">
+        <div class="row mb-6">
+          <input id="cmp-q" class="field minw-280" placeholder="🔎 Szukaj w aktualnej kategorii…">
           <button id="cmp-add" class="btn good">+ Dodaj pozycję</button>
           <button id="cmp-csv" class="btn ghost">CSV eksport</button>
           <label class="btn ghost">CSV import <input id="cmp-csv-in" type="file" accept=".csv" hidden></label>
@@ -177,27 +180,27 @@
           <span class="pill">Widocznych: <b id="cmp-vis">0</b></span>
         </div>
         <!-- tabele -->
-        <div id="cmp-pumps" class="card" style="padding:0">
+        <div id="cmp-pumps" class="card no-pad">
           <div class="scroll"><table><thead><tr>
             <th>Akcje</th><th>Marka</th><th>Model</th><th>Moc [kW]</th><th>Typ (air/ground)</th><th>SCOP</th><th>Cena [zł]</th><th>Uwagi</th>
           </tr></thead><tbody id="tb-pumps"></tbody></table></div>
         </div>
-        <div id="cmp-boilers" class="card" style="padding:0;display:none">
+        <div id="cmp-boilers" class="card no-pad is-hidden">
           <div class="scroll"><table><thead><tr>
             <th>Akcje</th><th>Marka</th><th>Model</th><th>Rodzaj (pellet/gaz/elektryczny/drewno)</th><th>Moc [kW]</th><th>Sprawność</th><th>Cena [zł]</th><th>Uwagi</th>
           </tr></thead><tbody id="tb-boilers"></tbody></table></div>
         </div>
-        <div id="cmp-pv" class="card" style="padding:0;display:none">
+        <div id="cmp-pv" class="card no-pad is-hidden">
           <div class="scroll"><table><thead><tr>
             <th>Akcje</th><th>Marka</th><th>Model</th><th>Moc modułu [W]</th><th>Technologia</th><th>Falownik</th><th>Zestaw [kWp]</th><th>Cena zestawu [zł]</th><th>Uwagi</th>
           </tr></thead><tbody id="tb-pv"></tbody></table></div>
         </div>
-        <div id="cmp-insul" class="card" style="padding:0;display:none">
+        <div id="cmp-insul" class="card no-pad is-hidden">
           <div class="scroll"><table><thead><tr>
             <th>Akcje</th><th>Pozycja</th><th>Materiał</th><th>λ [W/mK]</th><th>Grubość [cm]</th><th>Cena / m² [zł]</th><th>Uwagi</th>
           </tr></thead><tbody id="tb-insul"></tbody></table></div>
         </div>
-        <div id="cmp-garage" class="card" style="padding:0;display:none">
+        <div id="cmp-garage" class="card no-pad is-hidden">
           <div class="scroll"><table><thead><tr>
             <th>Akcje</th><th>Marka</th><th>Model</th><th>Wymiar [mm]</th><th>Panel [mm]</th><th>Napęd</th><th>Współ. U</th><th>Cena [zł]</th><th>Uwagi</th>
           </tr></thead><tbody id="tb-garage"></tbody></table></div>
@@ -217,7 +220,7 @@
           <li><a href="OŚWIADCZENIE WSPÓŁWŁAŚCICIELA.docx" download>📄 Oświadczenie współwłaściciela (DOCX)</a></li>
           <li><a href="OŚWIADCZENIE WSPÓŁMAŁŻONKA.docx" download>📄 Oświadczenie współmałżonka (DOCX)</a></li>
         </ul>
-        <div class="small muted" style="margin-top:10px">
+        <div class="small muted mt-10">
           Pliki muszą leżeć obok <code>index.html</code> pod dokładnie taką nazwą, jak wyżej.
         </div>
       </div>
@@ -228,8 +231,8 @@
       <h1>Przesył plików (z przypisaniem do klienta i kategorii)</h1>
       <div class="card">
         <div class="row">
-          <select id="up-client" class="field" style="max-width:320px"></select>
-          <select id="up-cat" class="field" style="max-width:320px">
+          <select id="up-client" class="field maxw-320" aria-label="Wybierz klienta"></select>
+          <select id="up-cat" class="field maxw-320" aria-label="Kategoria pliku">
             <option>Umowa z firmą</option>
             <option>Audyt</option>
             <option>Dokument do audytu Czyste Powietrze</option>
@@ -244,10 +247,10 @@
           <label class="btn">Dodaj pliki… <input id="up-files" type="file" multiple hidden></label>
           <button id="up-refresh" class="btn ghost">Odśwież</button>
         </div>
-        <div class="small muted" style="margin-top:6px">Pliki zapisywane lokalnie (IndexedDB). Możesz je wyeksportować w „Eksport/Import”.</div>
+        <div class="small muted mt-6">Pliki zapisywane lokalnie (IndexedDB). Możesz je wyeksportować w „Eksport/Import”.</div>
       </div>
       <div class="card">
-        <div class="row" style="margin-bottom:6px">
+        <div class="row mb-6">
           <input id="up-q" class="field" placeholder="🔎 filtruj po nazwie/kliencie/kategorii…">
           <button id="up-clear" class="btn ghost">Wyczyść filtr</button>
         </div>
@@ -267,8 +270,8 @@
       <h1>Leady</h1>
       <div class="card">
         <div class="row">
-          <input id="ld-q" class="field" placeholder="🔎 Szukaj w leadach" style="min-width:260px">
-          <select id="ld-status" class="field">
+          <input id="ld-q" class="field minw-260" placeholder="🔎 Szukaj w leadach">
+          <select id="ld-status" class="field" aria-label="Filtruj status leadów">
             <option value="">Status (wszystkie)</option>
             <option>NOWY</option><option>KONTAKT</option><option>QUALIFIED</option><option>OFERTA</option><option>WYGRANY</option><option>PRZEGRANY</option>
           </select>
@@ -276,7 +279,7 @@
           <button id="ld-json" class="btn ghost">Eksport JSON</button>
           <label class="btn ghost">Import JSON <input id="ld-json-in" type="file" accept="application/json" hidden></label>
         </div>
-        <div class="scroll" style="margin-top:6px">
+        <div class="scroll mt-6">
           <table>
             <thead><tr><th>Akcje</th><th>Tytuł</th><th>Klient (opc.)</th><th>Status</th><th>Źródło</th><th>Data</th></tr></thead>
             <tbody id="ld-tbody"></tbody>
@@ -295,12 +298,12 @@
           <input type="file" id="file-input" multiple hidden />
         </div>
         <div class="files" id="pending-files"></div>
-        <div class="row" style="margin-top:8px">
-          <input id="chat-name" class="field" placeholder="Twoje imię (domyślnie: Anon)" style="max-width:240px">
+        <div class="row mt-8">
+          <input id="chat-name" class="field maxw-240" placeholder="Twoje imię (domyślnie: Anon)">
           <input id="chat-text" class="field" placeholder="Napisz wiadomość…" />
           <button id="chat-send" class="btn">Wyślij</button>
         </div>
-        <div class="small muted" style="margin-top:8px">
+        <div class="small muted mt-8">
           Wiadomości i pliki zapisują się lokalnie (IndexedDB). Eksport całości — w „Eksport/Import”.
         </div>
       </div>
@@ -326,6 +329,8 @@
       </div>
     </section>
 
+    <!-- removed duplicate export/import section (kept the later correct one) -->
+
     <!-- EKSPORT / IMPORT (pełny backup JSON, CSV klientów) -->
     <section id="tab-export" class="grid" hidden>
       <h1>Eksport / Import</h1>
@@ -333,10 +338,8 @@
         <div class="row">
           <button id="ex-full" class="btn">Eksport — pełny JSON</button>
           <label class="btn ghost">Import — pełny JSON <input id="im-full" type="file" accept="application/json" hidden></label>
-          <button id="ex-cli-csv" class="btn ghost">Eksport CSV — klienci</button>
-          <button id="wipe-all" class="btn bad">Wyczyść wszystkie dane lokalne</button>
         </div>
-        <div class="small muted" style="margin-top:8px">
+        <div class="small muted mt-8">
           Pełny JSON zawiera: klientów, leady, komponenty (wszystkie kategorie), wiadomości czatu, metadane plików oraz <b>same pliki</b> (base64 z IndexedDB).
         </div>
       </div>
@@ -386,7 +389,7 @@ let cliFilter={q:"",status:"",sort:"name.asc"};
 let openClientId=null;
 
 function renderClients(){
-  const q = cliFilter.q.toLowerCase();
+  const q = (cliFilter.q||"").toLowerCase();
   let rows = clients.filter(c=>{
     if(cliFilter.status && c.status!==cliFilter.status) return false;
     if(q){
@@ -412,26 +415,30 @@ function renderClients(){
       <td><span class="status ${c.status==='KLIENT'?'podpisana':c.status==='W TOKU'?'w-toku':c.status==='UTRACONY'?'anulowana':''}">${esc(c.status)}</span></td>
       <td>${esc(c.email||"")}<div class="small">${esc(c.phone||"")}</div></td>
       <td>${esc(c.address||"")}</td>
-      <td>${(c.tags||[]).map(t=><span class="pill">${esc(t)}</span>).join("")}</td>`;
+      <td>${(c.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join("")}</td>`;
     tr.querySelector(".o").addEventListener("click",()=>openClient(c.id));
     tb.appendChild(tr);
   });
   // Selects list for Upload
-  const sel=$("#up-client"); sel.innerHTML=<option value="">(bez przypisania)</option> + clients.map(x=><option value="${x.id}">${esc(x.name)}</option>).join("");
+  const sel=$("#up-client");
+  sel.innerHTML = '<option value="">(bez przypisania)</option>' + clients.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
 }
-
 function openClient(id){
-  openClientId=id;
-  const c=clients.find(x=>x.id===id); if(!c) return;
-  $("#e_name").value=c.name||""; $("#e_status").value=c.status||"LEAD";
-  $("#e_email").value=c.email||""; $("#e_phone").value=c.phone||"";
-  $("#e_addr").value=c.address||""; $("#e_tags").value=(c.tags||[]).join(", ");
-  $("#e_notes").value=c.notes||"";
+  openClientId = id;
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  $("#e_name").value = c.name || "";
+  $("#e_status").value = c.status || "LEAD";
+  $("#e_email").value = c.email || "";
+  $("#e_phone").value = c.phone || "";
+  $("#e_addr").value = c.address || "";
+  $("#e_tags").value = (c.tags||[]).join(", ");
+  $("#e_notes").value = c.notes || "";
 }
 
 function bindClientsUI(){
-  $("#cli-q").addEventListener("input",e=>{cliFilter.q=e.target.value.trim(); renderClients();});
-  $("#cli-status").addEventListener("change",e=>{cliFilter.status=e.target.value; renderClients();});
+  // Selects list for Upload
+  const sel=$("#up-client"); sel.innerHTML = '<option value="">(bez przypisania)</option>' + clients.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");
   $("#cli-sort").addEventListener("change",e=>{cliFilter.sort=e.target.value; renderClients();});
   $("#cli-add").addEventListener("click",()=>{ const c={id:uid(),created:Date.now(),name:"Nowy klient",status:"LEAD",email:"",phone:"",address:"",tags:[],notes:""}; clients.unshift(c); saveClients(); openClient(c.id); });
   $("#cli-del").addEventListener("click",()=>{ if(!openClientId) return; if(confirm("Usunąć klienta?")){ clients=clients.filter(x=>x.id!==openClientId); openClientId=null; saveClients(); } });
@@ -454,47 +461,71 @@ function saveCmp(k){ localStorage.setItem(CMP_KEYS[k], JSON.stringify(cmpState.d
 
 function renderCmp(){
   const q=(cmpState.q||"").toLowerCase();
-  const act=cmpState.active;
-  $("#cmp-vis").textContent="0";
-  const filterRow = row => JSON.stringify(row).toLowerCase().includes(q);
+  const act = cmpState.active || "pumps";
 
-  // helper to draw body from schema
-  function draw(tbId, arr, cols){
-    const tb=$(tbId); tb.innerHTML=""; let vis=0;
-    (arr||[]).forEach((r,idx)=>{
-      if(q && !filterRow(r)) return;
-      vis++;
-      const tr=document.createElement("tr");
-      const delBtn=<button class="btn bad" data-del="${idx}">Usuń</button>;
-      tr.innerHTML = <td class="row">${delBtn}</td> + cols.map(col=>{
-        const v=r[col.key]??""; const type=col.type||"text"; const step=col.step||""; const opt=col.opt||[];
-        if(type==="select"){
-          return <td><select data-i="${idx}" data-k="${col.key}" class="field">${opt.map(o=><option ${v===o?'selected':''}>${o}</option>).join("")}</select></td>;
-        }
-        return `<td><input data-i="${idx}" data-k="${col.key}" class="field" ${type!=="text"?type="${type}":''} ${step?step="${step}":''} value="${esc(v)}"></td>`;
-      }).join("");
-      tb.appendChild(tr);
-    });
-    $("#cmp-vis").textContent=vis;
-    // bind edits
-    tb.querySelectorAll("input,select").forEach(el=>{
-      el.addEventListener("input",()=>{ const i=+el.dataset.i; const k=el.dataset.k; let v=el.value; if(el.type==="number") v=Number(v)||0; cmpState.data[act][i][k]=v; saveCmp(act); });
-    });
-    tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{ const i=+b.dataset.del; if(confirm("Usuń pozycję?")){ cmpState.data[act].splice(i,1); saveCmp(act);} }));
+  function matchesQuery(obj){
+    if(!q) return true;
+    const hay = Object.values(obj||{}).join(" ").toLowerCase();
+    return hay.includes(q);
   }
 
+  function draw(tbId, arr, cols){
+    const tb=$(tbId);
+    tb.innerHTML = "";
+    let vis = 0;
+    (arr||[]).forEach((r, idx) => {
+      if(!matchesQuery(r)) return;
+      vis++;
+      const tr = document.createElement("tr");
+      const delBtn = `<button class="btn bad" data-del="${idx}">Usuń</button>`;
+      const cells = cols.map(col=>{
+        const v = r[col.key] ?? "";
+        const type = col.type || "text";
+        const step = col.step || "";
+        const opt = col.opt || [];
+        if(type === "select"){
+          const opts = opt.map(o=>`<option ${v===o ? 'selected' : '' }>${esc(o)}</option>`).join("");
+          return `<td><select data-i="${idx}" data-k="${col.key}" class="field">${opts}</select></td>`;
+        }
+        const typeAttr = type !== "text" ? `type="${type}"` : "";
+        const stepAttr = step ? `step="${step}"` : "";
+        return `<td><input data-i="${idx}" data-k="${col.key}" class="field" ${typeAttr} ${stepAttr} value="${esc(v)}"></td>`;
+      }).join("");
+      tr.innerHTML = `<td class="row">${delBtn}</td>` + cells;
+      tb.appendChild(tr);
+    });
+    $("#cmp-vis").textContent = vis;
+
+    // bind edits
+    tb.querySelectorAll("input,select").forEach(el=>{
+      el.addEventListener("input", ()=>{
+        const i = +el.dataset.i;
+        const k = el.dataset.k;
+        let v = el.value;
+        if(el.type === "number") v = Number(v) || 0;
+        cmpState.data[act][i][k] = v;
+        saveCmp(act);
+      });
+    });
+
+    // bind deletes
+    tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click", ()=>{
+      const i = +b.dataset.del;
+      if(confirm("Usuń pozycję?")){
+        cmpState.data[act].splice(i,1);
+        saveCmp(act);
+      }
+    }));
+  }
+
+  // render per active category
   if(act==="pumps"){
     draw("#tb-pumps", cmpState.data.pumps, [
-      {key:"brand"},{key:"model"},{key:"power",type:"number",step:"0.1"},
-      {key:"type",type:"select",opt:["powietrze","grunt"]},
-      {key:"scop",type:"number",step:"0.01"},{key:"price",type:"number",step:"1"},{key:"note"}
+      {key:"brand"},{key:"model"},{key:"power",type:"number"},{key:"type"},{key:"scop",type:"number"},{key:"price",type:"number"},{key:"note"}
     ]);
   }else if(act==="boilers"){
     draw("#tb-boilers", cmpState.data.boilers, [
-      {key:"brand"},{key:"model"},
-      {key:"kind",type:"select",opt:["pellet","gaz","elektryczny","drewno"]},
-      {key:"power",type:"number",step:"0.1"},{key:"eff",type:"number",step:"0.01"},
-      {key:"price",type:"number"},{key:"note"}
+      {key:"brand"},{key:"model"},{key:"kind"},{key:"power",type:"number"},{key:"eff",type:"number"},{key:"price",type:"number"},{key:"note"}
     ]);
   }else if(act==="pv"){
     draw("#tb-pv", cmpState.data.pv, [
@@ -518,11 +549,11 @@ function renderCmp(){
   }
 
   // toggle tables visibility
-  $("#cmp-pumps").style.display = act==="pumps"?"block":"none";
-  $("#cmp-boilers").style.display= act==="boilers"?"block":"none";
-  $("#cmp-pv").style.display     = act==="pv"?"block":"none";
-  $("#cmp-insul").style.display  = act==="insul"?"block":"none";
-  $("#cmp-garage").style.display = act==="garage"?"block":"none";
+  $("#cmp-pumps").style.display   = act==="pumps" ? "block" : "none";
+  $("#cmp-boilers").style.display = act==="boilers" ? "block" : "none";
+  $("#cmp-pv").style.display      = act==="pv" ? "block" : "none";
+  $("#cmp-insul").style.display   = act==="insul" ? "block" : "none";
+  $("#cmp-garage").style.display  = act==="garage" ? "block" : "none";
 }
 function bindCmpUI(){
   $$(".subtabs .sb").forEach(b=>b.addEventListener("click",()=>{
@@ -531,42 +562,155 @@ function bindCmpUI(){
     cmpState.active=b.dataset.sb; renderCmp();
   }));
   $("#cmp-q").addEventListener("input",e=>{ cmpState.q=e.target.value.trim(); renderCmp(); });
+
+  // small CSV helpers
+  function csvEsc(v){
+    if(v==null) return "";
+    const s = String(v);
+    // wrap value in quotes and escape internal quotes for safety
+    return s.replace(/"/g,'""');
+  }
+  function csvUnesc(v){
+    if(v==null) return "";
+    let s = String(v);
+    // remove surrounding quotes if present and unescape double quotes
+    if(s.length>=2 && s.startsWith('"') && s.endsWith('"')) s = s.slice(1,-1).replace(/""/g,'"');
+    return s;
+  }
+
   $("#cmp-add").addEventListener("click",()=>{
     const a=cmpState.active;
-    const blank={pumps:{brand:"",model:"",power:0,type:"powietrze",scop:3.5,price:0,note:""},
-                 boilers:{brand:"",model:"",kind:"pellet",power:0,eff:0.9,price:0,note:""},
-                 pv:{brand:"",model:"",watt:450,tech:"mono PERC",inverter:"",set_kwp:5.0,price:0,note:""},
-                 insul:{pos:"ściany",mat:"styropian",lambda:0.036,thick_cm:15,price_m2:0,note:""},
-                 garage:{brand:"",model:"",size:"2500x2125",panel_mm:40,drive:"TAK",u:1.3,price:0,note:""} }[a];
-    cmpState.data[a].push(blank); saveCmp(a);
+    const blanks = {
+      pumps:{brand:"",model:"",power:0,type:"powietrze",scop:3.5,price:0,note:""},
+      boilers:{brand:"",model:"",kind:"pellet",power:0,eff:0.9,price:0,note:""},
+      pv:{brand:"",model:"",watt:450,tech:"mono PERC",inverter:"",set_kwp:5.0,price:0,note:""},
+      insul:{pos:"ściany",mat:"styropian",lambda:0.036,thick_cm:15,price_m2:0,note:""},
+      garage:{brand:"",model:"",size:"",panel_mm:0,drive:"TAK",u:0.0,price:0,note:""}
+    };
+    const item = blanks[a] ? JSON.parse(JSON.stringify(blanks[a])) : {};
+    cmpState.data[a] = cmpState.data[a] || [];
+    cmpState.data[a].unshift(item);
+    saveCmp(a);
   });
-  $("#cmp-csv").addEventListener("click",()=>{ const a=cmpState.active; const rows=cmpState.data[a]; const cols=Object.keys(rows[0]||{brand:"",model:""}); const out=[cols.join(";")].concat(rows.map(r=>cols.map(k=>csvEsc(r[k])).join(";"))); downloadText(komponenty_${a}.csv, out.join("\n"), "text/csv;charset=utf-8"); });
-  $("#cmp-json").addEventListener("click",()=>{ const a=cmpState.active; downloadText(komponenty_${a}.json, JSON.stringify(cmpState.data[a],null,2)); });
+
+  $("#cmp-csv").addEventListener("click",()=>{
+    const a=cmpState.active;
+    const rows=cmpState.data[a]||[];
+    if(!rows.length){ alert("Brak pozycji do eksportu."); return; }
+    const cols=Object.keys(rows[0]||{brand:"",model:""});
+    const out=[cols.join(";")].concat(rows.map(r=>cols.map(k=>`"${csvEsc(r[k])}"`).join(";")));
+    downloadText(`komponenty_${a}.csv`, out.join("\n"), "text/csv;charset=utf-8");
+  });
+
+  $("#cmp-json").addEventListener("click",()=>{
+    const a=cmpState.active;
+    downloadText(`komponenty_${a}.json`, JSON.stringify(cmpState.data[a]||[],null,2));
+  });
+
   $("#cmp-csv-in").addEventListener("change",async e=>{
-    const f=e.target.files[0]; if(!f) return; const txt=await f.text(); const [head,...lines]=txt.split(/\r?\n/).filter(Boolean); const cols=head.split(";"); const arr=lines.map(line=>{const v=line.split(";"); const o={}; cols.forEach((k,i)=>o[k]=csvUnesc(v[i]||"")); return o;}); cmpState.data[cmpState.active]=arr; saveCmp(cmpState.active); e.target.value="";
+    const f=e.target.files[0]; if(!f) return;
+    const txt=await f.text();
+    const [head,...lines]=txt.split(/\r?\n/).filter(Boolean);
+    const cols=head.split(";");
+    const arr=lines.map(line=>{
+      const v=line.split(";");
+      const o={};
+      cols.forEach((k,i)=>o[k]=csvUnesc(v[i]||""));
+      return o;
+    });
+    cmpState.data[cmpState.active]=arr;
+    saveCmp(cmpState.active);
+    e.target.value="";
   });
-  $("#cmp-json-in").addEventListener("change",async e=>{ const f=e.target.files[0]; if(!f) return; try{ const arr=JSON.parse(await f.text()); if(!Array.isArray(arr)) throw 0; cmpState.data[cmpState.active]=arr; saveCmp(cmpState.active); }catch{ alert("Zły JSON."); } e.target.value=""; });
+
+  $("#cmp-json-in").addEventListener("change",async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    try{
+      const arr=JSON.parse(await f.text());
+      if(!Array.isArray(arr)) throw new Error("Invalid");
+      cmpState.data[cmpState.active]=arr;
+      saveCmp(cmpState.active);
+    }catch{
+      alert("Zły JSON.");
+    }
+    e.target.value="";
+  });
 }
-function csvEsc(v){ let s=v==null?"":String(v); if(/[;\n"]/.test(s)) s='"'+s.replace(/"/g,'""')+'"'; return s; }
-function csvUnesc(s){ if(s?.startsWith('"')&&s.endsWith('"')) return s.slice(1,-1).replace(/""/g,'"'); return s; }
 function downloadText(name, text, mime){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:mime||"application/json"})); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 
 /* ====== UPLOAD ====== */
 const upQ = {q:""};
-function fillUploadClientSelect(){ const sel=$("#up-client"); sel.innerHTML=<option value="">(bez przypisania)</option>+clients.map(c=><option value="${c.id}">${esc(c.name)}</option>).join(""); }
-function handleUploadFiles(files){
+function fillUploadClientSelect(){
+  const sel=$("#up-client");
+  sel.innerHTML = '<option value="">(bez przypisania)</option>' + clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+}
+
+async function handleUploadFiles(files){
   const clientId = $("#up-client").value||null;
   const clientName = clientId ? (clients.find(c=>c.id===clientId)?.name||"") : "";
   const cat=$("#up-cat").value||"Inne";
-  Array.from(files||[]).forEach(async f=>{
-    const id=uid();
-    await dbPut({ id, name:f.name, type:f.type||"application/octet-stream", size:f.size, blob:f, at:Date.now(), category:cat, clientId, clientName, origin:"upload" });
-  });
+  const maxPerFile = 200 * 1024 * 1024; // reasonable limit (200MB)
+  for(const f of Array.from(files||[])){
+    if(f.size > maxPerFile){ alert(`Plik ${f.name} jest większy niż dozwolony rozmiar`); continue; }
+    const id = uid();
+    const rec = {
+      id,
+      name: f.name,
+      type: f.type || "application/octet-stream",
+      size: f.size,
+      at: Date.now(),
+      clientId: clientId || "",
+      clientName: clientName || "",
+      category: cat || "",
+      origin: "upload",
+      blob: f
+    };
+    await dbPut(rec);
+  }
   renderUploads();
 }
+
 async function renderUploads(){
   const q=(upQ.q||"").toLowerCase();
   const list=await dbAll();
+  const tb=$("#up-tbody"); tb.innerHTML="";
+  list.sort((a,b)=>(b.at||0)-(a.at||0));
+  const filtered = list.filter(x=>{
+    const hay=[x.name,x.clientName,x.category,x.type].join(" ").toLowerCase();
+    return !q || hay.includes(q);
+  });
+  filtered.forEach(rec=>{
+    const tr=document.createElement("tr");
+    const when = rec.at ? new Date(rec.at).toLocaleString('pl-PL') : '';
+    tr.innerHTML = `<td class="row">
+        <button class="btn ghost" data-dl="${rec.id}">Pobierz</button>
+        <button class="btn bad" data-del="${rec.id}">Usuń</button>
+      </td>
+      <td>${esc(rec.name)}</td>
+      <td>${esc(rec.clientName||"")}</td>
+      <td>${esc(rec.category||"")}</td>
+      <td>${esc(rec.type||"")}</td>
+      <td>${bytes(rec.size||0)}</td>
+      <td>${when}</td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll("[data-dl]").forEach(b=>b.addEventListener("click",async (ev)=>{
+    const id = b.getAttribute("data-dl");
+    const rec=await dbGet(id); if(!rec){ alert("Plik niedostępny."); return; }
+    const url=URL.createObjectURL(rec.blob); const a=document.createElement("a"); a.href=url; a.download=rec.name; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }));
+  tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",async (ev)=>{
+    const id = b.getAttribute("data-del");
+    if(!confirm("Usunąć plik?")) return; await dbDel(id); renderUploads();
+  }));
+}
+
+function bindUploadUI(){
+  $("#up-files").addEventListener("change", async e=>{ await handleUploadFiles(e.target.files); e.target.value=""; });
+  $("#up-refresh").addEventListener("click",renderUploads);
+  $("#up-q").addEventListener("input",e=>{ upQ.q=e.target.value.trim(); renderUploads(); });
+  $("#up-clear").addEventListener("click",()=>{ upQ.q=""; $("#up-q").value=""; renderUploads(); });
+}
   const tb=$("#up-tbody"); tb.innerHTML="";
   list.sort((a,b)=>(b.at||0)-(a.at||0));
   list.filter(x=>{
@@ -594,7 +738,6 @@ async function renderUploads(){
   tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",async ()=>{
     if(!confirm("Usunąć plik?")) return; await dbDel(b.dataset.del); renderUploads();
   }));
-}
 function bindUploadUI(){
   $("#up-files").addEventListener("change",e=>{handleUploadFiles(e.target.files); e.target.value="";});
   $("#up-refresh").addEventListener("click",renderUploads);
@@ -602,80 +745,96 @@ function bindUploadUI(){
   $("#up-clear").addEventListener("click",()=>{ upQ.q=""; $("#up-q").value=""; renderUploads(); });
 }
 
-/* ====== LEADY ====== */
-const LS_LEADS="arkon_leads_v1";
-let leads=[];
-function loadLeads(){ try{return JSON.parse(localStorage.getItem(LS_LEADS)||"[]")}catch{return[]} }
-function saveLeads(){ localStorage.setItem(LS_LEADS, JSON.stringify(leads)); renderLeads(); refreshDashboard(); }
-function renderLeads(){
-  const q=($("#ld-q").value||"").toLowerCase(); const st=$("#ld-status").value||"";
-  const tb=$("#ld-tbody"); tb.innerHTML="";
-  leads.filter(l=>{
-    if(st && l.status!==st) return false;
-    const hay=[l.title,l.clientName,l.source].join(" ").toLowerCase();
-    return !q || hay.includes(q);
-  }).sort((a,b)=>(b.created||0)-(a.created||0)).forEach((l,idx)=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="row">
-      <button class="btn ghost" data-ed="${idx}">Edytuj</button>
-      <button class="btn bad" data-del="${idx}">Usuń</button>
-    </td>
-    <td>${esc(l.title)}</td>
-    <td>${esc(l.clientName||"")}</td>
-    <td>${esc(l.status)}</td>
-    <td>${esc(l.source||"")}</td>
-    <td>${new Date(l.created||Date.now()).toLocaleString('pl-PL')}</td>`;
-    tb.appendChild(tr);
-  });
-  tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{ if(confirm("Usunąć lead?")){ leads.splice(+b.dataset.del,1); saveLeads(); } }));
-  tb.querySelectorAll("[data-ed]").forEach(b=>b.addEventListener("click",()=>editLead(+b.dataset.ed)));
-}
-function editLead(i){
-  const l=leads[i]; if(!l) return;
-  const title=prompt("Tytuł", l.title)||l.title;
-  const client=prompt("Klient (nazwa, opcjonalnie)", l.clientName||"")||l.clientName||"";
-  const status=prompt("Status: NOWY/KONTAKT/QUALIFIED/OFERTA/WYGRANY/PRZEGRANY", l.status)||l.status;
-  const source=prompt("Źródło (np. WWW, FB, telefon)", l.source||"")||l.source||"";
-  leads[i]={...l,title,clientName:client,status,source};
-  saveLeads();
-}
-function bindLeadsUI(){
-  $("#ld-add").addEventListener("click",()=>{ leads.unshift({title:"Nowy lead",clientName:"",status:"NOWY",source:"",created:Date.now()}); saveLeads(); });
-  $("#ld-json").addEventListener("click",()=>downloadText("arkon_leady.json", JSON.stringify(leads,null,2)));
-  $("#ld-json-in").addEventListener("change",async e=>{ const f=e.target.files[0]; if(!f) return; try{ const arr=JSON.parse(await f.text()); if(!Array.isArray(arr)) throw 0; leads=arr; saveLeads(); }catch{ alert("Zły plik JSON"); } e.target.value=""; });
-  $("#ld-q").addEventListener("input",renderLeads);
-  $("#ld-status").addEventListener("change",renderLeads);
-}
-
-/* ====== CHAT ====== */
-const LS_MSGS = "arkon_msgs_v1";
-function loadMsgs(){ try{return JSON.parse(localStorage.getItem(LS_MSGS)||"[]")}catch{return[]} }
-function saveMsgs(list){ localStorage.setItem(LS_MSGS, JSON.stringify(list)); }
-let messages = loadMsgs();
-let pendingFiles = []; // {id,name,type,size,blob}
-const chatBox = $("#chat-box");
-function renderChat(){ chatBox.innerHTML=""; messages.forEach(m=>appendMsg(m,false)); chatBox.scrollTop = chatBox.scrollHeight; }
 function appendMsg(m,scroll=true){
   const dt = new Date(m.at||Date.now());
   const time = dt.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"});
   const div=document.createElement("div"); div.className="bubble";
-  let html = <div class="meta"><strong>${esc(m.user||"Anon")}</strong> • ${time}</div><div class="text">${esc(m.text||"")}</div>;
+  let html = `<div class="meta"><strong>${esc(m.user||"Anon")}</strong> • ${time}</div><div class="text">${esc(m.text||"")}</div>`;
   if(m.files && m.files.length){
-    html += <div style="margin-top:6px"> + m.files.map(f=><a class="file-pill" href="#" data-dlid="${f.id}" title="${esc(f.name)}"><span>📎</span>${esc(f.name)} <small>(${bytes(f.size)})</small></a>).join("") + </div>;
+    html += `<div style="margin-top:6px">` + m.files.map(f=>`<a class="file-pill" href="#" data-dlid="${f.id}" title="${esc(f.name)}"><span>📎</span>${esc(f.name)} <small>(${bytes(f.size)})</small></a>`).join("") + `</div>`;
   }
-  div.innerHTML = html; chatBox.appendChild(div); if(scroll) chatBox.scrollTop=chatBox.scrollHeight;
+  const chatBox = $("#chat-box");
+  div.innerHTML = html;
+  chatBox.appendChild(div);
+  if(scroll) chatBox.scrollTop=chatBox.scrollHeight;
+
   div.querySelectorAll("[data-dlid]").forEach(a=>{
     a.addEventListener("click", async (e)=>{
       e.preventDefault();
-      const id=a.getAttribute("data-dlid");
-      const rec = await dbGet(id);
+      const fid = a.getAttribute("data-dlid");
+      const rec = await dbGet(fid);
       if(!rec){ alert("Plik niedostępny."); return; }
       const url = URL.createObjectURL(rec.blob);
-      const link = document.createElement("a"); link.href=url; link.download=rec.name; document.body.appendChild(link); link.click(); link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1200);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = rec.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1500);
     });
   });
 }
+
+function renderLeads(){
+  const q = ($("#ld-q").value||"").toLowerCase();
+  const statusFilter = $("#ld-status").value || "";
+  const tb = $("#ld-tbody");
+  tb.innerHTML = "";
+  (leads||[]).forEach((l, idx) => {
+    if(statusFilter && l.status !== statusFilter) return;
+    const hay = [l.title, l.clientName, l.status, l.source].join(" ").toLowerCase();
+    if(q && !hay.includes(q)) return;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="row">
+        <button class="btn ghost" data-ed="${idx}">Edytuj</button>
+        <button class="btn bad" data-del="${idx}">Usuń</button>
+      </td>
+      <td>${esc(l.title)}</td>
+      <td>${esc(l.clientName||"")}</td>
+      <td>${esc(l.status)}</td>
+      <td>${esc(l.source||"")}</td>
+      <td>${new Date(l.created||Date.now()).toLocaleString('pl-PL')}</td>`;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{ 
+    if(confirm("Usunąć lead?")){ leads.splice(+b.dataset.del,1); saveLeads(); renderLeads(); } 
+  }));
+  tb.querySelectorAll("[data-ed]").forEach(b=>b.addEventListener("click",()=>editLead(+b.dataset.ed)));
+}
+
+function editLead(i){
+  const l = leads[i]; if(!l) return;
+  const title = prompt("Tytuł", l.title) || l.title;
+  const client = prompt("Klient (nazwa, opcjonalnie)", l.clientName||"") || l.clientName||"";
+  const status = prompt("Status: NOWY/KONTAKT/QUALIFIED/OFERTA/WYGRANY/PRZEGRANY", l.status) || l.status;
+  const source = prompt("Źródło (np. WWW, FB, telefon)", l.source||"") || l.source||"";
+  leads[i] = {...l, title, clientName: client, status, source};
+  saveLeads();
+  renderLeads();
+}
+
+function bindLeadsUI(){
+  $("#ld-add").addEventListener("click",()=>{ 
+    leads.unshift({title:"Nowy lead",clientName:"",status:"NOWY",source:"",created:Date.now()}); 
+    saveLeads(); renderLeads(); 
+  });
+  $("#ld-json").addEventListener("click",()=>downloadText("arkon_leady.json", JSON.stringify(leads,null,2)));
+  $("#ld-json-in").addEventListener("change",async e=>{
+    const f = e.target.files[0]; if(!f) return;
+    try{
+      const arr = JSON.parse(await f.text());
+      if(!Array.isArray(arr)) throw new Error("Invalid");
+      leads = arr; saveLeads(); renderLeads();
+    }catch{ alert("Zły plik JSON"); }
+    e.target.value = "";
+  });
+  $("#ld-q").addEventListener("input",renderLeads);
+  $("#ld-status").addEventListener("change",renderLeads);
+}
+
 async function sendMessage(){
   const text = ($("#chat-text").value||"").trim();
   if(!text && pendingFiles.length===0) return;
@@ -687,31 +846,40 @@ async function sendMessage(){
   pendingFiles = []; renderPendingFiles();
   $("#chat-text").value=""; $("#chat-text").focus();
 }
+
 const dz = $("#dz"), fi = $("#file-input"), pendingBox=$("#pending-files");
 dz.addEventListener("click",()=>fi.click());
 dz.addEventListener("dragover",(e)=>{ e.preventDefault(); dz.classList.add("drag"); });
 dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
 dz.addEventListener("drop",(e)=>{ e.preventDefault(); dz.classList.remove("drag"); handleFiles(e.dataTransfer.files); });
 fi.addEventListener("change",()=>{ handleFiles(fi.files); fi.value=""; });
+
 function renderPendingFiles(){
   if(!pendingFiles.length){ pendingBox.innerHTML=""; return; }
-  pendingBox.innerHTML = pendingFiles.map((f,i)=><span class="file-pill">📎 ${esc(f.name)} <small>(${bytes(f.size)})</small> <a href="#" data-rm="${i}" title="Usuń">&times;</a></span>).join("");
+  pendingBox.innerHTML = pendingFiles.map((f,i)=>`<span class="file-pill">📎 ${esc(f.name)} <small>(${bytes(f.size)})</small> <a href="#" data-rm="${i}" title="Usuń">&times;</a></span>`).join("");
   pendingBox.querySelectorAll("[data-rm]").forEach(a=>a.addEventListener("click",(e)=>{ e.preventDefault(); const idx=+a.getAttribute("data-rm"); pendingFiles.splice(idx,1); renderPendingFiles(); }));
 }
+
 function handleFiles(fileList){
   const maxPerFile = 50 * 1024 * 1024; // 50MB
   Array.from(fileList||[]).forEach(f=>{
-    if(f.size>maxPerFile){ alert(Plik ${f.name} jest większy niż 50MB); return; }
+    if(f.size>maxPerFile){ alert(`Plik ${f.name} jest większy niż 50MB`); return; }
     const id = uid();
     pendingFiles.push({ id, name:f.name, type:f.type||"application/octet-stream", size:f.size, blob:f });
   });
   renderPendingFiles();
 }
-$("#chat-send").addEventListener("click", sendMessage);
-$("#chat-text").addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); sendMessage(); }});
 
-/* ====== EKSPORT / IMPORT PEŁNY ====== */
-function blobToBase64(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res((r.result||"").toString().split(",")[1]||""); r.onerror=()=>rej(r.error); r.readAsDataURL(blob); }); }
+// helper used by export/import to convert blob to base64 (safe to redeclare)
+async function blobToBase64(blob){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload = ()=>{ const b64 = r.result.split(",")[1]||""; res(b64); };
+    r.onerror = ()=>rej(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
 async function exportFull(){
   const files = await dbAll();
   const files64 = [];
@@ -725,6 +893,7 @@ async function exportFull(){
   };
   downloadText("arkon_full_export.json", JSON.stringify(dump,null,2));
 }
+
 async function importFull(file){
   try{
     const txt=await file.text(); const dump=JSON.parse(txt);

@@ -24,6 +24,7 @@
   .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .btn.ok{background:#194d34;border-color:var(--ok)}
   input,select,textarea{background:var(--field);border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
+  .toolbar input{min-width:280px}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
   .small{font-size:12px;color:#aeb8da}
   .grid{display:grid;gap:12px}
@@ -63,20 +64,20 @@
 <div class="wrap">
   <!-- TABS -->
   <div class="tabs" role="tablist" aria-label="Kategorie stolarki">
-    <button class="tab" data-k="okna" aria-selected="true">Okna</button>
-    <button class="tab" data-k="drzwi_zew">Drzwi zewn.</button>
-    <button class="tab" data-k="drzwi_wew">Drzwi wew.</button>
-    <button class="tab" data-k="bramy">Bramy garażowe</button>
-    <button class="tab" data-k="oslony">Rolety/Żaluzje/Moskitiery</button>
+    <button class="tab" role="tab" data-k="okna" aria-selected="true">Okna</button>
+    <button class="tab" role="tab" data-k="drzwi_zew" aria-selected="false">Drzwi zewn.</button>
+    <button class="tab" role="tab" data-k="drzwi_wew" aria-selected="false">Drzwi wew.</button>
+    <button class="tab" role="tab" data-k="bramy" aria-selected="false">Bramy garażowe</button>
+    <button class="tab" role="tab" data-k="oslony" aria-selected="false">Rolety/Żaluzje/Moskitiery</button>
   </div>
 
   <!-- TOOLBAR -->
   <div class="toolbar">
-    <input id="q" placeholder="🔎 szukaj: marka/model/typ/wariant/uwagi…" style="min-width:280px">
-    <select id="fTyp"></select>
-    <select id="fMater"></select>
-    <select id="fKolor"></select>
-    <select id="fSzklenie"></select>
+    <input id="q" placeholder="🔎 szukaj: marka/model/typ/wariant/uwagi…">
+    <select id="fTyp" title="Filtr: Typ"></select>
+    <select id="fMater" title="Filtr: Materiał"></select>
+    <select id="fKolor" title="Filtr: Kolor"></select>
+    <select id="fSzklenie" title="Filtr: Szklenie"></select>
     <button id="btnAdd" class="btn ok">+ Dodaj</button>
     <button id="btnCSV" class="btn ghost">CSV</button>
     <button id="btnJSON" class="btn ghost">JSON</button>

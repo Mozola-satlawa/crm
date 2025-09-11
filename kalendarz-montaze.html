@@ -37,6 +37,17 @@
   .right{display:flex;gap:8px;justify-content:flex-end}
   .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#101735;border:1px solid #2a3777;padding:2px 6px;border-radius:6px;color:#cfe0ff}
 
+  /* Utility classes (moved inline styles here) */
+  .nav a.active{background:#223160}
+  .row-between{justify-content:space-between}
+  .mt-10{margin-top:10px}
+  .mt-8{margin-top:8px}
+  .mt-6{margin-top:6px}
+  .overflow-auto{overflow:auto}
+  .flex-1{flex:1}
+  .w-100px{width:100px}
+  .w-100{width:100%}
+
   /* Calendar */
   .calendar{border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:#0f173a;border-bottom:1px solid var(--line)}
@@ -80,55 +91,44 @@
 <body>
 
 <header>
-  <h1>Kalendarz Montaży • ARKON</h1>
-  <div class="small">Planowanie ekip i terminów. Dane: <code>localStorage</code> — eksport JSON/ICS, druk do PDF.</div>
+  <a href="kalendarz-montaze.html" class="active">Kalendarz</a>
 </header>
-
-<nav>
-  <a href="index.html">Pulpit</a>
-  <a href="klienci.html">Klienci</a>
-  <a href="lidy.html">Lidy</a>
-  <a href="komponenty.html">Komponenty</a>
-  <a href="upload.html">Przesył plików</a>
-  <a href="chat.html">Komunikator</a>
-  <a href="kalendarz-montaze.html" style="background:#223160">Kalendarz</a>
-</nav>
 
 <div class="wrap grid cols-2">
   <!-- LEWY: kalendarz + lista -->
   <section class="grid">
     <div class="card">
-      <div class="row" style="justify-content:space-between;align-items:center">
+      <div class="row row-between">
         <div class="row">
           <button id="prev" class="btn">←</button>
           <button id="today" class="btn ghost">Dziś</button>
           <button id="next" class="btn">→</button>
-          <input id="jump" type="month" title="Skocz do miesiąca">
+          <input id="jump" type="text" pattern="\d{4}-\d{2}" placeholder="rrrr-mm" title="Skocz do miesiąca (RRRR-MM)" aria-label="Wybierz miesiąc">
         </div>
         <div class="row">
-          <select id="fInstaller"><option value="">Monter (wszyscy)</option></select>
-          <select id="fStatus">
+          <select id="fInstaller" aria-label="Filtr monter"><option value="">Monter (wszyscy)</option></select>
+          <select id="fStatus" aria-label="Filtr statusu">
             <option value="">Status (wszystkie)</option>
             <option value="PLAN">PLAN</option>
             <option value="POTWIERDZONY">POTWIERDZONY</option>
             <option value="ZAKOŃCZONY">ZAKOŃCZONY</option>
             <option value="ANULOWANY">ANULOWANY</option>
           </select>
-          <input id="q" placeholder="🔎 Szukaj: klient/adres/uwagi">
+          <input id="q" placeholder="🔎 Szukaj: klient/adres/uwagi" aria-label="Szukaj">
           <button id="btnClear" class="btn ghost">Wyczyść filtry</button>
           <button id="btnNew" class="btn ok">+ Nowy montaż</button>
         </div>
       </div>
 
-      <div id="cal" class="calendar" style="margin-top:10px">
+      <div id="cal" class="calendar mt-10">
         <div class="cal-head" id="calHead"></div>
         <div class="cal-grid" id="calGrid" aria-live="polite"></div>
       </div>
-      <div class="small" style="margin-top:6px">Kliknij w dzień, aby dodać montaż. Kliknij w kafelek montażu, aby edytować.</div>
+      <div class="small mt-6">Kliknij w dzień, aby dodać montaż. Kliknij w kafelek montażu, aby edytować.</div>
     </div>
 
     <div class="card">
-      <div class="row" style="justify-content:space-between">
+      <div class="row row-between">
         <b>Lista montaży (widok tabeli)</b>
         <div class="right">
           <button id="btnExport" class="btn">Eksport JSON</button>
@@ -136,7 +136,7 @@
           <button id="btnPrint" class="btn ghost">Drukuj / PDF</button>
         </div>
       </div>
-      <div style="overflow:auto;margin-top:6px">
+      <div class="overflow-auto mt-6">
         <table id="tbl">
           <thead>
             <tr>
@@ -153,36 +153,36 @@
   <aside class="grid">
     <div class="card">
       <b>Monterzy • legenda</b>
-      <div id="legend" class="legend" style="margin-top:8px"></div>
-      <div class="row" style="margin-top:10px">
-        <input id="newInstName" placeholder="Imię i nazwisko">
-        <input id="newInstColor" type="color" value="#7dd3fc" title="Kolor">
+      <div id="legend" class="legend mt-8"></div>
+      <div class="row mt-10">
+        <input id="newInstName" placeholder="Imię i nazwisko" aria-label="Imię i nazwisko">
+        <input id="newInstColor" type="color" value="#7dd3fc" title="Kolor" aria-label="Kolor">
         <button id="btnAddInstaller" class="btn ok">+ Monter</button>
       </div>
     </div>
 
     <div class="card">
       <b>Obłożenie w miesiącu</b>
-      <div id="load" class="small" style="margin-top:8px"></div>
+      <div id="load" class="small mt-8"></div>
     </div>
 
     <div class="card">
       <b>Szybkie dodawanie</b>
       <div class="small">Wypełnij i kliknij „Dodaj”. Wszystko możesz później edytować.</div>
-      <div class="grid" style="margin-top:8px">
-        <input id="qDate" type="date">
-        <div class="row"><input id="qTime" type="time" style="flex:1"><input id="qDur" type="number" min="1" value="4" title="Czas [h]" style="width:100px"><span class="pill">Czas [h]</span></div>
-        <input id="qClient" placeholder="Klient (nazwa)">
-        <input id="qAddr" placeholder="Adres">
-        <input id="qScope" placeholder="Zakres (np. PC 12 kW + bufor)">
-        <select id="qStatus">
+      <div class="grid mt-8">
+        <input id="qDate" type="date" aria-label="Data">
+        <div class="row"><input id="qTime" type="time" class="flex-1" aria-label="Godzina"><input id="qDur" type="number" min="1" value="4" title="Czas [h]" class="w-100px" aria-label="Czas [h]"><span class="pill">Czas [h]</span></div>
+        <input id="qClient" placeholder="Klient (nazwa)" aria-label="Klient">
+        <input id="qAddr" placeholder="Adres" aria-label="Adres">
+        <input id="qScope" placeholder="Zakres (np. PC 12 kW + bufor)" aria-label="Zakres">
+        <select id="qStatus" aria-label="Status">
           <option>PLAN</option><option>POTWIERDZONY</option><option>ZAKOŃCZONY</option><option>ANULOWANY</option>
         </select>
         <div>
           <label class="small">Monterzy (Ctrl/⌘, aby wybrać kilku)</label>
-          <select id="qInst" multiple size="4" style="width:100%"></select>
+          <select id="qInst" multiple size="4" class="w-100" aria-label="Monterzy"></select>
         </div>
-        <textarea id="qNotes" placeholder="Uwagi (opcjonalnie)"></textarea>
+        <textarea id="qNotes" placeholder="Uwagi (opcjonalnie)" aria-label="Uwagi"></textarea>
         <button id="btnQuickAdd" class="btn ok">+ Dodaj montaż</button>
       </div>
     </div>
@@ -191,7 +191,7 @@
 
 <!-- Drawer (edycja szczegółowa) -->
 <aside id="drawer" class="drawer" aria-label="Edycja montażu">
-  <div class="hd row" style="justify-content:space-between">
+  <div class="hd row row-between">
     <b>Edycja montażu</b>
     <div class="right">
       <button id="btnIcs" class="btn ghost" type="button">Eksport ICS</button>
@@ -202,21 +202,21 @@
   </div>
   <div class="bd">
     <div class="kv">
-      <label>Data</label><input id="e_date" type="date">
-      <label>Godzina</label><input id="e_time" type="time">
-      <label>Czas [h]</label><input id="e_dur" type="number" min="1">
-      <label>Klient</label><input id="e_client">
-      <label>Adres</label><input id="e_addr">
-      <label>Zakres</label><input id="e_scope">
-      <label>Status</label>
-      <select id="e_status">
+      <label for="e_date">Data</label><input id="e_date" type="date" aria-label="Data">
+      <label for="e_time">Godzina</label><input id="e_time" type="time" aria-label="Godzina">
+      <label for="e_dur">Czas [h]</label><input id="e_dur" type="number" min="1" aria-label="Czas [h]">
+      <label for="e_client">Klient</label><input id="e_client" aria-label="Klient">
+      <label for="e_addr">Adres</label><input id="e_addr" aria-label="Adres">
+      <label for="e_scope">Zakres</label><input id="e_scope" aria-label="Zakres">
+      <label for="e_status">Status</label>
+      <select id="e_status" aria-label="Status">
         <option>PLAN</option><option>POTWIERDZONY</option><option>ZAKOŃCZONY</option><option>ANULOWANY</option>
       </select>
       <label>Monterzy</label>
       <div id="e_instBox" class="chips"></div>
-      <label>Uwagi</label><textarea id="e_notes"></textarea>
-      <label>Powiązany klient (z modułu Klienci)</label>
-      <select id="e_clientId"><option value="">— niepowiązany —</option></select>
+      <label for="e_notes">Uwagi</label><textarea id="e_notes" aria-label="Uwagi"></textarea>
+      <label for="e_clientId">Powiązany klient (z modułu Klienci)</label>
+      <select id="e_clientId" aria-label="Powiązany klient"><option value="">— niepowiązany —</option></select>
     </div>
   </div>
 </aside>
@@ -340,7 +340,7 @@ window.addEventListener('keydown',(e)=>{
 function render(){
   // head labels
   const days = ['Pon','Wt','Śr','Czw','Pt','Sob','Ndz'];
-  calHead.innerHTML = days.map(d=><div>${d}</div>).join('');
+  calHead.innerHTML = days.map(d=>`<div>${d}</div>`).join('');
   // set month picker
   $('#jump').value = view.year+'-'+pad2(view.month+1);
   renderCalendar();
@@ -371,14 +371,14 @@ function renderCalendar(){
   // fill events
   const filtered = filterEvents(events);
   filtered.forEach(ev=>{
-    const el = calGrid.querySelector(.cell[data-date="${ev.date}"] .list);
+    const el = calGrid.querySelector(`.cell[data-date="${ev.date}"] .list`);
     if(!el) return;
     const clr = colorFor(ev);
     const label = escapeHtml(shortEventText(ev));
     const div = document.createElement('a');
     div.href='#'; div.className='ev';
-    div.innerHTML = <span class="bar" style="background:${clr}"></span>${label};
-    div.title = ${ev.time} • ${ev.client} • ${ev.scope};
+    div.innerHTML = `<span class="bar" style="background:${clr}"></span>${label}`;
+    div.title = `${ev.time || ''} • ${ev.client || ''} • ${ev.scope || ''}`;
     div.addEventListener('click',(e)=>{ e.preventDefault(); openDrawer(ev.id); });
     el.appendChild(div);
   });
@@ -404,7 +404,7 @@ function renderList(){
     const inst = (ev.installers||[]).map(id=>{
       const ins = installers.find(x=>x.id===id);
       if(!ins) return '';
-      return <span class="dot"><span class="c" style="background:${ins.color}"></span>${escapeHtml(ins.name)}</span>;
+      return `<span class="dot"><span class="c" style="background:${ins.color}"></span>${escapeHtml(ins.name)}</span>`;
     }).join(' ');
     const stCl = statusClass(ev.status);
     const tr = document.createElement('tr');
@@ -427,7 +427,7 @@ function renderLegend(){
   installers.forEach(i=>{
     const div = document.createElement('span');
     div.className='dot';
-    div.innerHTML = <span class="c" style="background:${i.color}"></span>${escapeHtml(i.name)};
+    div.innerHTML = `<span class="c" style="background:${i.color}"></span>${escapeHtml(i.name)}`;
     box.appendChild(div);
   });
 }
@@ -442,7 +442,7 @@ function renderLoad(){
     }
   });
   const html = installers.map(i=>{
-    return `<div class="row" style="justify-content:space-between;border-bottom:1px dashed #28356c;padding:4px 0">
+    return `<div class="row row-between" style="border-bottom:1px dashed #28356c;padding:4px 0">
       <span class="dot"><span class="c" style="background:${i.color}"></span>${escapeHtml(i.name)}</span>
       <b>${counts[i.id]||0}</b>
     </div>`;
@@ -488,7 +488,7 @@ function shortEventText(ev){
   const insCount = (ev.installers||[]).length;
   const who = insCount ? ` • ${insCount} os.` : '';
   const time = ev.time? ev.time+' ' : '';
-  return ${time}${ev.client||''}${who};
+  return `${time}${ev.client||''}${who}`;
 }
 
 /* ===== month nav ===== */
@@ -525,13 +525,13 @@ function drawInstallerChips(list){
     const ins = installers.find(x=>x.id===id); if(!ins) return;
     const chip=document.createElement('span');
     chip.className='dot';
-    chip.innerHTML = <span class="c" style="background:${ins.color}"></span>${escapeHtml(ins.name)} <a href="#" data-id="${ins.id}" title="Usuń" style="color:#ffb4b4;margin-left:6px">×</a>;
+    chip.innerHTML = `<span class="c" style="background:${ins.color}"></span>${escapeHtml(ins.name)} <a href="#" data-id="${ins.id}" title="Usuń" style="color:#ffb4b4;margin-left:6px">×</a>`;
     chip.querySelector('a').onclick = (e)=>{ e.preventDefault(); set.delete(ins.id); drawInstallerChips([...set]); saveFromEditor({installers:[...set]}); };
     box.appendChild(chip);
   });
   // dodaj
   const sel=document.createElement('select');
-  sel.innerHTML = '<option value="">+ Dodaj montera…</option>' + installers.map(i=><option value="${i.id}">${escapeHtml(i.name)}</option>).join('');
+  sel.innerHTML = '<option value="">+ Dodaj montera…</option>' + installers.map(i=>`<option value="${i.id}">${escapeHtml(i.name)}</option>`).join('');
   sel.onchange = ()=>{ if(sel.value){ set.add(sel.value); drawInstallerChips([...set]); saveFromEditor({installers:[...set]}); sel.value=''; } };
   box.appendChild(sel);
 }
@@ -566,13 +566,13 @@ function saveFromEditor(patch){
 /* ===== clients / installers in UI ===== */
 function fillInstallerFilters(){
   const sel=$('#fInstaller'); const v=sel.value;
-  sel.innerHTML='<option value="">Monter (wszyscy)</option>'+installers.map(i=><option value="${i.id}">${escapeHtml(i.name)}</option>).join('');
+  sel.innerHTML='<option value="">Monter (wszyscy)</option>'+installers.map(i=>`<option value="${i.id}">${escapeHtml(i.name)}</option>`).join('');
   sel.value=v||'';
 }
 function fillClientSelect(selected){
   const sel=$('#e_clientId'); const v=selected||sel.value;
   const data = load(LS.clients, []);
-  sel.innerHTML='<option value="">— niepowiązany —</option>'+data.map(c=><option value="${c.id}">${escapeHtml(c.name||'Klient')}</option>).join('');
+  sel.innerHTML='<option value="">— niepowiązany —</option>'+data.map(c=>`<option value="${c.id}">${escapeHtml(c.name||'Klient')}</option>`).join('');
   sel.value=v||'';
 }
 
@@ -586,14 +586,14 @@ function exportJSON(){
 }
 function exportICS(ev){
   // Single VEVENT export (local time, no TZ)
-  const dt = (ev.date||'')+(ev.time? 'T'+ev.time.replace(':','')+'00' : 'T000000');
   const durH = Math.max(1, Number(ev.dur)||1);
-  const end = new Date(ev.date+'T'+(ev.time||'00:00')+':00');
+  // Build end time from local date/time
+  const end = new Date((ev.date||'') + 'T' + ((ev.time||'00:00')) + ':00');
   end.setHours(end.getHours()+durH);
-  const dtEnd = toLocalDateStr(end).replace(/-/g,'')+'T'+pad2(end.getHours())+pad2(end.getMinutes())+'00';
-  const uidStr = ev.id+'@arkon';
-  const sum = (ev.client||'Montaż')+' — '+(ev.scope||'');
-  const desc = Adres: ${ev.addr||''}\\nMonterzy: ${(ev.installers||[]).map(id=>installers.find(x=>x.id===id)?.name||'').join(', ')}\\nStatus: ${ev.status||''}\\nUwagi: ${ev.notes||''};
+  const dtEnd = toLocalDateStr(end).replace(/-/g,'') + 'T' + pad2(end.getHours()) + pad2(end.getMinutes()) + '00';
+  const uidStr = (ev.id||uid()) + '@arkon';
+  const sum = (ev.client||'Montaż') + ' — ' + (ev.scope||'');
+  const desc = `Adres: ${ev.addr||''}\\nMonterzy: ${(ev.installers||[]).map(id=>installers.find(x=>x.id===id)?.name||'').join(', ')}\\nStatus: ${ev.status||''}\\nUwagi: ${ev.notes||''}`;
   const ics = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//ARKON//Kalendarz Montaży//PL
@@ -609,7 +609,7 @@ END:VEVENT
 END:VCALENDAR`;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
-  a.download = montaz_${(ev.client||'klient').replace(/\s+/g,'_')}.ics;
+  a.download = `montaz_${(ev.client||'klient').replace(/\s+/g,'_')}.ics`;
   a.click(); URL.revokeObjectURL(a.href);
 }
 

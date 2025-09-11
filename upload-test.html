@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Test Upload • Netlify</title>
   <style>
     body { font-family: system-ui, sans-serif; padding: 2rem; background:#0b1020; color:#fff; }
@@ -15,7 +16,8 @@
   <h1>📤 Upload pliku do Netlify Functions</h1>
 
   <form id="uploadForm" class="box">
-    <input type="file" name="file" required>
+    <label for="fileInput">Wybierz plik</label>
+    <input id="fileInput" type="file" name="file" required title="Wybierz plik do przesłania" placeholder="Wybierz plik" aria-label="Wybierz plik">
     <br>
     <button type="submit">Wyślij</button>
   </form>

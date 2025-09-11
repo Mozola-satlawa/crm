@@ -51,6 +51,9 @@
     .card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0f1636}
     .card h4{margin:0 0 8px;font-size:15px}
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0d1530;border:1px dashed var(--line);font-size:11px;font-weight:800;margin-right:6px;color:#cfe1ff}
+    /* utility classes to avoid inline styles */
+    .hidden{display:none!important}
+    .pill-inline{display:inline-flex;align-items:center;gap:8px}
     ul.clean{margin:6px 0 0;padding-left:18px}ul.clean li{margin:3px 0}
     table{width:100%;border-collapse:collapse;font-size:13px}
     th,td{border-bottom:1px solid var(--line);padding:8px 10px}
@@ -64,6 +67,7 @@
     /* Sekcja doboru z powierzchni (wygląd kompaktowy) */
     .inline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .inline .cell{display:flex;flex-direction:column;min-width:140px}
+    .cell.minwide{min-width:220px}
     .inline strong{color:#aee1ff}
 
     /* ======== ŁADNY WYDRUK ======== */
@@ -119,69 +123,66 @@
         <h3>Dobierz parametry</h3>
         <div class="row">
           <div class="col">
-            <label>Marka</label>
-            <select id="brand">
+            <label id="brandLabel">Marka</label>
+            <select id="brand" aria-labelledby="brandLabel" title="Marka kotła">
               <option value="Ferroli">Ferroli (gaz/kondens.)</option>
               <option value="DEFRO">DEFRO (pellet)</option>
               <option value="Stalmark">Stalmark (pellet)</option>
               <option value="LAZAR">LAZAR (zgazowujące drewno)</option>
             </select>
-          </div>
-          <div class="col wide">
-            <label>Model kotła (lokalna lista dla wybranej marki)</label>
-            <select id="boiler"></select>
+            <select id="boiler" aria-labelledby="boilerLabel" title="Model kotła"></select>
           </div>
           <div class="col">
-            <label>Moc [kW]</label>
-            <input id="power" type="text" readonly>
+            <label id="powerLabel">Moc [kW]</label>
+            <input id="power" type="text" readonly title="Moc kotła w kW" placeholder="—" aria-labelledby="powerLabel">
           </div>
           <div class="col">
-            <label>Typ/paliwo</label>
-            <input id="type" type="text" readonly>
+            <label id="typeLabel">Typ/paliwo</label>
+            <input id="type" type="text" readonly title="Typ lub paliwo kotła" placeholder="—" aria-labelledby="typeLabel">
           </div>
           <div class="col">
-            <label>Cena kotła [PLN]</label>
-            <input id="boilerPrice" type="text" readonly>
+            <label id="boilerPriceLabel">Cena kotła [PLN]</label>
+            <input id="boilerPrice" type="text" readonly title="Cena kotła netto" placeholder="—" aria-labelledby="boilerPriceLabel">
           </div>
           <div class="col">
-            <label>Zasobnik CWU [l]</label>
-            <select id="tank"></select>
+            <label id="tankLabel">Zasobnik CWU [l]</label>
+            <select id="tank" aria-labelledby="tankLabel" title="Pojemność zasobnika"></select>
           </div>
           <div class="col">
-            <label>Cena zbiornika [PLN]</label>
-            <input id="tankPrice" type="text" readonly>
+            <label id="tankPriceLabel">Cena zbiornika [PLN]</label>
+            <input id="tankPrice" type="text" readonly title="Cena zbiornika netto" placeholder="—" aria-labelledby="tankPriceLabel">
           </div>
 
           <!-- Bufor ciepła: wymagany dla drewna; dla pellet/gaz — opcjonalny -->
-          <div class="col" id="bufferOptWrap" style="display:none">
-            <label>Bufor ciepła (opcjonalnie)</label>
-            <label class="pill" style="display:inline-flex;align-items:center;gap:8px">
-              <input type="checkbox" id="bufferOpt"> Dodaj bufor do zestawu
+          <div class="col hidden" id="bufferOptWrap">
+            <label id="bufferOptWrapLabel">Bufor ciepła (opcjonalnie)</label>
+            <label class="pill pill-inline">
+              <input type="checkbox" id="bufferOpt" aria-labelledby="bufferOptWrapLabel"> Dodaj bufor do zestawu
             </label>
           </div>
-          <div class="col" id="bufferWrap" style="display:none">
-            <label id="bufferLabel">Bufor ciepła [l]</label>
-            <select id="buffer"></select>
+          <div class="col hidden" id="bufferWrap">
+            <label id="bufferLabel" for="buffer">Bufor ciepła [l]</label>
+            <select id="buffer" title="Pojemność bufora"></select>
             <div class="mini" id="bufferHint">—</div>
           </div>
-          <div class="col" id="bufferPriceWrap" style="display:none">
-            <label>Cena bufora [PLN]</label>
-            <input id="bufferPrice" type="text" readonly>
+          <div class="col hidden" id="bufferPriceWrap">
+            <label for="bufferPrice">Cena bufora [PLN]</label>
+            <input id="bufferPrice" type="text" readonly title="Cena bufora netto">
           </div>
 
           <div class="col">
-            <label>Liczba grzejników (montaż)</label>
-            <input id="rads" type="number" min="0" step="1" value="0">
+            <label for="rads">Liczba grzejników (montaż)</label>
+            <input id="rads" type="number" min="0" step="1" value="0" title="Liczba grzejników" placeholder="0">
             <div class="mini">750 PLN/szt.</div>
           </div>
           <div class="col">
-            <label>Wkład kominowy [m]</label>
-            <input id="chimneyM" type="number" min="0" step="0.1" value="0">
+            <label for="chimneyM">Wkład kominowy [m]</label>
+            <input id="chimneyM" type="number" min="0" step="0.1" value="0" title="Długość wkładu kominowego w metrach" placeholder="0.0">
             <div class="mini">650 PLN/mb</div>
           </div>
           <div class="col">
-            <label>VAT</label>
-            <select id="vat">
+            <label for="vat">VAT</label>
+            <select id="vat" title="Stawka VAT">
               <option value="0.08">8%</option>
               <option value="0.23">23%</option>
             </select>
@@ -192,12 +193,11 @@
             <label>Dobór mocy z powierzchni</label>
             <div class="inline">
               <div class="cell">
-                <span class="mini">Powierzchnia domu [m²]</span>
-                <input id="houseArea" type="number" min="20" step="1" value="120">
+                <input id="houseArea" type="number" min="20" step="1" value="120" title="Powierzchnia domu w m²" placeholder="120" aria-labelledby="houseAreaLabel">
               </div>
               <div class="cell">
-                <span class="mini">Standard budynku</span>
-                <select id="buildingStd">
+                <span class="mini" id="buildingStdLabel">Standard budynku</span>
+                <select id="buildingStd" title="Standard budynku" aria-labelledby="buildingStdLabel">
                   <option value="35">Nowy A+/A (35 W/m²)</option>
                   <option value="50" selected>Dobrze ocieplony (50 W/m²)</option>
                   <option value="70">Modernizowany (70 W/m²)</option>
@@ -205,14 +205,16 @@
                 </select>
               </div>
               <div class="cell">
-                <span class="mini">Proponowana moc [kW] (z rezerwą 15%)</span>
-                <input id="suggestedKW" type="text" readonly>
+                <span class="mini" id="suggestedKWLabel">Proponowana moc [kW] (z rezerwą 15%)</span>
+                <input id="suggestedKW" type="text" readonly title="Proponowana moc kotła w kW" placeholder="—" aria-labelledby="suggestedKWLabel">
               </div>
-              <div class="cell" style="min-width:220px">
+              <div class="cell minwide">
                 <span class="mini">Proponowany model</span>
                 <div id="suggestedModel" class="hint">—</div>
               </div>
-              <button class="btn alt" id="applySuggested">Dopasuj model</button>
+              <div class="cell">
+                <button class="btn alt" id="applySuggested">Dopasuj model</button>
+            </div>
             </div>
           </div>
 
@@ -224,15 +226,15 @@
 
         <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Piece (ograniczony do Ferroli/DEFRO/Stalmark/LAZAR) ▼▼▼ -->
         <div class="sep"></div>
-        <h3 style="margin-top:0">Mostek ARKON — Komponenty • Piece</h3>
+        <h3>Mostek ARKON — Komponenty • Piece</h3>
         <div class="row">
           <div class="col">
-            <label>Marka (z katalogu)</label>
-            <select id="arkonBrand"></select>
+            <label id="arkonBrandLabel">Marka (z katalogu)</label>
+            <select id="arkonBrand" aria-labelledby="arkonBrandLabel" title="Marka (z katalogu)"></select>
           </div>
           <div class="col">
-            <label>Paliwo / typ</label>
-            <select id="arkonFuel">
+            <label id="arkonFuelLabel">Paliwo / typ</label>
+            <select id="arkonFuel" aria-labelledby="arkonFuelLabel" title="Paliwo / typ">
               <option value="">— dowolne —</option>
               <option value="gaz">gaz</option>
               <option value="gaz-kondensacyjny">gaz-kondensacyjny</option>
@@ -249,12 +251,13 @@
             <input id="arkonMax" type="number" step="0.1" placeholder="np. 25">
           </div>
           <div class="col wide">
-            <label>Model (z „Komponenty • Piece”)</label>
-            <select id="arkonModel" disabled></select>
+            <label id="arkonModelLabel">Model (z „Komponenty • Piece”)</label>
+            <select id="arkonModel" aria-labelledby="arkonModelLabel" title="Model (z „Komponenty • Piece”)"
+                    disabled></select>
           </div>
           <div class="col">
             <label>Akcje</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="inline">
               <button class="btn ghost" id="useArkon">Użyj tego kotła</button>
               <button class="btn ghost" id="openArkon">Otwórz katalog (nowa karta)</button>
             </div>
@@ -290,8 +293,8 @@
         </table>
         <div class="sep"></div>
         <div class="row">
-          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" style="font-weight:800;font-size:22px;"></div></div>
-          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" style="font-weight:800;font-size:22px;"></div></div>
+          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" class="price-preview"></div></div>
+          <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" class="price-preview"></div></div>
         </div>
       </div>
     </div>
@@ -301,8 +304,9 @@
       <div class="bundle-grid" id="addons"></div>
       <div class="sep"></div>
       <button class="btn ghost" id="addSelectedAddons">Dodaj wybrane</button>
-      <div class="sub" style="margin-top:6px">Grzejniki i wkład kominowy wliczasz polami powyżej.</div>
+      <div class="sub">Grzejniki i wkład kominowy wliczasz polami powyżej.</div>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -451,7 +455,7 @@
     function activeBoiler(){
       if(state.arkon.selected){
         return {
-          model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
+          model: state.arkon.selected.brand + ' ' + state.arkon.selected.model,
           power: state.arkon.selected.powMax || state.arkon.selected.powMin || '',
           fuel:  (state.arkon.selected.fuel || '').toLowerCase(),
           type:  state.arkon.selected.type || '',
@@ -468,7 +472,7 @@
       if(!b||!t){ box.textContent='Wybierz markę, model i zasobnik — pokażę skład.'; return; }
       const items = [];
       const labelFuel = (b.fuel||fuelOfBrand(state.brand));
-      items.push(`Kocioł — ${b.model}${b.power? ` (${b.power} kW)` : ''} • ${labelFuel}`);
+      items.push(`Kocioł — ${b.model}${b.power? ` (${b.power} kW)`:''} • ${labelFuel}`);
       items.push(`Zasobnik CWU — ${t} l`);
       if(requiresBuffer(b) || state.bufferSelected){
         items.push(`Bufor ciepła — ${state.bufferLiters} l${requiresBuffer(b)?' (wymagany)':' (opcjonalnie)'}`);
@@ -477,7 +481,7 @@
       items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
       items.push('Naczynie przeponowe CO, odpowietrzniki automatyczne');
       const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN/szt.`);
-      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue? ` • zalec. Ø ${b.flue} mm` : ''}`);
+      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue? ` • zalec. Ø ${b.flue} mm`:''}`);
       items.push('Montaż, uruchomienie, konfiguracja sterowania');
       box.innerHTML = '<ul class="clean">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
     }
@@ -728,15 +732,15 @@
       ms.disabled = list.length===0;
       ms.innerHTML = list.length? '<option value="">— wybierz model —</option>' : '<option value="">— brak modeli —</option>';
       if(!list.length){ q('#arkonPreview').textContent='Brak modeli dla filtrów.'; return; }
-      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.model}${x.powMax||x.powMin? ` • ${x.powMin||''}-${x.powMax||''} kW` : ''} • ${fmt(x.price)} PLN</option>`).join('');
+      ms.innerHTML += list.map(x=>`<option value="${x.id}">${x.model}${(x.powMax||x.powMin) ? ` • ${x.powMin||''}-${x.powMax||''} kW` : ''} • ${fmt(x.price)} PLN</option>`).join('');
       q('#arkonPreview').textContent='Wybierz model, aby zobaczyć szczegóły.';
     }
     function renderArkonPreview(){
-      const p=state.arkon.selected, box=q('#arkonPreview');
-      if(!p){ box.textContent='Brak wyboru z katalogu.'; return; }
-      const pow = (p.powMin||'') + (p.powMax? `–${p.powMax}` : '');
+      const p = state.arkon.selected, box = q('#arkonPreview');
+      if(!p){ box.textContent = 'Brak wyboru z katalogu.'; return; }
+      const pow = (p.powMin||'') + (p.powMax ? `–${p.powMax}` : '');
       box.innerHTML = `<b>${p.brand} ${p.model}</b><br>
-        Moc: ${pow||'—'} kW • Paliwo: ${p.fuel||'—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue?` • Spalin Ø: ${p.flue} mm` : ''}`;
+        Moc: ${pow || '—'} kW • Paliwo: ${p.fuel || '—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue ? ` • Spalin Ø: ${p.flue} mm` : ''}`;
     }
     function selectArkonById(id){
       if(!id) return;
@@ -752,11 +756,11 @@
       // wpisz do pól głównych
       state.selectedBoiler = {
         model: `${found.brand} ${found.model}`,
-        power:found.powMax||found.powMin||'',
-        fuel:found.fuel||'',
-        type:found.type||'',
-        price:Number(found.price)||0,
-        flue:found.flue||''
+        power: found.powMax||found.powMin||'',
+        fuel: found.fuel||'',
+        type: found.type||'',
+        price: Number(found.price)||0,
+        flue: found.flue||''
       };
       applyBoilerToUi();
     }
@@ -766,16 +770,16 @@
         state.arkon.selected=null; fillArkonModels(); renderArkonPreview(); renderPreview();
       }
       if(e.target.id==='arkonModel'){
-        const id=e.target.value;
+        const id = e.target.value;
         state.arkon.selected = (state.arkon.list||[]).find(x=>x.id===id) || null;
         if(state.arkon.selected){
           state.selectedBoiler = {
             model: `${state.arkon.selected.brand} ${state.arkon.selected.model}`,
-            power:state.arkon.selected.powMax||state.arkon.selected.powMin||'',
-            fuel:state.arkon.selected.fuel||'',
-            type:state.arkon.selected.type||'',
-            price:Number(state.arkon.selected.price)||0,
-            flue:state.arkon.selected.flue||''
+            power: state.arkon.selected.powMax||state.arkon.selected.powMin||'',
+            fuel: state.arkon.selected.fuel||'',
+            type: state.arkon.selected.type||'',
+            price: Number(state.arkon.selected.price)||0,
+            flue: state.arkon.selected.flue||''
           };
           applyBoilerToUi();
         }
@@ -788,8 +792,8 @@
 
     document.addEventListener('input', (e)=>{
       if(e.target.matches('[data-qty-basket]')){
-        const i=Number(e.target.getAttribute('data-qty-basket'));
-        state.basket[i].qty=Math.max(1, Number(e.target.value)||1); renderBasket();
+        const i = Number(e.target.getAttribute('data-qty-basket'));
+        state.basket[i].qty = Math.max(1, Number(e.target.value)||1); renderBasket();
       }
       if(e.target.id==='houseArea' || e.target.id==='buildingStd'){ calcSuggestedKW(); }
     });
@@ -797,18 +801,18 @@
     document.getElementById('applySuggested').addEventListener('click', applySuggestedModel);
 
     document.addEventListener('click', (e)=>{
-      const del=e.target.getAttribute('data-del');
-      if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); return; }
+      const del = e.target.getAttribute('data-del');
+      if(del != null){ state.basket.splice(Number(del),1); renderBasket(); return; }
 
-      const addId=e.target.getAttribute('data-addon');
-      if(addId!=null){
-        const i=Number(addId); const name=Object.keys(ACCESSORY_BASE)[i];
-        const qty=Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`)?.value)||1);
+      const addId = e.target.getAttribute('data-addon');
+      if(addId != null){
+        const i = Number(addId); const name = Object.keys(ACCESSORY_BASE)[i];
+        const qty = Math.max(1, Number(document.querySelector(`[data-qty="${i}"]`)?.value) || 1);
         addToBasket(name, ACCESSORY_BASE[name], qty); return;
       }
 
       if(e.target.id==='addPack'){
-        const b=activeBoiler(), t=state.selectedTank; 
+        const b = activeBoiler(), t = state.selectedTank;
         if(!b||!t) return alert('Wybierz kocioł i zasobnik.');
         if(requiresBuffer(b) && (!state.bufferLiters || !state.bufferPrice)){
           return alert('Dla kotłów zgazowujących (drewno) wymagany jest bufor ciepła — wybierz pojemność.');
@@ -817,16 +821,16 @@
           b, TANKS[t], Number(state.rads)||0, Number(state.chimneyM)||0,
           (requiresBuffer(b) || state.bufferSelected) ? state.bufferPrice : 0
         );
-        const rlabel = state.rads?` + grzejniki x${state.rads}`:'';
-        const mlabel = (Number(state.chimneyM)||0)>0 ? ` + wkład ${state.chimneyM} m` : '';
-        const blabel = (requiresBuffer(b) || state.bufferSelected)?` + bufor ${state.bufferLiters} l`:'';
+        const rlabel = state.rads ? ` + grzejniki x${state.rads}` : '';
+        const mlabel = (Number(state.chimneyM)||0) > 0 ? ` + wkład ${state.chimneyM} m` : '';
+        const blabel = (requiresBuffer(b) || state.bufferSelected) ? ` + bufor ${state.bufferLiters} l` : '';
         addToBasket(`Zestaw: ${b.model} + CWU ${t} l${blabel} + montaż${rlabel}${mlabel}`, price, 1); return;
       }
 
       if(e.target.id==='addBoilerOnly'){
-        const b=activeBoiler(); if(!b) return alert('Wybierz kocioł.');
+        const b = activeBoiler(); if(!b) return alert('Wybierz kocioł.');
         const surcharge = BOILER_ONLY_SURCHARGES[state.brand]||0;
-        addToBasket(`Kocioł: ${b.model} — tylko urządzenie`, (Number(b.price)||0)+surcharge, 1); return;
+        addToBasket(`Kocioł: ${b.model} — tylko urządzenie`, (Number(b.price)||0) + surcharge, 1); return;
       }
     });
 
@@ -837,10 +841,10 @@
       XLSX.writeFile(wb, 'Koszyk_piece_master.xlsx');
     });
     document.getElementById('copyQuote').addEventListener('click', ()=>{
-      const vat=Number(document.getElementById('vat').value)||0.08;
-      const sum=state.basket.reduce((a,b)=>a+b.final*b.qty,0);
-      let txt='Oferta — Konfigurator pieców (master)\n\n';
-      state.basket.forEach(it=>{ txt+=`• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
+      const vat = Number(document.getElementById('vat').value) || 0.08;
+      const sum = state.basket.reduce((a,b)=>a + b.final * b.qty, 0);
+      let txt = 'Oferta — Konfigurator pieców (master)\n\n';
+      state.basket.forEach(it => { txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
       txt += `\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
       navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
     });

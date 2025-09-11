@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ARKON — Wszystkie pliki i umowy</title>
 <meta name="description" content="Jeden ekran: wzory dokumentów, pliki z Upload (IndexedDB) oraz umowy zapisane przy klientów. Podgląd PDF/IMG, pobieranie, wyszukiwanie, tagi.">
-<style>
+  <style>
   :root{
     --bg:#0c0c0c; --panel:#121212; --card:#181818; --line:#2a2a2a;
     --ink:#f2f3f5; --muted:#b9c0cc; --accent:#3ea6ff; --ok:#2ecc71; --bad:#ff5c5c;
@@ -55,24 +55,25 @@
   .modal iframe{width:100%;height:100%;border:0;background:#000}
   @media(min-width:1200px){ .cols-2{grid-template-columns:2fr 1fr} }
   @media print{ nav,.toolbar,.modal{display:none!important} }
+
+  /* moved from inline styles */
+  .toolbar input#q, .toolbar .search-input { min-width:280px; }
+  .right.auto-margin { margin-left: auto; }
+  .hint.mt-8 { margin-top: 8px; }
+  .right.mb-8 { margin-bottom: 8px; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Wszystkie pliki i umowy • ARKON CRM</h1>
-  <div class="small">Jedno miejsce: wzory dokumentów (FILES), pliki z Upload (IndexedDB) i umowy zapisane u klientów. Podgląd PDF/IMG/HTML, pobieranie, wyszukiwarka.</div>
-</header>
-
 <nav class="tabs" role="tablist">
-  <button id="tabDocs" class="active" type="button">📁 Dokumenty (FILES)</button>
-  <button id="tabUpload" type="button">⬆️ Upload (IndexedDB)</button>
-  <button id="tabContracts" type="button">🧾 Umowy (z Klientów)</button>
+  <button id="tabDocs" class="active" role="tab" aria-controls="secDocs" aria-selected="true" type="button">📁 Dokumenty (FILES)</button>
+  <button id="tabUpload" role="tab" aria-controls="secUpload" aria-selected="false" type="button">⬆️ Upload (IndexedDB)</button>
+  <button id="tabContracts" role="tab" aria-controls="secContracts" aria-selected="false" type="button">🧾 Umowy (z Klientów)</button>
 </nav>
 
 <div class="wrap">
   <!-- Wspólna toolbar -->
   <div class="toolbar">
-    <input id="q" placeholder="🔎 Szukaj po nazwie/opisie/tagach…" style="min-width:280px" aria-label="Szukaj">
+    <input id="q" placeholder="🔎 Szukaj po nazwie/opisie/tagach…" class="search-input" aria-label="Szukaj">
     <select id="fType" title="Typ pliku" aria-label="Typ">
       <option value="">Typ: wszystkie</option>
       <option value="pdf">PDF</option>
@@ -86,7 +87,7 @@
       <option value="mod.desc">Sort: ostatnio modyfikowane</option>
     </select>
     <span class="pill">Widocznych: <b id="countVis">0</b></span>
-    <div class="right" style="margin-left:auto">
+    <div class="right auto-margin">
       <button id="btnExportCSV" class="btn ghost" type="button">CSV (lista)</button>
       <button id="btnReloadUpload" class="btn ghost" type="button" title="Przeładuj listę z IndexedDB">Odśwież Upload</button>
     </div>
@@ -99,21 +100,21 @@
         <thead><tr><th>Nazwa</th><th>Opis</th><th>Tagi</th><th>Akcje</th></tr></thead>
         <tbody id="tbodyDocs"></tbody>
       </table>
-      <div class="hint" style="margin-top:8px">Upewnij się, że pliki z href leżą w tym samym katalogu co ta strona (lub zaktualizuj ścieżki).</div>
+      <div class="hint mt-8">Upewnij się, że pliki z href leżą w tym samym katalogu co ta strona (lub zaktualizuj ścieżki).</div>
     </div>
   </section>
 
   <!-- Sekcja: Upload (IndexedDB) -->
   <section id="secUpload" class="section">
     <div class="card">
-      <div class="right" style="margin-bottom:8px">
+      <div class="right mb-8">
         <button id="btnAddFromUpload" class="btn ok" type="button">Załaduj z Upload</button>
       </div>
       <table>
         <thead><tr><th>Nazwa</th><th>Typ</th><th>Źródło</th><th>Akcje</th></tr></thead>
         <tbody id="tbodyUpload"></tbody>
       </table>
-      <div class="hint" style="margin-top:8px">Źródło: IndexedDB <code>arkonCRM_local → files</code>. PDF/IMG mają podgląd, inne — pobieranie.</div>
+      <div class="hint mt-8">Źródło: IndexedDB <code>arkonCRM_local → files</code>. PDF/IMG mają podgląd, inne — pobieranie.</div>
     </div>
   </section>
 
@@ -124,7 +125,7 @@
         <thead><tr><th>Nr / Data</th><th>Klient / Projekt</th><th>Wartość</th><th>Akcje</th></tr></thead>
         <tbody id="tbodyContracts"></tbody>
       </table>
-      <div class="hint" style="margin-top:8px">Ładowane z <code>localStorage['arkon_clients_v1']</code> (pole <code>contracts[]</code> przy kliencie).</div>
+      <div class="hint mt-8">Ładowane z <code>localStorage['arkon_clients_v1']</code> (pole <code>contracts[]</code> przy kliencie).</div>
     </div>
   </section>
 </div>

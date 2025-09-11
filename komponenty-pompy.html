@@ -1,150 +1,85 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ARKON — Komponenty: Pompy ciepła (PRIMA-ready)</title>
-<meta name="description" content="Baza pomp ciepła: marki, modele, parametry, akcesoria. Filtrowanie, sortowanie, import/eksport, edycja. Zintegrowane z PRIMA v10.">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Komponenty • Pompy ciepła — Midea, Panasonic & Galmet (proporcjonalna wycena)</title>
 <style>
-  :root{ --bg:#0b1020; --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da; --accent:#4cc9f0; --ok:#2fbf71; --warn:#ffb84d; --bad:#ff6b6b; --grid:#243059; --card:#0f1533; --line:#1c2750;}
+  :root{--bg:#0b1020;--p1:#121a34;--p2:#172142;--ink:#e8edff;--muted:#aeb8da;--accent:#4cc9f0;--ok:#2fbf71;--warn:#ffb84d;--bad:#ff6b6b;--grid:#243059;--card:#0f1533;--line:#1c2750}
   *{box-sizing:border-box}
   body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
   header{padding:16px;background:#11183a;border-bottom:1px solid var(--line)}
   header h1{margin:0;font-size:22px}
-  nav{background:#172142;display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);align-items:center}
-  nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
-  nav a:hover{background:#223160}
-  .nav-spacer{flex:1}
-  .nav-prima{background:#1d3c2a;border-color:#2d7a4a}
-  .nav-prima:hover{background:#225a32}
-  .wrap{max-width:1400px;margin:auto;padding:16px}
+  .wrap{max-width:1500px;margin:auto;padding:16px}
   .grid{display:grid;gap:12px}
-  @media(min-width:1100px){ .cols-2{grid-template-columns:1.6fr 1fr} }
+  @media(min-width:1100px){.cols-2{grid-template-columns:1.55fr 1fr}}
   .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .right{display:flex;gap:8px;justify-content:flex-end}
+  .right{margin-left:auto;display:flex;gap:8px}
   .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
-  .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .btn.ok{background:#194d34;border-color:#2f9762}
   .btn.warn{background:#3a2a19;border-color:#9d7a33}
-  .btn.tiny{padding:4px 8px;font-size:12px}
-  .btn[disabled]{opacity:.55;cursor:not-allowed}
-  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:var(--ink);font:inherit}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .tiny{font-size:12px}
+  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:#ink;font:inherit;color:var(--ink)}
   input::placeholder{color:#aeb8da99}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
   .muted{color:var(--muted);font-size:13px}
   table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px;border-bottom:1px solid var(--grid);vertical-align:top;text-align:left}
+  th,td{padding:10px;border-bottom:1px solid #243059;vertical-align:top;text-align:left}
   th{font-size:12px;color:#aeb8da;position:sticky;top:0;background:#151d46;z-index:1}
   tbody tr:hover{background:#0d153033}
   .small{font-size:12px;color:#aeb8da}
-  .status{padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #2a3a75;background:#0f1a44}
   .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
-  .chip{display:inline-flex;gap:6px;align-items:center;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#cfe1ff}
-  .kbd{font:12px/1.2 ui-monospace,Menlo,Consolas,monospace;background:#101735;border:1px solid #2a3777;padding:2px 6px;border-radius:6px;color:#cfe0ff}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
-  .tab{padding:6px 10px;border:1px solid #2a3a75;border-radius:999px;cursor:pointer}
-  .tab.active{background:#223160}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  @media(max-width:900px){ .grid-2{grid-template-columns:1fr} }
-  .drawer{position:fixed;right:0;top:0;height:100%;width:560px;max-width:100%;background:linear-gradient(180deg,#0e1433,#0e173d);border-left:1px solid #2b3a77;box-shadow:-20px 0 60px #0008;transform:translateX(100%);transition:.25s;z-index:50;overflow:auto}
-  .drawer.open{transform:none}
-  .drawer .hd{position:sticky;top:0;background:#101a45;border-bottom:1px solid #2b3a77;padding:12px}
-  .drawer .bd{padding:12px}
-  .drawer h3{margin:0 0 6px 0}
-  .kv{display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center}
-  .kv label{font-size:13px;color:#aeb8da}
-  .kv input,.kv select,.kv textarea{width:100%}
-  details > summary{cursor:pointer;margin:8px 0;color:#cfe1ff}
-  .warnbox{border:1px dashed #9d7a33;padding:10px;border-radius:8px;background:#2b230c}
-  @media print{ nav,.btn,.drawer,.tabs{display:none!important} th{top:auto} }
+  .sep{height:1px;background:#243059;margin:10px 0}
+  .okline{padding:8px;border-radius:10px;background:#0f2a22;border:1px solid #155a41;color:#b4ffdd}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>Komponenty • Pompy ciepła <span class="small" style="font-weight:400">— PRIMA-ready</span></h1>
-  <div class="muted">Obszerna baza urządzeń i akcesoriów: marki, modele, parametry, ceny, kompatybilność. Zapis lokalny, import/eksport CSV/JSON. Aktualizacje emitują sygnał dla PRIMA.</div>
+  <h1>Komponenty • Pompy ciepła — Midea, Panasonic & Galmet</h1>
+  <div class="muted">Model wyceny <b>proporcjonalny</b>: najtańszy pakiet (HP + bufor min + CWU min + must‑have) = <b>38 000 PLN netto</b>. Każda droższa pompa / większy bufor / większy CWU podnosi cenę o <b>różnicę</b>. Opcjonalne akcesoria doliczane 1:1. „Sama pompa” = <b>cena urządzenia + 4 000 PLN</b>. Dane cenowe: Midea, Panasonic (rozszerzone), Galmet (PRIMA).</div>
 </header>
 
-<nav>
-  <a href="index.html">Pulpit</a>
-  <a href="komponenty.html">Komponenty — Hub</a>
-  <a href="komponenty-pompy.html" style="background:#223160">Pompy</a>
-  <a href="komponenty-piece.html">Piece</a>
-  <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
-  <a href="komponenty-ocieplenie.html">Ocieplenie</a>
-  <a href="komponenty-stolarka.html">Stolarka</a>
-  <a href="komponenty-hydraulika.html">Hydraulika</a>
-  <span class="nav-spacer"></span>
-  <!-- PRZEŁĄCZNIK do PRIMA (z prawej strony nav) -->
-  <a id="navPrimaLink" class="nav-prima" href="Konfigurator_PRIMA_v10_dynamic.html" title="Przejdź do Konfiguratora PRIMA">→ Konfigurator PRIMA</a>
-</nav>
-
 <div class="wrap grid cols-2">
-  <!-- LEWA: Lista + filtry -->
+  <!-- LEWA: Katalog + filtry -->
   <section class="grid">
     <div class="card">
       <div class="row">
-        <input id="q" placeholder="🔎 Szukaj: marka, model, czynnik, uwagi…" style="min-width:260px">
+        <input id="q" placeholder="🔎 Szukaj: marka, model, czynnik…" style="min-width:240px">
         <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
-        <select id="fType">
-          <option value="">Typ (wszystkie)</option>
-          <option value="split">Split</option>
-          <option value="monoblok">Monoblok</option>
-          <option value="gruntowa">Gruntowa</option>
-        </select>
-        <select id="fRefrig">
-          <option value="">Czynnik (wszystkie)</option>
-          <option>R32</option><option>R290</option><option>R410A</option><option>CO2</option>
-        </select>
-        <select id="fPhase">
-          <option value="">Fazy</option>
-          <option>1~</option><option>3~</option>
-        </select>
-        <select id="fUse">
-          <option value="">Zastosowanie</option>
-          <option value="dom">Dom jednorodzinny</option>
-          <option value="mdu">Wielorodzinny / komercyjne</option>
-          <option value="basen">Basen</option>
-        </select>
-      </div>
-      <div class="row" style="margin-top:6px">
-        <input id="fPowerMin" type="number" placeholder="Moc min [kW]" style="width:130px">
-        <input id="fPowerMax" type="number" placeholder="Moc max [kW]" style="width:130px">
-        <input id="fPriceMax" type="number" placeholder="Cena ≤ [PLN]" style="width:160px">
+        <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
+        <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
+        <select id="fPhase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
         <select id="sort">
           <option value="brand.asc">Sort: Marka ↑</option>
           <option value="brand.desc">Sort: Marka ↓</option>
-          <option value="power.asc">Sort: Moc ↑</option>
-          <option value="power.desc">Sort: Moc ↓</option>
-          <option value="price.asc">Sort: Cena ↑</option>
-          <option value="price.desc">Sort: Cena ↓</option>
-          <option value="scop.desc">Sort: SCOP ↓</option>
+          <option value="p.asc">Sort: Moc ↑</option>
+          <option value="p.desc">Sort: Moc ↓</option>
+          <option value="price.asc">Sort: Cena urządzenia ↑</option>
+          <option value="price.desc">Sort: Cena urządzenia ↓</option>
         </select>
-        <button id="btnClear" class="btn ghost">Wyczyść filtry</button>
+        <button id="btnClear" class="btn ghost">Wyczyść</button>
         <span class="pill">Łącznie: <b id="cntAll">0</b></span>
         <span class="pill">Widocznych: <b id="cntVis">0</b></span>
       </div>
     </div>
 
     <div class="card" style="overflow:auto">
-      <table id="tbl">
+      <table>
         <thead>
           <tr>
             <th>Akcje</th>
             <th>Marka / Model</th>
             <th>Typ</th>
-            <th>Moc [kW]</th>
+            <th>Moc A7 [kW]</th>
             <th>SCOP</th>
             <th>Czynnik</th>
             <th>Fazy</th>
-            <th>Praca niskie T</th>
             <th>Hałas [dB(A)]</th>
-            <th>CWU</th>
-            <th>Cena [PLN]</th>
-            <th>Uwagi / tagi</th>
+            <th>Cena urządzenia [PLN]</th>
+            <th>Uwagi</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -152,432 +87,329 @@
     </div>
   </section>
 
-  <!-- PRAWA: Akcje, akcesoria -->
+  <!-- PRAWA: Konfigurator -->
   <aside class="grid">
     <div class="card">
       <div class="row" style="justify-content:space-between">
-        <b>Operacje</b>
+        <b>Konfigurator zestawu</b>
         <div class="right">
-          <button id="btnAdd" class="btn ok">+ Dodaj pompę</button>
+          <button id="btnAddPack" class="btn ok">+ Dodaj ZESTAW</button>
+          <button id="btnAddHp" class="btn warn">+ Sama pompa (+4 000)</button>
         </div>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <button id="btnExportJSON" class="btn">Eksport JSON</button>
-        <label class="btn ghost">Import JSON<input id="importJSON" type="file" accept="application/json" hidden></label>
-        <button id="btnCSV" class="btn ghost">CSV</button>
-        <button id="btnPrint" class="btn ghost">Drukuj</button>
-      </div>
-      
-      <!-- PRIMA integration controls -->
-      <div class="row" style="margin-top:8px;align-items:flex-end">
-        <div style="flex:1;min-width:220px">
-          <label class="small">URL konfiguratora PRIMA</label>
-          <input id="primaUrl" placeholder="np. Konfigurator_PRIMA_v10_dynamic.html lub https://…">
-        </div>
-        <button id="btnPrimaOpen" class="btn ghost" title="Otwórz konfigurator PRIMA">Otwórz PRIMA</button>
-        <button id="btnPrimaSend" class="btn warn" title="Wyślij aktualnie edytowaną pompę do PRIMA" disabled>Wyślij do PRIMA</button>
-      </div>
-      <div class="small muted" style="margin-top:6px">
-        Zmiany w bazie są zapisywane w <code>localStorage</code> pod kluczem <span class="kbd">arkon_cmp_pumps_v1</span> i sygnalizowane przez <span class="kbd">arkon_pumps_updated</span>. Skrót: <span class="kbd">Alt</span>+<span class="kbd">P</span> — przełącz do PRIMA.
       </div>
 
-      <details style="margin-top:8px">
-        <summary>🎯 Wskazówki doboru</summary>
-        <div class="small" style="margin-top:6px">
-          • R290 = wyższe T zasilania (grzejniki), zwykle lepsza praca na mrozie.<br>
-          • Split: jednostka wewnętrzna + zewnętrzna; Monoblok: całość na zewnątrz (prostsza instalacja wodna).<br>
-          • Zapas mocy 10–20% względem OZC, zwłaszcza dla CWU / rozmrożeń.<br>
-          • SCOP≥4 dla podłogówki; sprawdzaj krzywe grzewcze i moc przy -7/-15 °C.
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label class="small">Model pompy</label>
+          <select id="selHp"></select>
         </div>
-      </details>
+        <div>
+          <label class="small">Bufor [l]</label>
+          <select id="selBufor"></select>
+        </div>
+        <div>
+          <label class="small">Zasobnik CWU [l]</label>
+          <select id="selCwu"></select>
+        </div>
+        <div>
+          <label class="small">VAT</label>
+          <select id="selVat"><option value="0.08">8%</option><option value="0.23">23%</option></select>
+        </div>
+        <div>
+          <label class="small">Grzejniki (montaż)</label>
+          <input id="inpRads" type="number" value="0" min="0" style="width:110px">
+          <div class="small muted">750 PLN/szt.</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label class="small">Zawór 3‑drogowy</label>
+          <select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select>
+        </div>
+        <div>
+          <label class="small">Grupa bezpieczeństwa</label>
+          <select id="selSafety"><option value="0">w zestawie</option><option value="390">+390</option></select>
+        </div>
+        <div>
+          <label class="small">Hydraulika (rozdzielacze)</label>
+          <select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select>
+        </div>
+        <div>
+          <label class="small">Glikol (monoblok)</label>
+          <select id="selGlycol"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <div class="row">
+        <div style="flex:1">
+          <div class="muted">Cena zestawu (netto) wg modelu proporcjonalnego</div>
+          <div id="pricePreview" style="font-weight:800;font-size:18px">—</div>
+          <div id="typeHint" class="okline" style="display:none;margin-top:6px"></div>
+        </div>
+        <div style="min-width:240px">
+          <label class="small">Prowizja handlowca</label>
+          <div class="row">
+            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" style="width:80px">
+            <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" style="width:130px">
+          </div>
+          <div class="small muted">Możesz wpisać % i/lub PLN (sumują się).</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <b>Akcesoria i hydraulika (do zestawu)</b>
-      <div class="grid-2" style="margin-top:8px">
-        <div>
-          <div class="muted">Bufory / sprzęgła</div>
-          <ul class="small">
-            <li>Bufor 50/100/200/300 l (izolowany, króćce 1")</li>
-            <li>Sprzęgło hydrauliczne 25/32/40</li>
-          </ul>
-          <div class="muted" style="margin-top:6px">Zasobniki CWU</div>
-          <ul class="small">
-            <li>200/250/300/400 l, wężownica XXL</li>
-            <li>Zasobnik biwalentny (PV/solary + PC)</li>
-          </ul>
-          <div class="muted" style="margin-top:6px">Zawory</div>
-          <ul class="small">
-            <li>3-drogowy przełączający CWU/CO (DN20–DN32)</li>
-            <li>Antyzamrożeniowy, bezpieczeństwa 3 bar</li>
-          </ul>
-        </div>
-        <div>
-          <div class="muted">Pompy obiegowe</div>
-          <ul class="small">
-            <li>Grundfos Alpha2, Magna3</li>
-            <li>Wilo Yonos PARA, Stratos MAXO</li>
-          </ul>
-          <div class="muted" style="margin-top:6px">Armatura</div>
-          <ul class="small">
-            <li>Filtr siatkowy + magnetyt (MagnaClean)</li>
-            <li>Odpowietrzniki autom., rotametry, mieszacze</li>
-            <li>Naczynie przeponowe 12/18/25/35 l</li>
-          </ul>
-          <div class="muted" style="margin-top:6px">Inne</div>
-          <ul class="small">
-            <li>Glikol -15/-25 °C, izolacje kauczukowe</li>
-            <li>Tace ociekowe, grzałki tacy, ramy montażowe</li>
-          </ul>
+      <b>Skład zestawu (must‑have)</b>
+      <div id="mustHave" class="muted" style="margin-top:6px">Wybierz pompę, bufor i zasobnik — pokażę skład.</div>
+    </div>
+
+    <div class="card">
+      <b>Koszyk</b>
+      <table id="basket" style="margin-top:8px">
+        <thead><tr><th>Pozycja</th><th>Ilość</th><th class="right">Cena [PLN]</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="sep"></div>
+      <div class="row">
+        <div><span class="muted">Suma netto</span><div id="sumNet" style="font-weight:800;font-size:18px"></div></div>
+        <div><span class="muted">Prowizja</span><div id="sumProv" style="font-weight:800;font-size:18px"></div></div>
+        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" style="font-weight:800;font-size:18px"></div></div>
+        <div class="right">
+          <button id="btnCopy" class="btn ghost">Kopiuj ofertę</button>
+          <button id="btnPrint" class="btn ghost">Drukuj / PDF</button>
+          <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
         </div>
       </div>
     </div>
   </aside>
 </div>
 
-<!-- Drawer Edycji -->
-<aside id="drawer" class="drawer" aria-label="Edycja pompy">
-  <div class="hd">
-    <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">Edycja pompy</h3>
-      <div class="right">
-        <button id="btnClose" class="btn ghost" type="button">Zamknij</button>
-        <button id="btnDel" class="btn bad" type="button">Usuń</button>
-        <button id="btnDup" class="btn" type="button">Duplikuj</button>
-        <button id="btnSendFromDrawer" class="btn warn" type="button" title="Wyślij tę pompę do PRIMA">Wyślij do PRIMA</button>
-      </div>
-    </div>
-  </div>
-  <div class="bd">
-    <div class="kv">
-      <label>Marka</label><input id="e_brand" placeholder="np. Panasonic">
-      <label>Model</label><input id="e_model" placeholder="np. Aquarea T-CAP 9 kW">
-      <label>Typ</label>
-      <select id="e_type"><option>split</option><option>monoblok</option><option>gruntowa</option></select>
-      <label>Moc nominalna [kW]</label><input id="e_power" type="number" step="0.1" placeholder="np. 9">
-      <label>SCOP</label><input id="e_scop" type="number" step="0.01" placeholder="np. 4.5">
-      <label>Czynnik</label><select id="e_refrig"><option>R32</option><option>R290</option><option>R410A</option><option>CO2</option></select>
-      <label>Fazy</label><select id="e_phase"><option>1~</option><option>3~</option></select>
-      <label>Praca przy -25 °C</label><select id="e_lowtemp"><option>tak</option><option>nie</option></select>
-      <label>Hałas [dB(A)]</label><input id="e_noise" type="number" step="1" placeholder="np. 52">
-      <label>Wbud. zasobnik CWU</label><select id="e_cwu"><option>brak</option><option>180 l</option><option>200 l</option><option>250 l</option></select>
-      <label>Cena katalogowa [PLN]</label><input id="e_price" type="number" step="1" placeholder="np. 32000">
-      <label>Tagi (przecinki)</label><input id="e_tags" placeholder="np. T-CAP, -25C, PV-ready">
-      <label>Uwagi</label><textarea id="e_notes" placeholder="np. Zestaw z buforem 100 l, zawór 3D, pompa Yonos"></textarea>
-      <label>Kompatybilne akcesoria</label><textarea id="e_acc" placeholder="np. Bufor 100l; Zawór 3D DN25; Grundfos Alpha2"></textarea>
-      <label>Link producenta</label><input id="e_link" placeholder="https://…">
-    </div>
-  </div>
-</aside>
-
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 'use strict';
 
-/* ===== helpers ===== */
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const INT = new Intl.NumberFormat('pl-PL');
-function fmt(n){ return INT.format(Math.round(Number(n)||0)); }
-function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+/* ====== Dane urządzeń ======
+   price = cena NETTO samego urządzenia (bez dopłaty 4k)
+   Uwaga: ceny orientacyjne (najniższe oferty brutto / 1,23). */
+const HEATPUMPS = [
+  // ===== MIDEA: M-THERMAL / ARCTIC (R32 / R290) =====
+  {brand:'Midea', model:'M‑Thermal Arctic 4.5 kW Monoblok MHC‑V4WD2N7‑E30 (R290)', kind:'monoblok', phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M‑Thermal PRO 6 kW Monoblok',                       kind:'monoblok', phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
+  {brand:'Midea', model:'M‑Thermal Arctic 8.4 kW Monoblok MHC‑V8W/D2N8‑BE30', kind:'monoblok', phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
+  {brand:'Midea', model:'M‑Thermal PRO 8 kW Split',                           kind:'split',    phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
+  {brand:'Midea', model:'M‑Thermal PRO 8 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
+  {brand:'Midea', model:'M‑Thermal 9 kW Monoblok (R32)',                      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
+  {brand:'Midea', model:'M‑Thermal 10 kW Monoblok MHC‑V10W/D2N8‑B',          kind:'monoblok', phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
+  {brand:'Midea', model:'M‑Thermal 12 kW Monoblok (R32)',                     kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
+  {brand:'Midea', model:'M‑Thermal 12 kW Monoblok 3F',                        kind:'monoblok', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
+  {brand:'Midea', model:'M‑Thermal Arctic 12 kW Monoblok MHC‑V12WD2RN7‑E30',  kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M‑Thermal Arctic 14 kW Monoblok MHC‑V14WD2RN7‑E30',  kind:'monoblok', phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
+  {brand:'Midea', model:'M‑Thermal 16 kW Monoblok (R32) M‑Thermal‑16W/D2N8‑BE30', kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:20516, tags:['3F']},
+  {brand:'Midea', model:'M‑Thermal 26 kW Monoblok MHC‑V26W/D2RN8‑B',          kind:'monoblok', phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
+  {brand:'Midea', model:'M‑Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok', phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
 
-/* ===== storage ===== */
-const LS_KEY = 'arkon_cmp_pumps_v1';
-const PRIMA_URL_KEY = 'arkon_prima_url';
-const LS_PING_KEY = 'arkon_pumps_updated';
-const LS_SELECTED_ID = 'arkon_selected_pump_id';
-const PRIMA_DEFAULT = 'Konfigurator_PRIMA_v10_dynamic.html';
+  // ===== PANASONIC: AQUAREA (R32) =====
+  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH‑MDC05J3E5',            kind:'monoblok', phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J‑gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH‑MDC07J3E5',            kind:'monoblok', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J‑gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH‑MXC09J3E5 (T‑CAP)',    kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T‑CAP']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH‑MDC09H3E5',            kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH‑MDC12H6E5',           kind:'monoblok', phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT‑ADC07K3E5 (All‑in‑One)',  kind:'all-in-one', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
+  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT‑WC09K3E5',               kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea All‑in‑One 9 kW 3F',                    kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                        kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea T‑CAP 16 kW 3F Quiet',                  kind:'split',    phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T‑CAP','3F']},
 
-let pumps = load(LS_KEY, []);
-function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; } }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(pumps)); render(); fillBrands(); broadcastUpdate(); }
-function broadcastUpdate(){ try{ localStorage.setItem(LS_PING_KEY, String(Date.now())); }catch{} }
-function getPrimaUrl(){ try{ return localStorage.getItem(PRIMA_URL_KEY) || ''; }catch{ return ''; } }
-function setPrimaUrl(u){ try{ localStorage.setItem(PRIMA_URL_KEY, u||''); updatePrimaLink(); }catch{} }
-function ensurePrimaUrl(){ let u = getPrimaUrl(); if(!u){ u = PRIMA_DEFAULT; setPrimaUrl(u); $('#primaUrl').value = u; } }
+  // ===== GALMET PRIMA (R32) — orientacyjnie =====
+  {brand:'Galmet', model:'PRIMA 6GT Monoblok',            kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 8GT Monoblok',            kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 10GT Monoblok',           kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F',        kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']}
+];
 
-/* ===== seed (jeśli pusto) ===== */
-if(!pumps.length){
-  pumps = [
-    {id:uid(),brand:'Panasonic',model:'Aquarea T-CAP 9kW',type:'split',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:52,cwu:'brak',price:32000,tags:['T-CAP','-20C'],notes:'Wysoka moc na mrozie, dobry do grzejników niskotemp.',acc:'Bufor 100l; Zawór 3D DN25; Grundfos Alpha2',link:''},
-    {id:uid(),brand:'Panasonic',model:'Aquarea All-in-One 200l 7kW',type:'split',power:7,scop:4.8,refrig:'R32',phase:'1~',lowtemp:'tak',noise:50,cwu:'200 l',price:36000,tags:['AIO','podłogówka'],notes:'Zintegrowany zasobnik 200 l',acc:'Zawór 3D DN20; Wilo Yonos PARA',link:''},
-    {id:uid(),brand:'Daikin',model:'Altherma 3 8kW',type:'split',power:8,scop:4.7,refrig:'R32',phase:'1~',lowtemp:'tak',noise:48,cwu:'brak',price:34500,tags:['Quiet'],notes:'Cicha jednostka, COP wysoki przy +7 °C',acc:'Bufor 50l; Grundfos Alpha2',link:''},
-    {id:uid(),brand:'Daikin',model:'Altherma 3 H HT 14kW',type:'split',power:14,scop:4.2,refrig:'R32',phase:'3~',lowtemp:'tak',noise:54,cwu:'brak',price:48000,tags:['wysoka temp'],notes:'Do modernizacji z grzejnikami',acc:'Bufor 100l; Zawór 3D DN32',link:''},
-    {id:uid(),brand:'Mitsubishi',model:'Ecodan 8.5kW',type:'split',power:8.5,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:49,cwu:'brak',price:35500,tags:['Zubadan'],notes:'Stabilna moc na mrozie (Zubadan)',acc:'Sprzęgło 25; Wilo Yonos',link:''},
-    {id:uid(),brand:'LG',model:'Therma V 9kW Monoblok',type:'monoblok',power:9,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:53,cwu:'brak',price:31500,tags:['monoblok'],notes:'Prosta instalacja wodna',acc:'Bufor 50l; Naczynie 18l',link:''},
-    {id:uid(),brand:'Samsung',model:'EHS Mono 12kW',type:'monoblok',power:12,scop:4.4,refrig:'R32',phase:'3~',lowtemp:'tak',noise:55,cwu:'brak',price:33500,tags:['PV-ready'],notes:'Dobra integracja z PV',acc:'Zawór 3D DN25; Alpha2',link:''},
-    {id:uid(),brand:'Vaillant',model:'aroTHERM plus 7kW',type:'monoblok',power:7,scop:4.8,refrig:'R290',phase:'1~',lowtemp:'tak',noise:48,cwu:'brak',price:39900,tags:['R290','wysoka temp'],notes:'Do grzejników: do 75 °C',acc:'Bufor 100l; Sprzęgło 25',link:''},
-    {id:uid(),brand:'Viessmann',model:'Vitocal 150-A 10kW',type:'monoblok',power:10,scop:4.7,refrig:'R290',phase:'3~',lowtemp:'tak',noise:50,cwu:'brak',price:44500,tags:['R290'],notes:'Nowa generacja na propanie',acc:'Zawór 3D; Grundfos Alpha3',link:''},
-    {id:uid(),brand:'Bosch',model:'Compress 7000i AW 9kW',type:'split',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:51,cwu:'brak',price:33800,tags:['7000i'],notes:'Sterownik zdalny, aplikacja',acc:'Bufor 50l; Wilo',link:''},
-    {id:uid(),brand:'NIBE',model:'S2125-12',type:'monoblok',power:12,scop:4.9,refrig:'R290',phase:'3~',lowtemp:'tak',noise:53,cwu:'brak',price:52000,tags:['premium','R290'],notes:'Top sprawność, rozbudowana automatyka',acc:'Bufor 100l; Stratos MAXO',link:''},
-    {id:uid(),brand:'Atlantic',model:'Extensa AI 8kW',type:'split',power:8,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:50,cwu:'brak',price:28900,tags:['budżet'],notes:'Ekonomiczna',acc:'Filtr + magnetyt',link:''},
-    {id:uid(),brand:'Gree',model:'Versati 10kW',type:'split',power:10,scop:4.3,refrig:'R32',phase:'1~',lowtemp:'tak',noise:54,cwu:'brak',price:26500,tags:['value'],notes:'Dobry stosunek cena/jakość',acc:'Bufor 50l',link:''},
-    {id:uid(),brand:'Midea',model:'M-Thermal 12kW',type:'monoblok',power:12,scop:4.4,refrig:'R32',phase:'3~',lowtemp:'tak',noise:55,cwu:'brak',price:25900,tags:['monoblok'],notes:'Popularna w zestawach OEM',acc:'Zawór 3D',link:''},
-    {id:uid(),brand:'Haier',model:'Super Aqua 8kW',type:'split',power:8,scop:4.4,refrig:'R32',phase:'1~',lowtemp:'tak',noise:52,cwu:'brak',price:24800,tags:['ekonomia'],notes:'Aplikacja mobilna',acc:'Grundfos Alpha2',link:''},
-    {id:uid(),brand:'Hitachi',model:'Yutaki S 11kW',type:'split',power:11,scop:4.5,refrig:'R32',phase:'3~',lowtemp:'tak',noise:52,cwu:'brak',price:39900,tags:['japońska'],notes:'Szeroka modulacja',acc:'Bufor 100l',link:''},
-    {id:uid(),brand:'Stiebel Eltron',model:'WPL 09 ACS classic',type:'monoblok',power:9,scop:4.6,refrig:'R32',phase:'1~',lowtemp:'tak',noise:47,cwu:'brak',price:51200,tags:['premium','cicha'],notes:'Bardzo niski hałas',acc:'Sprzęgło 25',link:''},
-    {id:uid(),brand:'Buderus',model:'Logatherm WSW 8 (gruntowa)',type:'gruntowa',power:8,scop:5.0,refrig:'R410A',phase:'3~',lowtemp:'tak',noise:43,cwu:'brak',price:62000,tags:['gruntowa'],notes:'Sonde / kolektor poziomy',acc:'Solanka; wymiennik',link:''},
-    {id:uid(),brand:'Toshiba',model:'Estia 8kW',type:'split',power:8,scop:4.5,refrig:'R32',phase:'1~',lowtemp:'tak',noise:49,cwu:'brak',price:32900,tags:['sprawdzone'],notes:'Dobra praca częściowa',acc:'Alpha2; bufor 50l',link:''},
-  ];
-  save();
+// Bufory / CWU — ceny NETTO (bazowe)
+const BUFFERS = { '50':1200, '80':1450, '100':1650, '150':2200, '200':2600, '300':3600 };
+const TANKS   = { '150':2450, '200':2900, '250':3400, '300':3800 };
+
+// Montaż i zasady
+const RAD_PRICE           = 750;     // montaż grzejnika / szt.
+const ONLY_HP_SURCHARGE   = 4000;    // sama pompa = cena urządzenia + 4k
+const PACK_BASE_TARGETNET = 38000;   // najtańszy pakiet = 38k netto
+
+/* ====== State ====== */
+const state = {
+  vat:0.08, rads:0, v3d:0, safety:0, hydro:0, glycol:0,
+  basket:[],
+  selectedHp:null, selectedBuf:'100', selectedTank:'200',
+  provPct:0, provAbs:0,
+};
+
+/* ====== Helpers ====== */
+const $ = s=>document.querySelector(s); const $$ = s=>Array.from(document.querySelectorAll(s));
+const INT  = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+const INT0 = new Intl.NumberFormat('pl-PL');
+const fmt = n => INT.format(Number(n)||0);
+
+function cheapest(obj){ return Math.min(...Object.values(obj).map(Number)); }
+function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>Number(h.price)||0)); }
+function computeBaseOffset(){ return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS)); }
+let BASE_OFFSET = computeBaseOffset();
+
+function soloPrice(hp){ return (Number(hp.price)||0) + ONLY_HP_SURCHARGE; }
+
+function pricePack(hpPrice, bufPrice, tankPrice, extras){
+  const core = (Number(hpPrice)||0) + (Number(bufPrice)||0) + (Number(tankPrice)||0);
+  return BASE_OFFSET + core + (Number(extras)||0);
 }
 
-/* ===== UI state ===== */
-let openId = null;
+function activeHp(){ return state.selectedHp; }
 
-/* ===== filters ===== */
-const filter = { q:'', brand:'', type:'', refrig:'', phase:'', use:'', pmin:'', pmax:'', priceMax:'', sort:'brand.asc' };
-
-$('#q').addEventListener('input', e=>{ filter.q=e.target.value.trim(); render(); });
-$('#fBrand').addEventListener('change', e=>{ filter.brand=e.target.value; render(); });
-$('#fType').addEventListener('change', e=>{ filter.type=e.target.value; render(); });
-$('#fRefrig').addEventListener('change', e=>{ filter.refrig=e.target.value; render(); });
-$('#fPhase').addEventListener('change', e=>{ filter.phase=e.target.value; render(); });
-$('#fUse').addEventListener('change', e=>{ filter.use=e.target.value; render(); });
-$('#fPowerMin').addEventListener('input', e=>{ filter.pmin=Number(e.target.value)||''; render(); });
-$('#fPowerMax').addEventListener('input', e=>{ filter.pmax=Number(e.target.value)||''; render(); });
-$('#fPriceMax').addEventListener('input', e=>{ filter.priceMax=Number(e.target.value)||''; render(); });
-$('#sort').addEventListener('change', e=>{ filter.sort=e.target.value; render(); });
-$('#btnClear').addEventListener('click', ()=>{
-  $('#q').value=''; $('#fBrand').value=''; $('#fType').value=''; $('#fRefrig').value=''; $('#fPhase').value=''; $('#fUse').value='';
-  $('#fPowerMin').value=''; $('#fPowerMax').value=''; $('#fPriceMax').value=''; $('#sort').value='brand.asc';
-  Object.assign(filter, {q:'',brand:'',type:'',refrig:'',phase:'',use:'',pmin:'',pmax:'',priceMax:'',sort:'brand.asc'});
-  render();
-});
-
-/* ===== table render ===== */
-function render(){
-  const tb = $('#tbody'); tb.innerHTML='';
-  let rows = pumps.slice();
-
-  // filter
-  rows = rows.filter(p=>{
-    if(filter.q){
-      const q=filter.q.toLowerCase();
-      const hit = [p.brand,p.model,p.refrig,p.notes,(p.tags||[]).join(' ')].some(v=> (v||'').toLowerCase().includes(q));
-      if(!hit) return false;
-    }
-    if(filter.brand && p.brand!==filter.brand) return false;
-    if(filter.type && p.type!==filter.type) return false;
-    if(filter.refrig && p.refrig!==filter.refrig) return false;
-    if(filter.phase && p.phase!==filter.phase) return false;
-    if(filter.pmin!=='' && (Number(p.power)||0) < filter.pmin) return false;
-    if(filter.pmax!=='' && (Number(p.power)||0) > filter.pmax) return false;
-    if(filter.priceMax!=='' && (Number(p.price)||0) > filter.priceMax) return false;
-    if(filter.use){
-      if(filter.use==='dom' && (Number(p.power)||0)>12) return false;
-      if(filter.use==='mdu' && (Number(p.power)||0)<=12) return false;
-      if(filter.use==='basen' && !(p.tags||[]).join(' ').toLowerCase().includes('basen')) return false;
-    }
-    return true;
-  });
-
-  // sort
-  rows.sort((a,b)=>{
-    switch(filter.sort){
-      case 'brand.asc': return (a.brand||'').localeCompare(b.brand||'', 'pl',{sensitivity:'base'}) || (a.model||'').localeCompare(b.model||'', 'pl');
-      case 'brand.desc': return (b.brand||'').localeCompare(a.brand||'', 'pl',{sensitivity:'base'}) || (b.model||'').localeCompare(a.model||'', 'pl');
-      case 'power.asc': return (a.power||0)-(b.power||0);
-      case 'power.desc': return (b.power||0)-(a.power||0);
-      case 'price.asc': return (a.price||0)-(b.price||0);
-      case 'price.desc': return (b.price||0)-(a.price||0);
-      case 'scop.desc': return (b.scop||0)-(a.scop||0);
-      default: return 0;
-    }
-  });
-
-  $('#cntAll').textContent = pumps.length;
-  $('#cntVis').textContent = rows.length;
-
+/* ====== Katalog ====== */
+function fillFilters(){
+  const brands=[...new Set(HEATPUMPS.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
+  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=><option>${b}</option>).join('');
+}
+function renderTable(){
+  const q=($('#q').value||'').toLowerCase(); const brand=$('#fBrand').value; const kind=$('#fType').value; const ref=$('#fRef').value; const ph=$('#fPhase').value; let rows=HEATPUMPS.filter(p=>{
+    if(q){ const hit=[p.brand,p.model,p.ref,(p.tags||[]).join(' ')].some(v=> (v||'').toLowerCase().includes(q)); if(!hit) return false; }
+    if(brand && p.brand!==brand) return false; if(kind && p.kind!==kind) return false; if(ref && p.ref!==ref) return false; if(ph && p.phase!==ph) return false; return true; });
+  switch($('#sort').value){
+    case 'brand.asc': rows.sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7); break;
+    case 'brand.desc': rows.sort((a,b)=> (b.brand.localeCompare(a.brand,'pl')) || a.pA7-b.pA7); break;
+    case 'p.asc': rows.sort((a,b)=>a.pA7-b.pA7); break; case 'p.desc': rows.sort((a,b)=>b.pA7-a.pA7); break;
+    case 'price.asc': rows.sort((a,b)=>a.price-b.price); break; case 'price.desc': rows.sort((a,b)=>b.price-a.price); break;
+  }
+  $('#cntAll').textContent = HEATPUMPS.length; $('#cntVis').textContent = rows.length;
+  const tb=$('#tbody'); tb.innerHTML='';
   rows.forEach(p=>{
     const tr=document.createElement('tr');
-    const tags = (p.tags||[]).map(t=>'<span class="tag">'+escapeHtml(t)+'</span>').join('');
     tr.innerHTML = `
-      <td>
-        <button class="btn ghost tiny open" data-id="${p.id}" title="Edytuj" type="button">✏️</button>
-        <button class="btn tiny" data-sendprima="${p.id}" title="Wyślij ten model do PRIMA i przełącz">PRIMA ↗</button>
-      </td>
-      <td><b>${escapeHtml(p.brand||'')}</b><div class="small">${escapeHtml(p.model||'')}</div></td>
-      <td>${escapeHtml(p.type||'')}</td>
-      <td>${p.power??''}</td>
-      <td>${p.scop??''}</td>
-      <td>${escapeHtml(p.refrig||'')}</td>
-      <td>${escapeHtml(p.phase||'')}</td>
-      <td>${escapeHtml(p.lowtemp||'')}</td>
-      <td>${p.noise??''}</td>
-      <td>${escapeHtml(p.cwu||'')}</td>
-      <td>${fmt(p.price||0)}</td>
-      <td>${tags}<div class="small">${escapeHtml(p.notes||'')}</div></td>`;
-    tr.addEventListener('dblclick', ()=> openDrawer(p.id));
+      <td><button class=\"btn tiny\" data-pick=\"${p.brand}|${p.model}\">Wybierz</button></td>
+      <td><b>${p.brand}</b><div class=\"small\">${p.model}</div></td>
+      <td>${p.kind}</td>
+      <td>${p.pA7}</td>
+      <td>${p.scop||''}</td>
+      <td>${p.ref||''}</td>
+      <td>${p.phase||''}</td>
+      <td>${p.noise||''}</td>
+      <td>${INT0.format(p.price)} PLN</td>
+      <td>${(p.tags||[]).map(t=><span class=\"tag\">${t}</span>).join('')}</td>`;
     tb.appendChild(tr);
   });
-
-  tb.querySelectorAll('.open').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); openDrawer(b.dataset.id); }));
-  tb.querySelectorAll('[data-sendprima]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); sendToPrima(b.dataset.sendprima, /*sameTab*/ true); }));
 }
 
-/* ===== brand filter fill ===== */
-function fillBrands(){
-  const sel = $('#fBrand'); const cur = sel.value;
-  const brands = Array.from(new Set(pumps.map(p=>p.brand))).sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
-  sel.innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>`<option${b===cur?' selected':''}>${escapeHtml(b)}</option>`).join('');
+/* ====== Konfigurator ====== */
+function fillSelects(){
+  const s=$('#selHp'); const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7);
+  s.innerHTML = sorted.map((x,i)=><option value=\"${i}\">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW • ${INT0.format(x.price)} PLN</option>).join('');
+  state.selectedHp = sorted[0];
+  const b=$('#selBufor'); b.innerHTML = Object.keys(BUFFERS).map(v=><option value=\"${v}\">${v} l • ${INT0.format(BUFFERS[v])} PLN</option>).join(''); b.value='100'; state.selectedBuf='100';
+  const t=$('#selCwu');   t.innerHTML = Object.keys(TANKS).map(v=><option value=\"${v}\">${v} l • ${INT0.format(TANKS[v])} PLN</option>).join(''); t.value='200'; state.selectedTank='200';
+  applyHpToUi();
 }
-fillBrands();
+function applyHpToUi(){ renderPreview(); renderMustHave(); }
 
-/* ===== CRUD ===== */
-$('#btnAdd').addEventListener('click', ()=>{
-  const p = { id:uid(), brand:'', model:'', type:'split', power:8, scop:4.5, refrig:'R32', phase:'1~', lowtemp:'tak', noise:52, cwu:'brak', price:30000, tags:[], notes:'', acc:'', link:'' };
-  pumps.unshift(p); save(); openDrawer(p.id);
-});
-function removePump(id){ const i=pumps.findIndex(x=>x.id===id); if(i>=0){ pumps.splice(i,1); save(); closeDrawer(); } }
-function duplicatePump(id){
-  const src = pumps.find(x=>x.id===id); if(!src) return;
-  const copy = JSON.parse(JSON.stringify(src)); copy.id=uid(); copy.model = (src.model||'') + ' (kopia)';
-  pumps.unshift(copy); save(); openDrawer(copy.id);
+function renderPreview(){
+  const b=activeHp(); if(!b){ $('#pricePreview').textContent='—'; return; }
+  const bufKey=state.selectedBuf, tankKey=state.selectedTank;
+  const bufCost = BUFFERS[bufKey]||0; const tankCost = (b.kind==='all-in-one') ? 0 : (TANKS[tankKey]||0);
+  const extras = Number(state.v3d||0) + Number(state.safety||0) + Number(state.hydro||0) + Number(state.glycol||0) + (Number(state.rads)||0)*750;
+  const sum = pricePack(b.price, bufCost, tankCost, extras);
+  $('#pricePreview').textContent = ${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN);
+  const hint=$('#typeHint'); hint.style.display='block';
+  if(b.kind==='monoblok') hint.textContent='Monoblok: glikol/ochrona na odcinku zewnętrznym (jeśli potrzebny).';
+  else if(b.kind==='all-in-one') hint.textContent='All‑in‑One: wbudowany zasobnik CWU — dodatkowy zwykle zbędny.';
+  else hint.textContent='Split: glikol nie dotyczy (obieg chłodniczy).';
 }
 
-/* ===== Drawer ===== */
-const drawer = $('#drawer');
-$('#btnClose').addEventListener('click', closeDrawer);
-$('#btnDel').addEventListener('click', ()=>{ if(openId && confirm('Usunąć pompę?')) removePump(openId); });
-$('#btnDup').addEventListener('click', ()=>{ if(openId) duplicatePump(openId); });
-$('#btnSendFromDrawer').addEventListener('click', ()=>{ if(openId) sendToPrima(openId, /*sameTab*/ true); });
-
-function openDrawer(id){
-  openId = id;
-  const p = pumps.find(x=>x.id===id); if(!p) return;
-  drawer.classList.add('open');
-
-  $('#e_brand').value = p.brand||'';
-  $('#e_model').value = p.model||'';
-  $('#e_type').value  = p.type||'split';
-  $('#e_power').value = p.power??'';
-  $('#e_scop').value  = p.scop??'';
-  $('#e_refrig').value= p.refrig||'R32';
-  $('#e_phase').value = p.phase||'1~';
-  $('#e_lowtemp').value = p.lowtemp||'tak';
-  $('#e_noise').value = p.noise??'';
-  $('#e_cwu').value = p.cwu||'brak';
-  $('#e_price').value = p.price??'';
-  $('#e_tags').value = (p.tags||[]).join(', ');
-  $('#e_notes').value = p.notes||'';
-  $('#e_acc').value = p.acc||'';
-  $('#e_link').value = p.link||'';
-
-  bindEditorHandlers();
-  const btnOpsSend = $('#btnPrimaSend'); if (btnOpsSend) btnOpsSend.disabled = false;
+function renderMustHave(){
+  const b=activeHp(); const buf=state.selectedBuf; const t=state.selectedTank; const box=$('#mustHave');
+  if(!b||!buf||!t){ box.textContent='Wybierz pompę, bufor i zasobnik — pokażę skład.'; return; }
+  const items=[];
+  items.push(Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'}));
+  items.push(Bufor — ${buf} l);
+  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : Zasobnik CWU — ${t} l);
+  items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
+  if(Number(state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
+  items.push('Rozdzielacz(e) / hydraulika wg wyboru');
+  const r = Number(state.rads)||0; if(r>0) items.push(Montaż grzejników: ${r} × ${INT0.format(750)} PLN);
+  items.push('Montaż, uruchomienie, konfiguracja sterowania, szkolenie użytkownika');
+  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">' + items.map(t=><li>${t}</li>).join('') + '</ul>';
 }
-function closeDrawer(){ drawer.classList.remove('open'); openId=null; const btnOpsSend=$('#btnPrimaSend'); if(btnOpsSend) btnOpsSend.disabled=true; }
 
-function bindEditorHandlers(){
-  ['#e_brand','#e_model','#e_power','#e_scop','#e_noise','#e_price','#e_tags','#e_notes','#e_acc','#e_link'].forEach(sel=>{
-    $(sel).oninput = debounce(saveEditor, 160);
+/* ====== Koszyk ====== */
+function addToBasket(name, price, qty=1){ const i=state.basket.findIndex(x=>x.name===name && Math.abs(x.price-price)<0.01); if(i>=0) state.basket[i].qty += qty; else state.basket.push({name, price, qty}); renderBasket(); }
+function renderBasket(){
+  const tb=$('#basket tbody'); tb.innerHTML=''; let sumNet=0;
+  state.basket.forEach((it,i)=>{ sumNet += it.price*it.qty; const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.name}</td>
+      <td><input type=\"number\" min=\"1\" value=\"${it.qty}\" data-qty=\"${i}\" style=\"width:70px;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:6px 8px;color:#e8edff\"></td>
+      <td class=\"right\">${fmt(it.price)} PLN</td>
+      <td class=\"right\"><button class=\"btn bad tiny\" data-del=\"${i}\">Usuń</button></td>`;
+    tb.appendChild(tr);
   });
-  ['#e_type','#e_refrig','#e_phase','#e_lowtemp','#e_cwu'].forEach(sel=>{
-    $(sel).onchange = saveEditor;
-  });
-}
-function saveEditor(){
-  if(!openId) return;
-  const p = pumps.find(x=>x.id===openId); if(!p) return;
-  p.brand = $('#e_brand').value.trim();
-  p.model = $('#e_model').value.trim();
-  p.type  = $('#e_type').value;
-  p.power = Number($('#e_power').value)||0;
-  p.scop  = Number($('#e_scop').value)||0;
-  p.refrig= $('#e_refrig').value;
-  p.phase = $('#e_phase').value;
-  p.lowtemp = $('#e_lowtemp').value;
-  p.noise = Number($('#e_noise').value)||0;
-  p.cwu   = $('#e_cwu').value;
-  p.price = Number($('#e_price').value)||0;
-  p.tags  = $('#e_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
-  p.notes = $('#e_notes').value;
-  p.acc   = $('#e_acc').value;
-  p.link  = $('#e_link').value;
-  save();
+  const prov = sumNet*(Number(state.provPct)||0)/100 + (Number(state.provAbs)||0);
+  $('#sumNet').textContent   = fmt(sumNet) + ' PLN';
+  $('#sumProv').textContent  = fmt(prov)   + ' PLN';
+  $('#sumGross').textContent = fmt( (sumNet+prov) * (1+state.vat) ) + ' PLN';
 }
 
-/* ===== import/export ===== */
-$('#btnExportJSON').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(pumps,null,2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'arkon_pompy.json'; a.click(); URL.revokeObjectURL(a.href);
+/* ====== Events ====== */
+['q','fBrand','fType','fRef','fPhase','sort'].forEach(id=>{
+  const el=document.getElementById(id); el.addEventListener('input', renderTable); el.addEventListener('change', renderTable);
 });
-$('#importJSON').addEventListener('change', async (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  try{
-    const txt = await f.text(); const data = JSON.parse(txt);
-    if(!Array.isArray(data)) throw new Error('Zły format.');
-    pumps = data; save(); alert('Zaimportowano.');
-  }catch(err){ alert('Błąd importu: '+err.message); }
-  e.target.value='';
+$('#btnClear').addEventListener('click', ()=>{ ['q','fBrand','fType','fRef','fPhase'].forEach(id=>document.getElementById(id).value=''); $('#sort').value='brand.asc'; renderTable(); });
+
+document.addEventListener('click', (e)=>{
+  const pick=e.target.getAttribute('data-pick'); if(pick){ const [brand,model]=pick.split('|'); const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7 ); const idx=sorted.findIndex(x=>x.brand===brand && x.model===model); if(idx>=0){ $('#selHp').value=String(idx); state.selectedHp=sorted[idx]; applyHpToUi(); window.scrollTo({top:0,behavior:'smooth'});} }
+  const del=e.target.getAttribute('data-del'); if(del!=null){ state.basket.splice(Number(del),1); renderBasket(); }
 });
-$('#btnCSV').addEventListener('click', ()=>{
-  const cols = ['brand','model','type','power','scop','refrig','phase','lowtemp','noise','cwu','price','tags','notes','acc','link'];
-  const rows = [cols.join(';')];
-  pumps.forEach(p=>{
-    const r = cols.map(k=>{
-      let v = (k==='tags') ? (p.tags||[]).join('|') : (p[k]??'');
-      v = String(v);
-      if(/[;\n"]/.test(v)) v = '"'+v.replace(/"/g,'""')+'"';
-      return v;
-    });
-    rows.push(r.join(';'));
-  });
-  const blob = new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'arkon_pompy.csv'; a.click(); URL.revokeObjectURL(a.href);
+
+$('#selHp').addEventListener('change', ()=>{ const sorted=HEATPUMPS.slice().sort((a,b)=> (a.brand.localeCompare(b.brand,'pl')) || a.pA7-b.pA7 ); state.selectedHp = sorted[Number($('#selHp').value)||0]; applyHpToUi(); });
+['selBufor','selCwu','selVat'].forEach(id=>document.getElementById(id).addEventListener('change', (e)=>{ if(e.target.id==='selBufor') state.selectedBuf=e.target.value; if(e.target.id==='selCwu') state.selectedTank=e.target.value; if(e.target.id==='selVat') state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); renderMustHave(); }));
+['selV3d','selSafety','selHydro','selGlycol'].forEach(id=>document.getElementById(id).addEventListener('change', (e)=>{ state[e.target.id.replace('sel','').toLowerCase()] = Number(e.target.value)||0; renderPreview(); renderMustHave(); }));
+$('#inpRads').addEventListener('input', e=>{ state.rads=Math.max(0,Number(e.target.value)||0); renderPreview(); renderMustHave(); });
+['provPct','provAbs'].forEach(id=>document.getElementById(id).addEventListener('input', ()=>{ state.provPct=Number($('#provPct').value)||0; state.provAbs=Number($('#provAbs').value)||0; renderBasket(); }));
+
+$('#btnAddPack').addEventListener('click', ()=>{
+  const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
+  const bufKey=state.selectedBuf, tankKey=state.selectedTank;
+  const bufCost = BUFFERS[bufKey]||0; const tankCost = (b.kind==='all-in-one')? 0 : (TANKS[tankKey]||0);
+  const extras = Number(state.v3d||0) + Number(state.safety||0) + Number(state.hydro||0) + Number(state.glycol||0) + (Number(state.rads)||0)*750;
+  const price = pricePack(b.price, bufCost, tankCost, extras);
+  const labels=[]; if(Number(state.v3d)>0) labels.push('zawór 3D'); if(Number(state.safety)>0) labels.push('gr. bezp.'); if(Number(state.hydro)>0) labels.push('hydraulika+'); if(Number(state.glycol)>0 && b.kind==='monoblok') labels.push('glikol'); const rlabel = state.rads? ` + grzejniki x${state.rads}` : ''; const elabel = labels.length? ` + ${labels.join(', ')}` : '';
+  addToBasket(Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l'))}${rlabel}${elabel}, price, 1);
+});
+
+$('#btnAddHp').addEventListener('click', ()=>{ const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; } addToBasket(Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie, soloPrice(b), 1); });
+
+// ilości w koszyku / usuwanie
+ document.addEventListener('input', (e)=>{ if(e.target.matches('[data-qty]')){ const i=Number(e.target.getAttribute('data-qty')); state.basket[i].qty=Math.max(1,Number(e.target.value)||1); renderBasket(); } });
+
+$('#btnCopy').addEventListener('click', ()=>{
+  const sum = state.basket.reduce((a,b)=>a+b.price*b.qty,0); const prov = sum*(Number(state.provPct)||0)/100 + (Number(state.provAbs)||0);
+  let txt='Oferta — Pompy ciepła (zestaw)
+
+'; state.basket.forEach(it=>{ txt += `• ${it.name} × ${it.qty} | ${fmt(it.price)} PLN
+`; });
+  txt += `
+Suma netto: ${fmt(sum)} PLN`; txt += `
+Prowizja: ${fmt(prov)} PLN`; txt += `
+Razem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt((sum+prov)*(1+state.vat))} PLN`;
+  navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
-
-/* ===== PRIMA integration ===== */
-$('#primaUrl').addEventListener('input', e=> setPrimaUrl(e.target.value.trim()));
-$('#btnPrimaOpen').addEventListener('click', ()=> goToPrima(/*sameTab*/ false));
-$('#btnPrimaSend').addEventListener('click', ()=>{
-  if(!openId){ alert('Otwórz edycję pompy (✏️), a następnie wyślij.'); return; }
-  sendToPrima(openId, /*sameTab*/ true);
-});
-document.getElementById('navPrimaLink').addEventListener('click', (e)=>{
-  e.preventDefault();
-  // jeśli jest otwarta jakaś pompa, przekaż ją
-  if(openId) try{ localStorage.setItem(LS_SELECTED_ID, openId); }catch{}
-  goToPrima(/*sameTab*/ true);
+$('#btnXlsx').addEventListener('click', ()=>{
+  const rows = state.basket.map(it=>({ Pozycja: it.name, Ilosc: it.qty, Cena_PLN: it.price }));
+  const ws = XLSX.utils.json_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
+  XLSX.writeFile(wb, 'Koszyk_PompyCiepla_rozszerzony.xlsx');
 });
 
-function updatePrimaLink(){
-  const link = document.getElementById('navPrimaLink');
-  if (link){ link.href = getPrimaUrl() || PRIMA_DEFAULT; }
-}
-function goToPrima(sameTab){
-  ensurePrimaUrl();
-  const url = getPrimaUrl() || PRIMA_DEFAULT;
-  // ping i ewentualne ID już ustawione w LS_SELECTED_ID
-  broadcastUpdate();
-  if (sameTab) window.location.href = url; else window.open(url, '_blank');
-}
-function sendToPrima(id, sameTab){
-  save();
-  try{ localStorage.setItem(LS_SELECTED_ID, id); }catch{}
-  broadcastUpdate();
-  goToPrima(!!sameTab);
-}
-
-/* ===== hotkeys ===== */
-document.addEventListener('keydown', (e)=>{
-  if (e.altKey && (e.key==='p' || e.key==='P')){ e.preventDefault(); 
-    if(openId) try{ localStorage.setItem(LS_SELECTED_ID, openId);}catch{}
-    goToPrima(true);
-  }
-});
-
-/* ===== debounce ===== */
-function debounce(fn,ms){ let t; return function(){ const a=arguments; clearTimeout(t); t=setTimeout(()=>fn.apply(null,a),ms||180); }; }
-
-/* ===== boot ===== */
-render();
-$('#primaUrl').value = getPrimaUrl() || PRIMA_DEFAULT;
-ensurePrimaUrl();
-updatePrimaLink();
-
+/* ====== Init ====== */
+function init(){ fillFilters(); renderTable(); fillSelects(); renderBasket(); }
+init();
 </script>
 </body>
 </html>

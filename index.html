@@ -62,7 +62,7 @@
   @media print{ #lock,nav,.btn,.kbd{display:none!important} }
 
   /* ===== LOCK / LOGIN OVERLAY for DASHBOARD ===== */
-  #lock{position:fixed;inset:0;background:radial-gradient(1200px 600px at 60% -10%,#19307144,transparent),linear-gradient(180deg,#0a0f22 0%,#0a0f22 30%,#0b1130 100%);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999}
+  #lock{position:fixed;inset:0;background:radial-gradient(1200px 600px at 60% -10%,#19307144,transparent),linear-gradient(180deg,#0a0f22 0%,#0a0f22 30%,#0b1130 100%);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999}
   #lock.open{display:flex}
   .login-panel{width:460px;max-width:94vw;background:linear-gradient(180deg,#0f1636,#101a44);border:1px solid #2a3a75;border-radius:16px;padding:16px;box-shadow:0 20px 60px #0008}
   .login-panel h2{margin:0 0 4px}

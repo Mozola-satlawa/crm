@@ -43,25 +43,25 @@ th{font-size:12px;color:#aeb8da}
 .search{min-width:260px}
 input,select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:#e8edff;font:inherit}
 .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
+
+/* utility classes to replace inline styles */
+.space-between{justify-content:space-between}
+.overflow-auto{overflow:auto;margin-top:8px}
+.mt-8{margin-top:8px}
+.mt-6{margin-top:6px}
+.small-accent{margin-top:6px;color:#9fb4ff}
 </style>
 </head>
 <body>
 <header>
-  <h1>ARKON • Hub aplikacji</h1>
-  <div class="small">Przegląd modułów i ostatnich rekordów. <span class="kbd">/</span> – szukaj leadu • <a href="lidy.html">pełna lista →</a></div>
-</header>
-
-<div class="wrap grid cols-2">
-  <section class="grid">
-    <div class="card">
-      <div class="row" style="justify-content:space-between">
+      <div class="row space-between">
         <b>Ostatnie leady</b>
         <div class="row">
           <input id="q" class="search" placeholder="🔎 Imię, telefon, e‑mail, źródło, tag…">
           <span class="pill">Widocznych: <b id="vis">0</b></span>
         </div>
       </div>
-      <div style="overflow:auto;margin-top:8px">
+      <div class="overflow-auto">
         <table id="tblLeads">
           <thead>
             <tr>
@@ -76,18 +76,18 @@ input,select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padd
           <tbody></tbody>
         </table>
       </div>
-      <div class="right" style="margin-top:8px">
+      <div class="right mt-8">
         <a class="btn" href="lidy.html">Otwórz moduł „Lidy”</a>
         <a class="btn" href="dokumenty.html">Dokumenty</a>
         <a class="btn" href="dokumenty.html?tag=prefinansowanie">Prefinansowanie</a>
         <a class="btn" href="dokumenty.html?tag=dofinansowanie">Dofinansowanie</a>
         <button id="btnSeed" class="btn ghost" type="button">Dodaj przykładowe</button>
       </div>
-    </div>
-
-    <div class="card">
+      <div class="right mt-8">
+        <a class="btn" href="lidy.html">Otwórz moduł „Lidy”</a>
+      <div class="card">
       <b>Skróty</b>
-      <div class="row" style="margin-top:6px">
+      <div class="row mt-6">
         <a class="btn" href="index.html">Pulpit</a>
         <a class="btn" href="klienci.html">Klienci</a>
         <a class="btn" href="komponenty.html">Komponenty</a>
@@ -97,12 +97,12 @@ input,select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padd
         <a class="btn" href="kalkulator.html" target="_blank" rel="noopener">Kalkulator ↗️</a>
       </div>
     </div>
-  </section>
-
-  <aside class="grid">
+        <a class="btn" href="komponenty.html">Komponenty</a>
+        <a class="btn" href="kalendarz-montaze.html">Kalendarz montaży</a>
+        <a class="btn" href="dokumenty.html?tag=prefinansowanie">Prefinansowanie</a>
     <div class="card">
       <b>Moduły</b>
-      <div class="apps" style="margin-top:8px">
+      <div class="apps mt-8">
         <a class="app" href="index.html"><b>📊 Pulpit</b><div class="small">KPI + ostatnie rekordy.</div></a>
         <a class="app" href="klienci.html"><b>👥 Klienci</b><div class="small">Lista, projekty, umowy.</div></a>
         <a class="app" href="lidy.html"><b>🧲 Lidy</b><div class="small">Zbieranie i kwalifikacja.</div></a>
@@ -114,18 +114,18 @@ input,select{background:#0d1530;border:1px solid #28356c;border-radius:10px;padd
         <a class="app" href="dokumenty.html?tag=dofinansowanie"><b>💸 Dofinansowanie</b><div class="small">Wnioski, załączniki, oświadczenia.</div></a>
       </div>
     </div>
-
+        <a class="app" href="kalendarz-montaze.html"><b>📅 Kalendarz montaży</b><div class="small">Plan ekip i terminów.</div></a>
     <div class="card">
       <b>Statystyki (lokalne)</b>
-      <div class="grid cols-3 small" style="margin-top:6px">
+      <div class="grid cols-3 small mt-6">
         <div>Leady: <b id="cntLeads">0</b></div>
         <div>Klienci: <b id="cntClients">0</b></div>
         <div>Komponenty: <b id="cntCmp">0</b></div>
       </div>
-      <div class="small" style="margin-top:6px;color:#9fb4ff">Dane są tylko w Twojej przeglądarce.</div>
+      <div class="small small-accent">Dane są tylko w Twojej przeglądarce.</div>
     </div>
-  </aside>
-</div>
+      </div>
+</header>
 
 <script>
 'use strict';
