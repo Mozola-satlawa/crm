@@ -623,6 +623,19 @@ function fillSelects(){
 
   applyHpToUi();
 }
+function applyHpToUi(){
+  // Ustal zaznaczoną pompę na podstawie selekta
+  const arr = sortedHp();
+  const idx = Number(document.querySelector('#selHp')?.value) || 0;
+  state.selectedHp = arr[idx] || state.selectedHp || null;
+
+  // Odśwież widoki zależne od wybranej pompy
+  renderPreview();
+  renderMustHave();
+  renderBasket();  // tylko odświeżenie sum (bez ingerencji w koszyk)
+
+  saveState();
+}
 function activeHp(){ return state.selectedHp; }
 
 function pricePack(hpPrice, bufCost, tankCost, extras){
