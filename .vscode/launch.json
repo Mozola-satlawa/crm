@@ -1,5 +1,6 @@
 {
     "configurations": [
+        
 
         {
             "type": "msedge",
@@ -8,7 +9,7 @@
             "runtimeArgs": [
                 "--remote-debugging-port=9222"
             ],
-            "url": "c:\\Users\\misia\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.9\\out\\startpage\\index.html", // Provide your project's url to finish configuring
+            "url": "http://localhost:3000",
             "presentation": {
                 "hidden": true
             }
@@ -21,7 +22,7 @@
                 "--headless",
                 "--remote-debugging-port=9222"
             ],
-            "url": "c:\\Users\\misia\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.9\\out\\startpage\\index.html", // Provide your project's url to finish configuring
+            "url": "http://localhost:3000",
             "presentation": {
                 "hidden": true
             }

@@ -70,6 +70,24 @@
   /* Sticky helpers */
   .sticky-note{background:#11204a;border:1px dashed #3453aa;border-radius:10px;padding:10px}
   @media print{ nav,.toolbar,.drawer,.modal{display:none!important} }
+
+  /* Utility classes moved from inline styles */
+  .as-on{ color:#8ae3b1; }
+  .minw-260{ min-width:260px; }
+  .mb-6{ margin-bottom:6px; }
+  .overflow-auto{ overflow:auto; }
+  .m0{ margin:0; }
+  .m14-0-6{ margin:14px 0 6px; }
+  .m0-0-6{ margin:0 0 6px; }
+  .mt-8{ margin-top:8px; }
+  .mt-6{ margin-top:6px; }
+  .mt-12{ margin-top:12px; }
+  .m6-0-10{ margin:6px 0 10px; }
+  .mt-10{ margin-top:10px; }
+  .m12-0-6{ margin:12px 0 6px; }
+  .justify-space-between{ justify-content:space-between; }
+  /* moved inline style for contractsLinks2 */
+  .wrap-contracts{ flex-wrap:wrap; gap:8px; }
 </style>
 </head>
 <body>
@@ -89,13 +107,11 @@
   <a href="komponenty-stolarka.html">Stolarka</a>
   <a href="lidy.html">Lidy</a>
   <a href="upload.html">Przesył plików</a>
-  <a href="chat.html">Komunikator</a>
+    <span class="pill">Autosave <b id="as" class="as-on">ON</b></span>
   <a href="ustawienia.html">Ustawienia</a>
 </nav>
-
-<div class="wrap">
   <!-- TOOLBAR -->
-  <div class="toolbar">
+      <input id="q" class="minw-260" placeholder="🔎 Szukaj: nazwa, e-mail, telefon, tag…">
     <button id="btnAdd" class="btn ok">+ Nowy klient</button>
     <button id="btnSchema" class="btn">⚙ Struktura pól</button>
     <button id="btnExportJSON" class="btn ghost">Eksport JSON</button>
@@ -105,13 +121,15 @@
     <span class="pill">Łącznie: <b id="countAll">0</b></span>
     <span class="pill">Widocznych: <b id="countVis">0</b></span>
     <span class="pill">Wybranych: <b id="countSel">0</b></span>
-    <span class="pill">Autosave <b id="as" style="color:#8ae3b1">ON</b></span>
+    <span class="pill">Autosave <b id="as_toolbar" class="as-on">ON</b></span>
+  </div>
+    <span class="pill">Autosave <b id="as" class="as-on">ON</b></span>
   </div>
 
   <!-- FILTRY -->
   <div class="card">
     <div class="row">
-      <input id="q" placeholder="🔎 Szukaj: nazwa, e-mail, telefon, tag…" style="min-width:260px">
+      <input id="qFilter" class="minw-260" placeholder="🔎 Szukaj: nazwa, e-mail, telefon, tag…">
       <select id="fStatus">
         <option value="">Status (wszystkie)</option>
         <option value="LEAD">LEAD</option>
@@ -121,11 +139,11 @@
         <option value="UTRACONY">UTRACONY</option>
       </select>
       <select id="sort">
-        <option value="name.asc">Sort: Nazwa ↑</option>
-        <option value="name.desc">Sort: Nazwa ↓</option>
         <option value="created.desc">Sort: Najnowsze</option>
         <option value="created.asc">Sort: Najstarsze</option>
       </select>
+      <div class="muted mb-6">Kliknij wiersz, aby edytować w panelu po prawej. Zaznacz kilka (Ctrl/⌘) — przygotowane pod akcje masowe.</div>
+      <div id="listWrapFilters" class="overflow-auto"></div>
       <input id="fTag" placeholder="Tag (np. pompa, fotowoltaika)">
       <select id="fField" title="Filtruj po wybranym polu własnym"></select>
       <input id="fFieldVal" placeholder="= wartość pola">
@@ -137,14 +155,13 @@
   <div class="grid cols-2">
     <!-- LISTA KLIENTÓW -->
     <div class="card">
-      <div class="muted" style="margin-bottom:6px">Kliknij wiersz, aby edytować w panelu po prawej. Zaznacz kilka (Ctrl/⌘) — przygotowane pod akcje masowe.</div>
-      <div id="listWrap" style="overflow:auto">
+      <div class="muted mb-6">Kliknij wiersz, aby edytować w panelu po prawej. Zaznacz kilka (Ctrl/⌘) — przygotowane pod akcje masowe.</div>
+      <div id="listWrap" class="overflow-auto">
         <table id="tbl" role="grid" aria-label="Tabela klientów">
           <thead id="thead">
             <tr>
               <th>▶️</th>
               <th>Nazwa</th>
-              <th>Status</th>
               <th>Kontakt</th>
               <th>Adres</th>
               <th>Tagi</th>
@@ -160,14 +177,15 @@
     <aside id="drawer" class="drawer" aria-label="Edycja klienta">
       <div class="hd">
         <div class="row">
-          <h3 style="margin:0">Edycja klienta</h3>
+          <h3 class="m0">Edycja klienta</h3>
           <div class="right">
             <button id="btnClose" class="btn ghost" type="button">Zamknij</button>
             <button id="btnDel" class="btn bad" type="button">Usuń</button>
-            <button id="btnDup" class="btn" type="button">Duplikuj</button>
-          </div>
         </div>
+        <h4 class="m14-0-6">Powiązania i szybkie linki</h4>
       </div>
+      <div class="bd">
+        <h4 class="m14-0-6">Powiązania i szybkie linki</h4>
       <div class="bd">
         <div class="kv">
           <label>Nazwa</label><input id="e_name" placeholder="np. Jan Kowalski / Firma XYZ">
@@ -182,67 +200,71 @@
           <label>Notatki</label><textarea id="e_notes" placeholder="Ważne uzgodnienia, terminy, itp."></textarea>
         </div>
 
-        <!-- POWIĄZANIA I SZYBKIE LINKI -->
-        <h4 style="margin:14px 0 6px">Powiązania i szybkie linki</h4>
-        <div class="kv">
-          <label>Lead (z Lidy)</label>
-          <select id="e_lead"><option value="">— brak —</option></select>
+        <h4 class="m14-0-6">Umowy / Szablony</h4>
+        <h4 class="m14-0-6">Powiązania i szybkie linki</h4>
+        <div class="row mt-8" id="contractsLinks">
+          <!-- Linki wypełniane w JS (dynamiczny clientId) -->
+        </div>
           <label>Folder/Token upload</label>
           <input id="e_folder" placeholder="np. CLNT-2025-0001 (tworzy się w upload.html)">
-          <label>Szybkie akcje</label>
+        <h4 class="m14-0-6">Pola własne</h4>
           <div class="row">
             <a id="linkCalc" class="btn ghost" href="#" target="_blank" rel="noopener">Kalkulator</a>
             <a id="linkUpload" class="btn ghost" href="#" target="_blank" rel="noopener">Przesył plików</a>
             <a id="linkDocs" class="btn ghost" href="dokumenty.html" target="_blank" rel="noopener">Dokumenty</a>
           </div>
-        </div>
 
-        <!-- UMOWY / SZABLONY (umowa2.html) -->
-        <h4 style="margin:14px 0 6px">Umowy / Szablony</h4>
-        <div class="small muted">Generuj/edytuj umowę na podstawie danych klienta.</div>
-        <div class="row" id="contractsLinks" style="margin-top:8px;flex-wrap:wrap;gap:8px">
-          <!-- Linki wypełniane w JS (dynamiczny clientId) -->
+          <h4 class="m0-0-6">Projekty</h4>
+          <div class="small muted mb-6">Każdy projekt może mieć umowy i dokumenty (linki/nazwy plików). Do faktycznego uploadu użyj strony „Przesył plików”.</div>
+
+          <div class="right mt-8">
+        <div class="row wrap-contracts" id="contractsLinks2">
+          <!-- dodatkowe miejsce na linki (bez konfliktu id) -->
+        </div>
+        <div class="row" id="contractsLinks2" style="flex-wrap:wrap;gap:8px">
+          <!-- dodatkowe miejsce na linki (bez konfliktu id) -->
         </div>
 
         <!-- Pola własne -->
-        <h4 style="margin:14px 0 6px">Pola własne</h4>
-        <div id="customFields" class="grid"></div>
+        <h4 class="m14-0-6">Pola własne</h4>
+  <div class="grid cols-3 mt-12">
 
-        <!-- Projekty / umowy / dokumenty -->
+      <h3 class="m0-0-6">Szablony wydruków (globalne)</h3>
         <div class="sticky-note">
-          <h4 style="margin:0 0 6px">Projekty</h4>
-          <div class="small muted" style="margin-bottom:6px">Każdy projekt może mieć umowy i dokumenty (linki/nazwy plików). Do faktycznego uploadu użyj strony „Przesył plików”.</div>
+          <h4 class="m0-0-6">Projekty</h4>
+          <div class="small muted mb-6">Każdy projekt może mieć umowy i dokumenty (linki/nazwy plików). Do faktycznego uploadu użyj strony „Przesył plików”.</div>
           <div id="projList"></div>
-          <div class="right" style="margin-top:8px">
-            <button id="btnAddProject" class="btn ok" type="button">+ Dodaj projekt</button>
-          </div>
-        </div>
+      <div class="small muted mt-6">W edycji klienta linki otwierają się z parametrem <code>?clientId=...</code>.</div>
+      </div>
+      </div>
+    </aside>
+      <h3 class="m0-0-6">Eksport/Import</h3>
       </div>
     </aside>
   </div>
 
   <!-- DOK przypięte -->
-  <div class="grid cols-3" style="margin-top:12px">
+  <div class="grid cols-3 mt-12">
     <div class="card">
-      <h3 style="margin:0 0 6px">Szablony wydruków (globalne)</h3>
+      <h3 class="m0-0-6">Podpowiedzi</h3>
       <div class="row">
         <a class="btn ghost" href="umowa2.html" target="_blank" rel="noopener">📄 Umowa 2</a>
         <a class="btn ghost" href="umowy.html" target="_blank" rel="noopener">📝 Edytor umów</a>
       </div>
-      <div class="small muted" style="margin-top:6px">W edycji klienta linki otwierają się z parametrem <code>?clientId=...</code>.</div>
+      <div class="small muted mt-6">W edycji klienta linki otwierają się z parametrem <code>?clientId=...</code>.</div>
     </div>
     <div class="card">
-      <h3 style="margin:0 0 6px">Eksport/Import</h3>
+      <h3 class="m0-0-6">Eksport/Import</h3>
       <div class="row">
         <button id="btnExportJSON2" class="btn">Eksport JSON</button>
         <label class="btn ghost">Import JSON<input id="importJSON2" type="file" accept="application/json" hidden></label>
         <button id="btnCSV2" class="btn ghost">Eksport CSV</button>
       </div>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 6px">Podpowiedzi</h3>
+    <div class="row justify-space-between">
+      <h3 id="schemaTitleCard" class="m0">Struktura pól (własne kolumny)</h3>
+      <h3 class="m0-0-6">Podpowiedzi</h3>
+      <div class="muted m6-0-10">Dodaj swoje pola do klientów (np. „Powierzchnia domu [m²]”, „Źródło leadu”). Typy: text, number, select, date, checkbox.</div>
       <ul class="small">
-        <li><span class="kbd">/</span> przenosi kursor do wyszukiwarki.</li>
         <li><span class="kbd">Alt+N</span> dodaje nowego klienta.</li>
         <li><span class="kbd">Alt+S</span> otwiera edytor struktury pól.</li>
         <li>Widok „Karty” — lepszy do szybkiego przeglądu.</li>
@@ -254,36 +276,34 @@
 <!-- MODAL STRUKTURY -->
 <div id="modalSchema" class="modal" role="dialog" aria-modal="true" aria-labelledby="schemaTitle">
   <div class="box">
-    <div class="row" style="justify-content:space-between">
-      <h3 id="schemaTitle" style="margin:0">Struktura pól (własne kolumny)</h3>
-      <div class="right"><button id="btnCloseSchema" class="btn ghost" type="button">Zamknij</button></div>
-    </div>
-    <div class="muted" style="margin:6px 0 10px">Dodaj swoje pola do klientów (np. „Powierzchnia domu [m²]”, „Źródło leadu”). Typy: text, number, select, date, checkbox.</div>
+    <div class="row justify-space-between">
+      <h3 id="schemaTitle" class="m0">Struktura pól (własne kolumny)</h3>
+    <div class="mt-8"></div>
+    <div class="muted m6-0-10">Dodaj swoje pola do klientów (np. „Powierzchnia domu [m²]”, „Źródło leadu”). Typy: text, number, select, date, checkbox.</div>
     <div class="grid-3">
-      <div><label>Nazwa etykiety</label><input id="s_label" placeholder="np. Powierzchnia [m²]"></div>
+    <div class="row mt-10">
       <div><label>Klucz (bez spacji)</label><input id="s_key" placeholder="np. powierzchnia_m2"></div>
       <div><label>Typ</label>
         <select id="s_type">
           <option value="text">text</option>
-          <option value="number">number</option>
           <option value="select">select</option>
-          <option value="date">date</option>
           <option value="checkbox">checkbox</option>
         </select>
       </div>
+      <div class="right mt-10"><button id="btnSaveSchema" class="btn" type="button">Zapisz schemat</button></div>
     </div>
-    <div style="margin-top:8px">
+    <div class="mt-8">
       <label>Opcje (dla „select”) — rozdzielone przecinkami</label>
       <input id="s_opts" placeholder="np. A,B,C">
     </div>
-    <div class="row" style="margin-top:10px">
+    <div class="row mt-10">
       <button id="btnAddField" class="btn ok" type="button">+ Dodaj pole</button>
       <button id="btnClearFields" class="btn bad" type="button">Wyczyść wszystko</button>
     </div>
 
-    <h4 style="margin:12px 0 6px">Aktywne pola</h4>
+    <h4 class="m12-0-6">Aktywne pola</h4>
     <div id="schemaList"></div>
-    <div class="right" style="margin-top:10px"><button id="btnSaveSchema" class="btn" type="button">Zapisz schemat</button></div>
+    <div class="right mt-10"><button id="btnSaveSchema2" class="btn" type="button">Zapisz schemat</button></div>
   </div>
 </div>
 
@@ -623,21 +643,26 @@ function updateQuickLinks(){
   $('#linkUpload').href = 'upload.html?clientId=' + encodeURIComponent(openId) + ($('#e_folder').value ? '&folder='+encodeURIComponent($('#e_folder').value) : '');
 }
 function renderContractLinks(id){
-  const box = $('#contractsLinks'); box.innerHTML='';
-  const mk = (href, label)=>{
-    const a=document.createElement('a');
-    a.className='btn ghost';
-    a.target='_blank'; a.rel='noopener';
-    a.href=href + (href.includes('?') ? '&' : '?') + 'clientId=' + encodeURIComponent(id);
-    a.textContent=label;
-    return a;
-  };
-  box.appendChild(mk('umowa.html','📄 Umowa'));
-  box.appendChild(mk('umowa2.html','📄 Umowa 2'));
-  box.appendChild(mk('umowy.html','📝 Edytor umów (główny)'));
-  box.appendChild(mk('umowy_ocieplenie.html','🏠 Ocieplenie'));
-  box.appendChild(mk('umowy_pv.html','☀️ Fotowoltaika'));
-  box.appendChild(mk('umowy_stolarka.html','🚪 Stolarka'));
+  // populate all possible contractsLinks containers (avoid duplicate-id issues)
+  const boxes = Array.from(document.querySelectorAll('#contractsLinks, #contractsLinks2'));
+  boxes.forEach(box=>{
+    if(!box) return;
+    box.innerHTML = '';
+    const mk = (href, label)=>{
+      const a=document.createElement('a');
+      a.className='btn ghost';
+      a.target='_blank'; a.rel='noopener';
+      a.href=href + (href.includes('?') ? '&' : '?') + 'clientId=' + encodeURIComponent(id);
+      a.textContent=label;
+      return a;
+    };
+    box.appendChild(mk('umowa.html','📄 Umowa'));
+    box.appendChild(mk('umowa2.html','📄 Umowa 2'));
+    box.appendChild(mk('umowy.html','📝 Edytor umów (główny)'));
+    box.appendChild(mk('umowy_ocieplenie.html','🏠 Ocieplenie'));
+    box.appendChild(mk('umowy_pv.html','☀️ Fotowoltaika'));
+    box.appendChild(mk('umowy_stolarka.html','🚪 Stolarka'));
+  });
 }
 
 /* ===== custom fields render ===== */

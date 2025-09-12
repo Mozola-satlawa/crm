@@ -214,14 +214,31 @@
               </div>
               <div class="cell">
                 <button class="btn alt" id="applySuggested">Dopasuj model</button>
-            </div>
+              </div>
             </div>
           </div>
 
+          <!-- Podgląd ceny -->
           <div class="col wide">
             <div class="muted">Aktualna cena zestawu (wg wyboru):</div>
             <div id="pricePreview" class="price-preview">—</div>
           </div>
+
+          <!-- ▼▼▼ NOWE: PROWIZJA HANDLOWCA ▼▼▼ -->
+          <div class="col">
+            <label>Prowizja handlowca</label>
+            <div class="inline">
+              <div class="cell">
+                <input id="provPct" type="number" min="0" step="0.1" placeholder="%" title="Prowizja w %">
+              </div>
+              <div class="cell">
+                <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" title="Prowizja kwotowa">
+              </div>
+            </div>
+            <div class="mini">Możesz wpisać % i/lub kwotę – zsumuję.</div>
+          </div>
+          <!-- ▲▲▲ KONIEC: PROWIZJA HANDLOWCA ▲▲▲ -->
+
         </div>
 
         <!-- ▼▼▼ MOSTEK: ARKON — Komponenty • Piece (ograniczony do Ferroli/DEFRO/Stalmark/LAZAR) ▼▼▼ -->
@@ -292,10 +309,14 @@
           <tbody></tbody>
         </table>
         <div class="sep"></div>
+        <!-- ▼▼▼ NOWE: rozszerzone podsumowanie z prowizją ▼▼▼ -->
         <div class="row">
-          <div class="col"><span class="muted">Suma końcowa</span><div id="sumFinal" class="price-preview"></div></div>
+          <div class="col"><span class="muted">Suma pozycji (netto)</span><div id="sumNet" class="price-preview"></div></div>
+          <div class="col"><span class="muted">Prowizja</span><div id="sumProv" class="price-preview"></div></div>
+          <div class="col"><span class="muted">Razem (netto)</span><div id="sumFinal" class="price-preview"></div></div>
           <div class="col"><span class="muted">Brutto (z VAT)</span><div id="sumBrutto" class="price-preview"></div></div>
         </div>
+        <!-- ▲▲▲ KONIEC: rozszerzone podsumowanie ▲▲▲ -->
       </div>
     </div>
 
@@ -385,7 +406,10 @@
       selectedBoiler:null, selectedTank:null,
       rads:0, chimneyM:0,
       bufferLiters:0, bufferPrice:0, bufferSelected:false,
-      arkon:{ list:[], byBrand:{}, selected:null }
+      arkon:{ list:[], byBrand:{}, selected:null },
+      // ▼▼▼ NOWE: prowizja ▼▼▼
+      provPct:0,  // prowizja procentowa
+      provAbs:0   // prowizja kwotowa
     };
 
     const q = s=>document.querySelector(s);
@@ -437,7 +461,8 @@
       renderBasket();
     }
     function renderBasket(){
-      const tb=q('#basket tbody'); tb.innerHTML=''; let sum=0;
+      const tb=q('#basket tbody'); tb.innerHTML=''; 
+      let sum=0;
       state.basket.forEach((it,i)=>{
         sum += it.final*it.qty;
         const tr=document.createElement('tr');
@@ -448,8 +473,22 @@
           <td class="right"><button class="btn warn" data-del="${i}">Usuń</button></td>`;
         tb.appendChild(tr);
       });
-      q('#sumFinal').textContent  = fmt(sum) + ' PLN';
-      q('#sumBrutto').textContent = fmt(sum*(1+state.vat)) + ' PLN';
+
+      // --- prowizja ---
+      const prov = sum * ((Number(state.provPct)||0)/100) + (Number(state.provAbs)||0);
+      const totalNet = sum + prov;
+      const vat = Number(q('#vat').value) || state.vat || 0.08;
+
+      // --- wyświetlenie ---
+      const sumNetEl   = q('#sumNet');
+      const sumProvEl  = q('#sumProv');
+      const sumFinalEl = q('#sumFinal');
+      const sumBrutEl  = q('#sumBrutto');
+
+      if(sumNetEl)   sumNetEl.textContent   = fmt(sum) + ' PLN';
+      if(sumProvEl)  sumProvEl.textContent  = fmt(prov) + ' PLN';
+      if(sumFinalEl) sumFinalEl.textContent = fmt(totalNet) + ' PLN';
+      if(sumBrutEl)  sumBrutEl.textContent  = fmt(totalNet * (1 + vat)) + ' PLN';
     }
 
     function activeBoiler(){
@@ -472,18 +511,20 @@
       if(!b||!t){ box.textContent='Wybierz markę, model i zasobnik — pokażę skład.'; return; }
       const items = [];
       const labelFuel = (b.fuel||fuelOfBrand(state.brand));
-      items.push(`Kocioł — ${b.model}${b.power? ` (${b.power} kW)`:''} • ${labelFuel}`);
+      items.push(`Kocioł — ${b.model}${b.power ? ` (${b.power} kW)` : ''} • ${labelFuel}`);
       items.push(`Zasobnik CWU — ${t} l`);
       if(requiresBuffer(b) || state.bufferSelected){
-        items.push(`Bufor ciepła — ${state.bufferLiters} l${requiresBuffer(b)?' (wymagany)':' (opcjonalnie)'}`);
+        items.push(`Bufor ciepła — ${state.bufferLiters} l${requiresBuffer(b) ? ' (wymagany)' : ' (opcjonalnie)'}`);
       }
       items.push('Armatura: zawór 3D CWU/CO, grupa bezpieczeństwa CO, zawór zwrotny');
       items.push('Pompa obiegowa CO + filtr siatkowy + separator magnetyczny');
       items.push('Naczynie przeponowe CO, odpowietrzniki automatyczne');
-      const r = Number(state.rads)||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN/szt.`);
-      const m = Number(state.chimneyM)||0; if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue? ` • zalec. Ø ${b.flue} mm`:''}`);
+      const r = Number(state.rads)||0;
+      if(r>0) items.push(`Montaż grzejników: ${r} × ${INT0.format(RAD_PRICE)} PLN/szt.`);
+      const m = Number(state.chimneyM)||0;
+      if(m>0) items.push(`Wkład kominowy: ${m} m × ${INT0.format(CHIMNEY_PRICE)} PLN/mb${b.flue ? ` • zalec. Ø ${b.flue} mm` : ''}`);
       items.push('Montaż, uruchomienie, konfiguracja sterowania');
-      box.innerHTML = '<ul class="clean">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
+      box.innerHTML = '<ul class="clean">' + items.map(item => `<li>${item}</li>`).join('') + '</ul>';
     }
 
     function renderPreview(){
@@ -507,7 +548,9 @@
       const cb = q('#bufferOpt');
 
       if(!b){ 
-        optWrap.style.display='none'; wrap.style.display='none'; wrapP.style.display='none';
+        if(optWrap) optWrap.style.display='none';
+        if(wrap) wrap.style.display='none';
+        if(wrapP) wrapP.style.display='none';
         state.bufferSelected=false; state.bufferLiters=0; state.bufferPrice=0; 
         return; 
       }
@@ -515,64 +558,69 @@
       const req = requiresBuffer(b);
       const sel = q('#buffer');
       const sizes = Object.keys(BUFFERS).map(Number).sort((a,b)=>a-b);
-      sel.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(BUFFERS[v])} PLN</option>`).join('');
+      if(sel) sel.innerHTML = sizes.map(v=>`<option value="${v}">${v} l • ${fmt(BUFFERS[v])} PLN</option>`).join('');
 
       if(req){
         // wymagany dla drewna
-        optWrap.style.display='none';
-        wrap.style.display=''; wrapP.style.display='';
-        label.innerHTML = 'Bufor ciepła [l] <span class="mini">(wymagany dla kotłów zgazowujących)</span>';
+        if(optWrap) optWrap.style.display='none';
+        if(wrap) wrap.style.display='';
+        if(wrapP) wrapP.style.display='';
+        if(label) label.innerHTML = 'Bufor ciepła [l] <span class="mini">(wymagany dla kotłów zgazowujących)</span>';
         const minL = minBufferLiters(b.power||0);
-        hint.textContent = `Min. zalecane: ok. ${INT0.format(minL)} l (≈ ${BUFFER_MIN_L_PER_KW} l/kW)`;
+        if(hint) hint.textContent = `Min. zalecane: ok. ${INT0.format(minL)} l (≈ ${BUFFER_MIN_L_PER_KW} l/kW)`;
         const def = nearestBufferSize(minL);
-        sel.value = String(def);
+        if(sel) sel.value = String(def);
         state.bufferLiters = def;
         state.bufferPrice = BUFFERS[def];
         state.bufferSelected = true;
-        q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+        if(q('#bufferPrice')) q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
       }else{
         // opcjonalny dla pellet/gaz
-        optWrap.style.display=''; // pokaż przełącznik
-        label.textContent = 'Bufor ciepła [l]';
-        hint.textContent = 'Opcjonalnie — wybierz pojemność (np. 500–1000 l), jeśli inwestor oczekuje zwiększenia komfortu/pojemności cieplnej.';
+        if(optWrap) optWrap.style.display='';
+        if(label) label.textContent = 'Bufor ciepła [l]';
+        if(hint) hint.textContent = 'Opcjonalnie — wybierz pojemność (np. 500–1000 l), jeśli inwestor oczekuje zwiększenia komfortu/pojemności cieplnej.';
         // zwiąż zdarzenie (raz)
-        if(!cb.dataset.bound){
+        if(cb && !cb.dataset.bound){
           cb.addEventListener('change', ()=>{
             state.bufferSelected = cb.checked;
             if(!state.bufferSelected){
-              wrap.style.display='none'; wrapP.style.display='none';
-              state.bufferLiters=0; state.bufferPrice=0; q('#bufferPrice').value = '';
+              if(wrap) wrap.style.display='none';
+              if(wrapP) wrapP.style.display='none';
+              state.bufferLiters=0; state.bufferPrice=0; if(q('#bufferPrice')) q('#bufferPrice').value = '';
               renderPreview(); renderMustHave();
             }else{
               // ustaw domyślnie 500 l
-              sel.value = '500';
+              if(sel) sel.value = '500';
               state.bufferLiters = 500;
               state.bufferPrice = BUFFERS['500'];
-              wrap.style.display=''; wrapP.style.display='';
-              q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+              if(wrap) wrap.style.display='';
+              if(wrapP) wrapP.style.display='';
+              if(q('#bufferPrice')) q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
               renderPreview(); renderMustHave();
             }
           });
           cb.dataset.bound='1';
         }
         // pokaż/ukryj zależnie od checkboxa
-        if(cb.checked || state.bufferSelected){
-          wrap.style.display=''; wrapP.style.display='';
-          if(!state.bufferLiters){ sel.value='500'; state.bufferLiters=500; state.bufferPrice=BUFFERS['500']; }
-          q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+        if(cb && (cb.checked || state.bufferSelected)){
+          if(wrap) wrap.style.display='';
+          if(wrapP) wrapP.style.display='';
+          if(!state.bufferLiters){ if(sel) sel.value='500'; state.bufferLiters=500; state.bufferPrice=BUFFERS['500']; }
+          if(q('#bufferPrice')) q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
           state.bufferSelected = true;
           cb.checked = true;
         }else{
-          wrap.style.display='none'; wrapP.style.display='none';
+          if(wrap) wrap.style.display='none';
+          if(wrapP) wrapP.style.display='none';
           state.bufferSelected = false;
-          state.bufferLiters=0; state.bufferPrice=0; q('#bufferPrice').value='';
+          state.bufferLiters=0; state.bufferPrice=0; if(q('#bufferPrice')) q('#bufferPrice').value='';
         }
       }
       // reaguj na zmianę pojemności
-      sel.onchange = ()=>{
+      if(sel) sel.onchange = ()=>{
         state.bufferLiters = Number(sel.value)||0;
         state.bufferPrice = BUFFERS[sel.value]||0;
-        q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
+        if(q('#bufferPrice')) q('#bufferPrice').value = fmt(state.bufferPrice) + ' PLN';
         renderPreview(); renderMustHave();
       };
 
@@ -583,16 +631,16 @@
     function calcSuggestedKW(){
       const area = Math.max(0, Number(q('#houseArea').value)||0);
       const spec = Math.max(10, Number(q('#buildingStd').value)||50); // W/m²
-      if(!area) { q('#suggestedKW').value='—'; q('#suggestedModel').textContent='—'; return null; }
+      if(!area) { if(q('#suggestedKW')) q('#suggestedKW').value='—'; if(q('#suggestedModel')) q('#suggestedModel').textContent='—'; return null; }
       const kw = area*spec/1000 * 1.15; // +15% rezerwy
-      q('#suggestedKW').value = INT2.format(kw);
+      if(q('#suggestedKW')) q('#suggestedKW').value = INT2.format(kw);
       const list = modelsForBrand(state.brand).slice().sort((a,b)=>a.power-b.power);
       let pick = list.find(x=>x.power >= kw) || list[list.length-1];
       if(pick){
-        q('#suggestedModel').textContent = `${state.brand} ${pick.model} (${pick.power} kW)`;
+        if(q('#suggestedModel')) q('#suggestedModel').textContent = `${state.brand} ${pick.model} (${pick.power} kW)`;
         return pick;
       }
-      q('#suggestedModel').textContent='—';
+      if(q('#suggestedModel')) q('#suggestedModel').textContent='—';
       return null;
     }
     function applySuggestedModel(){
@@ -738,7 +786,7 @@
     function renderArkonPreview(){
       const p = state.arkon.selected, box = q('#arkonPreview');
       if(!p){ box.textContent = 'Brak wyboru z katalogu.'; return; }
-      const pow = (p.powMin||'') + (p.powMax ? `–${p.powMax}` : '');
+      const pow = (p.powMin||'') + (p.powMax ? `-${p.powMax}` : '');
       box.innerHTML = `<b>${p.brand} ${p.model}</b><br>
         Moc: ${pow || '—'} kW • Paliwo: ${p.fuel || '—'} • Cena: <b>${fmt(p.price)} PLN</b>${p.flue ? ` • Spalin Ø: ${p.flue} mm` : ''}`;
     }
@@ -796,6 +844,12 @@
         state.basket[i].qty = Math.max(1, Number(e.target.value)||1); renderBasket();
       }
       if(e.target.id==='houseArea' || e.target.id==='buildingStd'){ calcSuggestedKW(); }
+      // ▼▼▼ NOWE: reaguj na zmianę prowizji ▼▼▼
+      if(e.target.id==='provPct' || e.target.id==='provAbs'){
+        state.provPct = Number(q('#provPct').value)||0;
+        state.provAbs = Number(q('#provAbs').value)||0;
+        renderBasket();
+      }
     });
 
     document.getElementById('applySuggested').addEventListener('click', applySuggestedModel);
@@ -836,27 +890,52 @@
 
     // Eksport / kopiuj / drukuj
     document.getElementById('exportQuote').addEventListener('click', ()=>{
-      const ws = XLSX.utils.json_to_sheet(state.basket.map(it => ({ Pozycja: it.name, Ilość: it.qty, Cena: it.final })));
-      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
+      const vat = Number(document.getElementById('vat').value) || 0.08;
+
+      const rows = state.basket.map(it => ({ Pozycja: it.name, Ilość: it.qty, Cena_PLN: it.final }));
+      const sum = state.basket.reduce((a,b)=> a + b.final*b.qty, 0);
+      const prov = sum * ((Number(state.provPct)||0)/100) + (Number(state.provAbs)||0);
+      const totalNet = sum + prov;
+
+      rows.push({Pozycja:'', Ilość:'', Cena_PLN:''});
+      rows.push({Pozycja:'Suma pozycji (netto)', Ilość:'', Cena_PLN: sum});
+      rows.push({Pozycja:'Prowizja', Ilość:'', Cena_PLN: prov});
+      rows.push({Pozycja:'Razem (netto)', Ilość:'', Cena_PLN: totalNet});
+      rows.push({Pozycja: `Brutto (VAT ${Math.round(vat*100)}%)`, Ilość:'', Cena_PLN: totalNet*(1+vat)});
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new(); 
+      XLSX.utils.book_append_sheet(wb, ws, 'Koszyk');
       XLSX.writeFile(wb, 'Koszyk_piece_master.xlsx');
     });
+
     document.getElementById('copyQuote').addEventListener('click', ()=>{
       const vat = Number(document.getElementById('vat').value) || 0.08;
       const sum = state.basket.reduce((a,b)=>a + b.final * b.qty, 0);
+      const prov = sum * ((Number(state.provPct)||0)/100) + (Number(state.provAbs)||0);
+      const totalNet = sum + prov;
       let txt = 'Oferta — Konfigurator pieców (master)\n\n';
       state.basket.forEach(it => { txt += `• ${it.name} x ${it.qty} | Cena: ${fmt(it.final)} PLN\n`; });
-      txt += `\nRazem: ${fmt(sum)} netto, ${fmt(sum*(1+vat))} brutto (VAT ${Math.round(vat*100)}%)`;
+      txt += `\nSuma pozycji (netto): ${fmt(sum)} PLN`;
+      txt += `\nProwizja: ${fmt(prov)} PLN`;
+      txt += `\nRazem (netto): ${fmt(totalNet)} PLN`;
+      txt += `\nBrutto (VAT ${Math.round(vat*100)}%): ${fmt(totalNet*(1+vat))} PLN`;
       navigator.clipboard.writeText(txt); alert('Skopiowano do schowka');
     });
+
     document.getElementById('print').addEventListener('click', ()=>{
       const b = activeBoiler();
       const tank = state.selectedTank ? `${state.selectedTank} l` : '—';
       const buf = (requiresBuffer(b) || state.bufferSelected) && state.bufferLiters ? ` | Bufor: ${state.bufferLiters} l${requiresBuffer(b)?' (wym.)':''}` : '';
+      // dorzuć krótkie streszczenie prowizji do nagłówka wydruku
+      const sum = state.basket.reduce((a,c)=>a + c.final*c.qty, 0);
+      const prov = sum * ((Number(state.provPct)||0)/100) + (Number(state.provAbs)||0);
       const meta = [
         `Data: ${new Date().toLocaleString('pl-PL')}`,
         `Marka/Model: ${b?b.model:'—'}`,
         `Moc: ${b?.power?b.power+' kW':'—'} | Paliwo: ${b?.fuel||'—'}${buf}`,
         `Zasobnik: ${tank} | VAT: ${Math.round((state.vat||0)*100)}%`,
+        `Prowizja: ${fmt(prov)} PLN`,
         `Podgląd ceny zestawu (netto): ${q('#pricePreview').textContent.replace('netto','').split('(')[0].trim()}`
       ].join(' | ');
       q('#printMeta').textContent = meta;

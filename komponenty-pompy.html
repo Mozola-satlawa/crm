@@ -60,9 +60,10 @@
   .w70{width:70px}.w80{width:80px}.w110{width:110px}.w120{width:120px}.w130{width:130px}.w180{width:180px}
   .cap{color:#aeb8da;font-size:12px}
   .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-  .chip{user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
+  .chip{-webkit-user-select:none;user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
   .chip.active{background:#233261}
   .chip .x{opacity:.7;margin-left:6px}
+  .ml-auto{margin-left:auto}
   .filterline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .kpi .box{background:#0d1530;border:1px solid #28356c;border-radius:12px;padding:10px}
@@ -113,7 +114,7 @@
         <div class="chips" id="chips">
           <!-- wypełniane JS -->
         </div>
-        <label class="small" style="margin-left:auto">
+        <label class="small ml-auto">
           <input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi
         </label>
       </div>
@@ -236,8 +237,7 @@
           </select>
         </div>
         <div>
-          <label class="small">Proponowana moc [kW]</label>
-          <input id="outHeatKw" type="text" class="w110" value="0.00" readonly>
+          <input id="outHeatKw" type="text" class="w110" value="0.00" readonly title="Proponowana moc [kW]" placeholder="0.00">
           <div class="small muted">Liczone: m² × W/m² ÷ 1000, z marginesem 10%.</div>
         </div>
       </div>
@@ -493,12 +493,12 @@ function makeChips(){
     box.appendChild(el);
   });
 }
+
 function fillFilters(){
   const brands=[...new Set(HEATPUMPS.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
-  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=><option>${b}</option>).join('');
+  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>'<option>'+b+'</option>').join('');
   $('#tagsAll').checked = !!state.tagsAll;
 }
-function parsePowerQuery(q){
   // Wspiera: "10 kW", "8-12", ">=12", "<=9", "==10"
   if(!q) return null;
   const kw = q.match(/([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
@@ -517,7 +517,27 @@ function parsePowerQuery(q){
     return p => Math.abs(p - v) <= tol;
   }
   return null;
+function parsePowerQuery(q){
+  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "==10"
+  if(!q) return null;
+  const kw = q.match(/([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(kw){
+    const op=kw[1], val=parseFloat(kw[2]);
+    return p => (op==='>='? p>=val : op==='<='? p<=val : op==='<'? p<val : op==='>'? p>val : p===val);
+  }
+  const range = q.match(/([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(range){
+    const a=parseFloat(range[1]), b=parseFloat(range[2]); const lo=Math.min(a,b), hi=Math.max(a,b);
+    return p => p>=lo && p<=hi;
+  }
+  const eq = q.match(/([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  if(eq){
+    const v=parseFloat(eq[1]); const tol=0.6; // tolerancja dopasowania
+    return p => Math.abs(p - v) <= tol;
+  }
+  return null;
 }
+
 function applyFiltersSort(rows){
   const q=($('#q')?.value||'').toLowerCase().trim();
   const brand=$('#fBrand')?.value, kind=$('#fType')?.value, ref=$('#fRef')?.value, ph=$('#fPhase')?.value;
@@ -577,7 +597,7 @@ function renderTable(){
       <td>${p.ref||''}</td>
       <td>${p.phase||''}</td>
       <td>${p.noise||''}</td>
-      <td>${(p.tags||[]).map(t=><span class="tag">${t}</span>).join('')}</td>
+      <td>${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</td>
     `;
     tb.appendChild(tr);
   });
@@ -589,19 +609,20 @@ function optionsForTanks(){
   const src = type==='dual' ? TANKS_DUAL : TANKS_SINGLE;
   return Object.keys(src);
 }
+
 function fillSelects(){
   const arr=sortedHp();
   const s=$('#selHp');
-  s.innerHTML = arr.map((x,i)=><option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>).join('');
+  s.innerHTML = arr.map((x,i)=>'<option value="'+i+'">'+x.brand+' '+x.model+' • '+x.kind+' • A7 '+x.pA7+' kW</option>').join('');
   state.selectedHp = state.selectedHp || arr[0] || null;
 
   const b=$('#selBufor');
-  b.innerHTML = Object.keys(BUFFERS).map(v=><option value="${v}">${v} l • ${INTint.format(BUFFERS[v])} PLN</option>).join('');
+  b.innerHTML = Object.keys(BUFFERS).map(v=>'<option value="'+v+'">'+v+' l • '+INTint.format(BUFFERS[v])+' PLN</option>').join('');
   if(!state.selectedBuf) state.selectedBuf='100'; b.value=state.selectedBuf;
 
   const t=$('#selCwu');
   const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  t.innerHTML = Object.keys(src).map(v=><option value="${v}">${v} l • ${INTint.format(src[v])} PLN</option>).join('');
+  t.innerHTML = Object.keys(src).map(v=>'<option value="'+v+'">'+v+' l • '+INTint.format(src[v])+' PLN</option>').join('');
   if(!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
   t.value=state.selectedTank;
 
@@ -613,7 +634,6 @@ function pricePack(hpPrice, bufCost, tankCost, extras){
   // cena pakietu = cena urządzenia + bufor + zasobnik + dodatki + offset
   return (+hpPrice||0) + (+bufCost||0) + (+tankCost||0) + (+extras||0) + BASE_OFFSET;
 }
-
 function renderPreview(){
   const b=activeHp(); if(!b){ $('#pricePreview').textContent='—'; return; }
   const bufKey=state.selectedBuf;
@@ -623,7 +643,7 @@ function renderPreview(){
   const tankCost=(b.kind==='all-in-one')?0:(tankSrc[tankKey]||0);
   const extras=(+state.v3d||0)+(+state.safety||0)+(+state.hydro||0)+(+state.glycol||0)+((+state.rads||0)*RAD_PRICE);
   const sum=pricePack(b.price,bufCost,tankCost,extras);
-  $('#pricePreview').textContent = ${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN);
+  $('#pricePreview').textContent = fmt(sum) + ' PLN netto (brutto: ' + fmt(sum*(1+state.vat)) + ' PLN)';
 
   const hint=$('#typeHint'); hint.style.display='block';
   if(b.kind==='monoblok') hint.textContent='Monoblok: w razie ryzyka zamarzania — glikol na odcinku zewnętrznym.';
@@ -634,27 +654,26 @@ function renderPreview(){
   const stdW = +($('#selStd')?.value||50);
   const margin=1.15;
   const areaCover = Math.floor((b.pA7*1000)/(stdW*margin));
-  $('#areaByHp').textContent = areaCover>0 ? ${areaCover} m² : '—';
+  $('#areaByHp').textContent = areaCover>0 ? (areaCover + ' m²') : '—';
 }
 
 function renderMustHave(){
   const b=activeHp(); const buf=state.selectedBuf; const t=state.selectedTank; const box=$('#mustHave');
   if(!b||!buf||!t){ box.textContent='Wybierz pompę, bufor i zasobnik — pokażę skład.'; return; }
   const items=[];
-  items.push(Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'}));
-  items.push(Bufor — ${buf} l);
+  items.push(`Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'})`);
+  items.push(`Bufor — ${buf} l`);
   const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
   const tankLabel = state.selectedTankType==='dual' ? 'dwuwężownicowy' : 'pojedyncza wężownica';
-  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : Zasobnik CWU — ${state.selectedTank} l (${tankLabel}));
+  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : `Zasobnik CWU — ${state.selectedTank} l (${tankLabel})`);
   items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
   if((+state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
   items.push('Rozdzielacz(e) / hydraulika wg wyboru');
-  const r=+state.rads||0; if(r>0) items.push(Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN);
+  const r=+state.rads||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN`);
   items.push('Montaż, uruchomienie, konfiguracja sterowania, szkolenie użytkownika');
-  box.innerHTML = '<ul class="small list-offset">'+items.map(t=><li>${t}</li>).join('')+'</ul>';
+  box.innerHTML = '<ul class="small list-offset">'+items.map(t=>`<li>${t}</li>`).join('')+'</ul>';
 }
 
-/* ===================== DOBÓR MOCY ===================== */
 function quickSuggest(){
   const area = +($('#inpArea')?.value||0);
   const wpm2 = +($('#selWperm2')?.value||0);
@@ -665,6 +684,7 @@ function quickSuggest(){
     $('#outHeatKw').value = '0.00';
   }
 }
+
 function recomputeAdvanced(){
   const area = +($('#areaAdv')?.value||0);
   const wpm2 = +($('#lossWm2')?.value||0);
@@ -678,8 +698,8 @@ function recomputeAdvanced(){
   const req_kw = (area*wpm2)/1000;
   const margin = 1.15;
   const target = req_kw*margin;
-  $('#heatLoad').textContent = ${req_kw.toFixed(2)} kW;
-  $('#heatTarget').textContent = ${target.toFixed(2)} kW;
+  $('#heatLoad').textContent = req_kw.toFixed(2) + ' kW';
+  $('#heatTarget').textContent = target.toFixed(2) + ' kW';
 
   // Propozycje najbardziej zbliżone
   const candidates = HEATPUMPS
@@ -689,11 +709,11 @@ function recomputeAdvanced(){
     .slice(0,3);
 
   const parts = [
-    Szac. zapotrzebowanie (A7): <b>${req_kw.toFixed(2)} kW</b>,
-    Z zapasem 15%: <b>${target.toFixed(2)} kW</b>
+    `Szac. zapotrzebowanie (A7): <b>${req_kw.toFixed(2)} kW</b>`,
+    `Z zapasem 15%: <b>${target.toFixed(2)} kW</b>`
   ];
   if(candidates.length){
-    parts.push('Propozycje: ' + candidates.map(h=>${h.brand} ${h.model} <span class="cap">(A7 ${h.pA7} kW)</span>).join(' • '));
+    parts.push('Propozycje: ' + candidates.map(h=>`${h.brand} ${h.model} <span class="cap">(A7 ${h.pA7} kW)</span>`).join(' • '));
   }else{
     parts.push('<span class="cap" style="color:#ff9">Brak oczywistego dopasowania — rozważ wyższą moc lub inny model.</span>');
   }
@@ -702,7 +722,7 @@ function recomputeAdvanced(){
   // Sugerowana pojemność CWU wg osób (podpowiedź)
   const use = $('#selCwuUse').value;
   let suggest = (use==='2-3'?'200–250 l':use==='4-5'?'250–300 l':'300 l +');
-  $('#areaHint').textContent = Sugerowana pojemność CWU dla ${use} osób: ${suggest}.;
+  $('#areaHint').textContent = `Sugerowana pojemność CWU dla ${use} osób: ${suggest}.`;
 }
 
 /* ===================== KOSZYK ===================== */
@@ -729,8 +749,6 @@ function renderBasket(){
   $('#sumProv').textContent = fmt(prov) + ' PLN';
   $('#sumGross').textContent = fmt( (sumNet+prov) * (1+state.vat) ) + ' PLN';
 }
-
-/* ===================== BAZA KLIENTÓW ===================== */
 const DB_CLIENTS_KEY='kp_clients_db';
 function readClients(){
   try{ return JSON.parse(localStorage.getItem(DB_CLIENTS_KEY)||'[]'); }catch(e){ return []; }
@@ -743,7 +761,7 @@ function populateClientSelect(){
   sel.innerHTML='<option value="">— wybierz z bazy —</option>';
   clients.forEach(c=>{
     const o=document.createElement('option');
-    o.value=c.id; o.textContent=${c.name} • ${c.email||'brak e-mail'};
+    o.value=c.id; o.textContent = (c.name || '') + ' • ' + (c.email || 'brak e-mail');
     sel.appendChild(o);
   });
 }
@@ -772,14 +790,14 @@ function saveClient(){
   alert('Zapisano klienta do bazy.');
 }
 
-/* ===================== PRZESYŁ DO UMOWY / KONTRAKT ===================== */
 function buildOfferSummary(){
   const sum = state.basket.reduce((a,b)=>a+b.price*b.qty,0);
   const prov = sum*(+state.provPct||0)/100 + (+state.provAbs||0);
   const gross = (sum+prov)*(1+state.vat);
-  const lines = state.basket.map(it=>• ${it.name} × ${it.qty} | ${fmt(it.price)} PLN);
+  const lines = state.basket.map(it=>'• ' + it.name + ' × ' + it.qty + ' | ' + fmt(it.price) + ' PLN');
   return {sum, prov, gross, lines};
 }
+
 function pushContractDraft(client){
   const b=activeHp();
   const heatLoad = $('#heatLoad').textContent;
@@ -818,6 +836,7 @@ function pushContractDraft(client){
   }catch(e){}
   return payload;
 }
+
 function goToContract(){
   // jeśli jest wybrany klient w selekcie – dołącz
   const selId = $('#selClient').value;
@@ -833,6 +852,7 @@ function goToContract(){
   pushContractDraft(client);
   location.href='index.html#umowa';
 }
+
 function mailToClient(){
   const selId = $('#selClient').value;
   let client=null;
@@ -843,25 +863,25 @@ function mailToClient(){
     if(draft.email) client=draft;
   }
   const {sum, prov, gross, lines} = buildOfferSummary();
-  const subject = Oferta – pompa ciepła / zestaw;
+  const subject = 'Oferta – pompa ciepła / zestaw';
   const bodyLines = [
     'Dzień dobry,',
     '',
     'Poniżej podsumowanie oferty:',
     ...lines,
     '',
-    Suma netto: ${fmt(sum)} PLN,
-    Prowizja: ${fmt(prov)} PLN,
-    Razem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt(gross)} PLN,
+    'Suma netto: ' + fmt(sum) + ' PLN',
+    'Prowizja: ' + fmt(prov) + ' PLN',
+    'Razem brutto (VAT ' + Math.round(state.vat*100) + '%): ' + fmt(gross) + ' PLN',
     '',
     'Szczegóły doboru mocy:',
-    • Szybka propozycja: ${$('#outHeatKw').value} kW,
-    • Obciążenie projektowe: ${$('#heatLoad').textContent} (zapas: ${$('#heatTarget').textContent}),
-    • Powierzchnia pokrywana wybraną pompą: ${$('#areaByHp').textContent},
+    '• Szybka propozycja: ' + $('#outHeatKw').value + ' kW',
+    '• Obciążenie projektowe: ' + $('#heatLoad').textContent + ' (zapas: ' + $('#heatTarget').textContent + ')',
+    '• Powierzchnia pokrywana wybraną pompą: ' + $('#areaByHp').textContent,
     '',
     'Pozdrawiam'
   ];
-  const mail = mailto:${client&&client.email?encodeURIComponent(client.email):''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))};
+  const mail = 'mailto:' + (client&&client.email?encodeURIComponent(client.email):'') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(bodyLines.join('\n'));
   location.href = mail;
 }
 
@@ -942,12 +962,12 @@ $('#btnAddPack').addEventListener('click', ()=>{
   const price = pricePack(b.price, bufCost, tankCost, extras);
   const labels=[]; if(+state.v3d>0) labels.push('zawór 3D'); if(+state.safety>0) labels.push('gr. bezp.'); if(+state.hydro>0) labels.push('hydraulika+'); if(+state.glycol>0 && b.kind==='monoblok') labels.push('glikol');
   const rlabel = state.rads? ` + grzejniki x${state.rads}` : ''; const elabel = labels.length? ` + ${labels.join(', ')}` : '';
-  addToBasket(Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l ('+(state.selectedTankType==='dual'?'dual':'single')+')'))}${rlabel}${elabel}, price, 1);
+  addToBasket(`Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l ('+(state.selectedTankType==='dual'?'dual':'single')+')'))}${rlabel}${elabel}`, price, 1);
 });
 $('#btnAddHp').addEventListener('click', ()=>{
   const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
   // UWAGA: dopłata 4000 liczona wewnętrznie, ale nigdzie nie jest wyświetlana
-  addToBasket(Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie, soloPrice(b), 1);
+  addToBasket(`Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie`, soloPrice(b), 1);
 });
 
 // Ilości w koszyku – live
@@ -963,10 +983,9 @@ document.addEventListener('input', (e)=>{
 $('#btnCopy').addEventListener('click', ()=>{
   const {sum, prov, gross, lines} = buildOfferSummary();
   let txt = 'Oferta — Pompy ciepła (zestaw)\n\n' + lines.join('\n');
-  txt += \n\nSuma netto: ${fmt(sum)} PLN;
-  txt += \nProwizja: ${fmt(prov)} PLN;
-  txt += \nRazem brutto (VAT ${Math.round(state.vat*100)}%): ${fmt(gross)} PLN;
-  navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
+  txt += '\n\nSuma netto: ' + fmt(sum) + ' PLN';
+  txt += '\nProwizja: ' + fmt(prov) + ' PLN';
+  txt +=  navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
 $('#btnXlsx').addEventListener('click', ()=>{
