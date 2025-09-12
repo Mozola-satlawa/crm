@@ -499,42 +499,37 @@ function fillFilters(){
   $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>'<option>'+b+'</option>').join('');
   $('#tagsAll').checked = !!state.tagsAll;
 }
-  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "==10"
-  if(!q) return null;
-  const kw = q.match(/([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
-  if(kw){
-    const op=kw[1], val=parseFloat(kw[2]);
-    return p => (op==='>='? p>=val : op==='<= '? p<=val : op==='<'? p<val : op==='>'? p>val : p===val);
-  }
-  const range = q.match(/([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
-  if(range){
-    const a=parseFloat(range[1]), b=parseFloat(range[2]); const lo=Math.min(a,b), hi=Math.max(a,b);
-    return p => p>=lo && p<=hi;
-  }
-  const eq = q.match(/([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
-  if(eq){
-    const v=parseFloat(eq[1]); const tol=0.6; // tolerancja dopasowania
-    return p => Math.abs(p - v) <= tol;
-  }
-  return null;
 function parsePowerQuery(q){
-  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "==10"
+  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "10"
   if(!q) return null;
-  const kw = q.match(/([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+  q = String(q).trim();
+
+  // Porównania: >=, <=, >, <
+  const kw = q.match(/^([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)/i);
   if(kw){
-    const op=kw[1], val=parseFloat(kw[2]);
-    return p => (op==='>='? p>=val : op==='<='? p<=val : op==='<'? p<val : op==='>'? p>val : p===val);
+    const op = kw[1], val = parseFloat(kw[2]);
+    if(op === '>=') return p => p >= val;
+    if(op === '<=') return p => p <= val;
+    if(op === '>')  return p => p > val;
+    if(op === '<')  return p => p < val;
+    return null;
   }
-  const range = q.match(/([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+
+  // Zakres: "8-12"
+  const range = q.match(/^([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)/);
   if(range){
-    const a=parseFloat(range[1]), b=parseFloat(range[2]); const lo=Math.min(a,b), hi=Math.max(a,b);
-    return p => p>=lo && p<=hi;
+    const a = parseFloat(range[1]), b = parseFloat(range[2]);
+    const lo = Math.min(a,b), hi = Math.max(a,b);
+    return p => p >= lo && p <= hi;
   }
-  const eq = q.match(/([0-9]+(?:\.[0-9]+)?)\s*k?w?/i);
+
+  // Prosta liczba: "10 kW" (tolerancja)
+  const eq = q.match(/^([0-9]+(?:\.[0-9]+)?)/);
   if(eq){
-    const v=parseFloat(eq[1]); const tol=0.6; // tolerancja dopasowania
+    const v = parseFloat(eq[1]), tol = 0.6; // tolerancja dopasowania
     return p => Math.abs(p - v) <= tol;
   }
+
   return null;
 }
 
