@@ -133,12 +133,72 @@
 
 <div class="wrap grid cols-2" id="panel">
 
-<aside>
+<main>
   <div class="card">
-    <div class="row gap-10 m-8-0">
-      <div class="avatar" id="lpAvatar" aria-hidden="true">A</div>
-      <div class="small" id="lpWelcome">Witaj! Zaloguj się, aby przejść do panelu.</div>
+    <h2>Wskaźniki (KPI)</h2>
+    <div class="grid-2">
+      <div class="kpi">
+        <span class="n" id="kpiClients">0</span>
+        <span>Klienci</span>
+      </div>
+      <div class="kpi">
+        <span class="n" id="kpiLeads">0</span>
+        <span>Leady</span>
+      </div>
+      <div class="kpi">
+        <span class="n" id="kpiComp">0</span>
+        <span>Komponenty</span>
+      </div>
     </div>
+    <div class="mt-8 small">
+      <b>Komponenty wg kategorii:</b>
+      <ul class="list-reset">
+        <li>Pompy: <span id="cmp_pumps">0</span></li>
+        <li>Kotły: <span id="cmp_boilers">0</span></li>
+        <li>PV: <span id="cmp_pv">0</span></li>
+        <li>Izolacje: <span id="cmp_insul">0</span></li>
+        <li>Garaże: <span id="cmp_garage">0</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card mt-8">
+    <h2>Ostatni klienci</h2>
+    <table id="tblClients">
+      <thead>
+        <tr>
+          <th>Nazwa</th>
+          <th>Status</th>
+          <th>Email / Telefon</th>
+          <th>Tagi</th>
+          <th>Dodano</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="card mt-8">
+    <h2>Ostatnie leady</h2>
+    <table id="tblLeads">
+      <thead>
+        <tr>
+          <th>Tytuł</th>
+          <th>Źródło</th>
+          <th>Status</th>
+          <th>Dodano</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
+</div>
+
+<!-- LOCK overlay: centralized login panel (initially toggled by JS via #lock) -->
+<div id="lock" aria-hidden="true">
+  <div class="login-panel" role="dialog" aria-modal="true" aria-label="Logowanie">
+    <h2>Logowanie</h2>
+    <div class="muted">Podaj dane, aby uzyskać dostęp do pulpitu.</div>
 
     <form id="loginForm" class="form-grid">
       <label class="small">Użytkownik</label>
@@ -165,14 +225,9 @@
       </div>
     </form>
   </div>
-
-  <div class="right mt-8">
-    <a class="btn ghost" href="komponenty.html">Otwórz komponenty</a>
-  </div>
-</aside>
 </div>
 
-<script>
+<script type="text/javascript">
 'use strict';
 
 /* ===== helpers ===== */
@@ -407,7 +462,13 @@ function statusClass(s){
     case 'LEAD': return 'lead';
     case 'ZAPYTANIE': return 'q';
     case 'W TOKU': return 'w';
-    case 'KLIENT': return 'c';
+$('#loginUser').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const passInput = $('#loginPass');
+    if(passInput) passInput.focus();
+  }
+});
     case 'UTRACONY': return 'l';
     default: return '';
   }
