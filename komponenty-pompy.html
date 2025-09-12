@@ -353,9 +353,7 @@
       <div class="footnote mt6">Dane klientów i projekty umów są przechowywane lokalnie w przeglądarce (local/sessionStorage).</div>
     </div>
   </aside>
-</div>
-
-<script>
+</div><script>
 'use strict';
 
 /* ===================== DANE NA SZTYWNO ===================== */
@@ -442,10 +440,9 @@ const fmt=n=>INTmoney.format(+n||0);
 
 const SAVE_KEY='kp_state_v2';
 function saveState(){
-  const draft = {
-    state,
-    basket: state.basket,
-  };
+  // Zapisz Set jako tablicę
+  const st = {...state, chipsActive: Array.from(state.chipsActive)};
+  const draft = { state: st, basket: state.basket };
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(draft)); }catch(e){}
 }
 function loadState(){
@@ -454,7 +451,9 @@ function loadState(){
     if(!raw) return;
     const d=JSON.parse(raw);
     if(d && d.state){
-      Object.assign(state, d.state);
+      const {chipsActive, ...rest} = d.state || {};
+      Object.assign(state, rest);
+      state.chipsActive = new Set(Array.isArray(chipsActive) ? chipsActive : []);
       if(Array.isArray(d.basket)) state.basket = d.basket;
     }
   }catch(e){}
@@ -993,7 +992,8 @@ $('#btnCopy').addEventListener('click', ()=>{
   let txt = 'Oferta — Pompy ciepła (zestaw)\n\n' + lines.join('\n');
   txt += '\n\nSuma netto: ' + fmt(sum) + ' PLN';
   txt += '\nProwizja: ' + fmt(prov) + ' PLN';
-  txt +=  navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
+  txt += '\nRazem brutto (z VAT): ' + fmt(gross) + ' PLN';
+  navigator.clipboard.writeText(txt).then(()=>alert('Skopiowano do schowka')).catch(()=>{});
 });
 $('#btnPrint').addEventListener('click', ()=> window.print());
 $('#btnXlsx').addEventListener('click', ()=>{
