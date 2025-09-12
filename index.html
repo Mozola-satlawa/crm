@@ -15,24 +15,28 @@
     --card:#0f1636; --chip:#16245a; --accent:#4cc9f0;
     --ok:#2fbf71; --warn:#ffb84d; --bad:#ff6b6b;
     --focus:#82c4ff;
+    --shadow: 0 20px 60px #0007, 0 2px 0 #0003 inset;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0;font:15px/1.55 system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--grad1),var(--grad2));color:var(--ink)}
   a{color:#cfe0ff;text-decoration:none}
-  header{padding:16px;border-bottom:1px solid var(--line);background:#0e1534;position:sticky;top:0;z-index:8}
+  header{padding:16px;border-bottom:1px solid var(--line);background:#0e1534;position:sticky;top:0;z-index:8;backdrop-filter:saturate(1.2) blur(4px)}
   header h1{margin:0;font-size:22px}
   header .muted{color:var(--muted);font-size:13px}
-  nav{display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#121a44}
-  nav a{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
-  nav a:hover{background:#1a2758}
+  nav{display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#121a44;position:sticky;top:58px;z-index:7}
+  nav a{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75;transition:transform .15s ease, background .15s ease}
+  nav a:focus{outline:2px solid var(--focus)}
+  nav a:hover{background:#1a2758;transform:translateY(-1px)}
   .wrap{max-width:1280px;margin:0 auto;padding:16px}
   .grid{display:grid;gap:14px}
   @media(min-width:1100px){ .cols-3{grid-template-columns:repeat(3,1fr)} .cols-2{grid-template-columns:2fr 1fr} }
-  .card{background:linear-gradient(180deg,#0f1636,#0f1a42);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .card{background:linear-gradient(180deg,#0f1636,#0f1a42);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);animation:fadeUp .35s ease both}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
-  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
+  .btn:focus{outline:2px solid var(--focus)}
+  .btn:hover{transform:translateY(-1px)}
   .btn.ghost{background:transparent;border:1px dashed #3a4ca3}
   .btn.bad{background:#3a1f2a;border-color:#7b3341}
   .btn.ok{background:#194d34;border-color:#2f9762}
@@ -43,7 +47,7 @@
   .small{font-size:12px;color:var(--muted)}
   .right{display:flex;gap:8px;justify-content:flex-end}
   .kpi{display:flex;align-items:center;gap:12px}
-  .kpi .n{font-weight:700;font-size:20px}
+  .kpi .n{font-weight:700;font-size:28px}
   .ok{color:#7ee2ab} .warn{color:#ffd699} .bad{color:#ffb1b1}
   .list-reset{list-style:none;margin:0;padding:0}
   .status{padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid #2a3a75;background:#0f1a44}
@@ -59,15 +63,15 @@
   .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   @media(max-width:720px){ .grid-2{grid-template-columns:1fr} }
-  @media print{ #lock,nav,.btn,.kbd{display:none!important} }
+  @media print{ #lock,nav,.btn,.kbd,.userbar,.toast-area{display:none!important} }
 
   /* ===== LOCK / LOGIN OVERLAY for DASHBOARD ===== */
-  #lock{position:fixed;inset:0;background:radial-gradient(1200px 600px at 60% -10%,#19307144,transparent),linear-gradient(180deg,#0a0f22 0%,#0a0f22 30%,#0b1130 100%);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999}
+  #lock{position:fixed;inset:0;background:radial-gradient(1200px 600px at 60% -10%,#19307144,transparent),linear-gradient(180deg,#0a0f22 0%,#0a0f22 30%,#0b1130 100%);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:9999}
   #lock.open{display:flex}
-  .login-panel{width:460px;max-width:94vw;background:linear-gradient(180deg,#0f1636,#101a44);border:1px solid #2a3a75;border-radius:16px;padding:16px;box-shadow:0 20px 60px #0008}
+  .login-panel{width:480px;max-width:94vw;background:linear-gradient(180deg,#0f1636,#101a44);border:1px solid #2a3a75;border-radius:16px;padding:16px;box-shadow:0 20px 60px #0008;animation:fadeUp .3s ease both}
   .login-panel h2{margin:0 0 4px}
   .login-panel .muted{margin-bottom:8px}
-  .field{width:100%;background:#0d1530;border:1px solid #28356c;color:#e8edff;border-radius:10px;padding:10px 12px;outline:0}
+  .field{width:100%;background:#0d1530;border:1px solid #28356c;color:#e8edff;border-radius:10px;padding:10px 12px;outline:0;transition:border-color .15s ease, box-shadow .15s ease}
   .field:focus{border-color:#3e61cc;box-shadow:0 0 0 3px #3e61cc33}
   .row-sb{display:flex;justify-content:space-between;align-items:center;gap:8px}
   .social{display:flex;gap:8px}
@@ -83,7 +87,7 @@
   .online{width:8px;height:8px;border-radius:50%;background:#2fbf71;border:1px solid #0b1}
   .link-like{background:transparent;border:0;color:#cfe0ff;text-decoration:underline;cursor:pointer}
 
-  /* utility classes to avoid inline styles */
+  /* utility classes */
   .mt-8{margin-top:8px}
   .mt-6{margin-top:6px}
   .m-8-0{margin:8px 0}
@@ -92,12 +96,18 @@
   .gap-8{gap:8px}
   .form-grid{display:grid;gap:8px;margin-top:6px}
   .grid-cols-1fr-auto{display:grid;grid-template-columns:1fr auto;gap:6px}
-  .note-field{width:100%;min-height:100px;margin-top:8px}
+  .note-field{width:100%;min-height:120px;margin-top:8px}
   .label-row{display:flex;align-items:center;gap:6px}
   .center{text-align:center}
   .muted-85{opacity:.85}
   .overflow-auto{overflow:auto}
 
+  /* animations */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* toast */
+  .toast-area{position:fixed;bottom:16px;right:16px;display:grid;gap:8px;z-index:99999}
+  .toast{background:#0f1a44;border:1px solid #2a3a75;border-radius:10px;padding:10px 12px;box-shadow:var(--shadow);animation:fadeUp .25s ease both}
 </style>
 </head>
 <body>
@@ -106,14 +116,14 @@
 <div class="userbar">
   <span id="ubName" class="small">Gość</span>
   <span class="online" title="online"></span>
-  <div id="ubAvatar" class="avatar">A</div>
+  <div id="ubAvatar" class="avatar" aria-hidden="true">A</div>
   <button id="btnLogout" class="btn ghost" title="Wyloguj">Wyloguj</button>
   <button id="btnLock" class="btn ghost" title="Zablokuj ekran">Zablokuj</button>
 </div>
 
 <header>
   <h1>Pulpit • ARKON CRM</h1>
-  <div class="small">Szybki podgląd i skróty. Wszystkie dane przechowywane lokalnie (LocalStorage/IndexedDB). Eksport/Backup dostępny z modułów.</div>
+  <div class="small">Szybki podgląd i skróty. Dane przechowywane lokalnie (LocalStorage/IndexedDB). Eksport/Backup dostępny w module Baza.</div>
 </header>
 
 <nav aria-label="Nawigacja główna">
@@ -127,7 +137,6 @@
   <a href="ustawienia.html">⚙ Ustawienia</a>
   <a href="kalkulator.html" target="_blank" rel="noopener">🧮 Kalkulator ↗️</a>
   <a href="baza.html">🗃 Baza (storage)</a>
-  <!-- NOWY LINK -->
   <a href="kalendarz-montaze.html">📅 Kalendarz montaży</a>
 </nav>
 
@@ -135,19 +144,18 @@
 
 <main>
   <div class="card">
-    <h2>Wskaźniki (KPI)</h2>
-    <div class="grid-2">
-      <div class="kpi">
-        <span class="n" id="kpiClients">0</span>
-        <span>Klienci</span>
+    <div class="row gap-10" style="justify-content:space-between;align-items:flex-start">
+      <div>
+        <h2>Wskaźniki (KPI)</h2>
+        <div class="grid-2">
+          <div class="kpi"><span class="n" id="kpiClients">0</span><span>Klienci</span></div>
+          <div class="kpi"><span class="n" id="kpiLeads">0</span><span>Leady</span></div>
+          <div class="kpi"><span class="n" id="kpiComp">0</span><span>Komponenty</span></div>
+        </div>
       </div>
-      <div class="kpi">
-        <span class="n" id="kpiLeads">0</span>
-        <span>Leady</span>
-      </div>
-      <div class="kpi">
-        <span class="n" id="kpiComp">0</span>
-        <span>Komponenty</span>
+      <div class="right">
+        <button id="btnSeed" class="btn" title="Załaduj dane demo">Wczytaj demo</button>
+        <button id="btnClearAll" class="btn bad" title="Wyczyść wszystkie dane">Wyczyść dane</button>
       </div>
     </div>
     <div class="mt-8 small">
@@ -161,49 +169,100 @@
       </ul>
     </div>
   </div>
+
   <div class="card mt-8">
-    <h2>Ostatni klienci</h2>
-    <table id="tblClients">
-      <thead>
-        <tr>
-          <th>Nazwa</th>
-          <th>Status</th>
-          <th>Email / Telefon</th>
-          <th>Tagi</th>
-          <th>Dodano</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2>Ostatni klienci</h2>
+      <div class="row">
+        <input id="filterClients" class="field" placeholder="Szukaj klienta (⌘/Ctrl+K)">
+        <button id="exportClients" class="btn ghost">Eksport JSON</button>
+        <label class="btn ghost" for="importClients">Import JSON</label>
+        <input id="importClients" type="file" accept="application/json" hidden>
+      </div>
+    </div>
+    <div class="overflow-auto">
+      <table id="tblClients" aria-label="Tabela ostatnich klientów">
+        <thead>
+          <tr>
+            <th>Nazwa</th>
+            <th>Status</th>
+            <th>Email / Telefon</th>
+            <th>Tagi</th>
+            <th>Dodano</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
+
   <div class="card mt-8">
-    <h2>Ostatnie leady</h2>
-    <table id="tblLeads">
-      <thead>
-        <tr>
-          <th>Tytuł</th>
-          <th>Źródło</th>
-          <th>Status</th>
-          <th>Dodano</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2>Ostatnie leady</h2>
+      <div class="row">
+        <input id="filterLeads" class="field" placeholder="Szukaj leadu">
+        <button id="exportLeads" class="btn ghost">Eksport JSON</button>
+        <label class="btn ghost" for="importLeads">Import JSON</label>
+        <input id="importLeads" type="file" accept="application/json" hidden>
+      </div>
+    </div>
+    <div class="overflow-auto">
+      <table id="tblLeads" aria-label="Tabela ostatnich leadów">
+        <thead>
+          <tr>
+            <th>Tytuł</th>
+            <th>Źródło</th>
+            <th>Status</th>
+            <th>Dodano</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mt-8">
+    <h2>Notatka</h2>
+    <textarea id="note" class="field note-field" placeholder="Twoja notatka..."></textarea>
+    <div class="mt-6 right">
+      <button id="btnClearNote" class="btn ghost">Wyczyść</button>
+    </div>
   </div>
 </main>
 
+<aside class="grid">
+  <div class="card">
+    <h3>Tipy</h3>
+    <ul class="list-reset small">
+      <li>Wyszukaj klienta: <span class="kbd">Ctrl/⌘</span> + <span class="kbd">K</span></li>
+      <li>Przejście do Klienci: naciśnij <span class="kbd">/</span></li>
+      <li>Nowy klient: <span class="kbd">Alt</span> + <span class="kbd">N</span></li>
+      <li>Zablokuj ekran: kliknij „Zablokuj” w prawym górnym rogu</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Backup</h3>
+    <div class="small">Szybki eksport wszystkich danych do pliku JSON.</div>
+    <div class="mt-6 right">
+      <button id="exportAll" class="btn">Eksport całości</button>
+      <label class="btn ghost" for="importAll">Import całości</label>
+      <input id="importAll" type="file" accept="application/json" hidden>
+    </div>
+  </div>
+</aside>
+
 </div>
 
-<!-- LOCK overlay: centralized login panel (initially toggled by JS via #lock) -->
+<!-- LOCK overlay: centralized login panel -->
 <div id="lock" aria-hidden="true">
   <div class="login-panel" role="dialog" aria-modal="true" aria-label="Logowanie">
     <h2>Logowanie</h2>
     <div class="muted">Podaj dane, aby uzyskać dostęp do pulpitu.</div>
 
     <form id="loginForm" class="form-grid">
-      <label class="small">Użytkownik</label>
-      <input id="loginUser" class="field" inputmode="email" placeholder="np. użytkownik" aria-label="Użytkownik" required>
-      <label class="small">Hasło</label>
+      <label class="small" for="loginUser">Użytkownik</label>
+      <input id="loginUser" class="field" inputmode="email" placeholder="np. Arkon2" aria-label="Użytkownik" required>
+      <label class="small" for="loginPass">Hasło</label>
       <div class="grid-cols-1fr-auto">
         <input id="loginPass" class="field" type="password" placeholder="••••••••" aria-label="Hasło" required>
         <button type="button" id="togglePass" class="btn ghost" aria-label="Pokaż/ukryj hasło">👁</button>
@@ -216,7 +275,7 @@
         <button type="button" id="forgot" class="link-like">Zapomniałeś hasła?</button>
       </div>
 
-      <div id="err" class="err"></div>
+      <div id="err" class="err" aria-live="polite"></div>
       <button class="btn ok" type="submit">Zaloguj</button>
       <div class="small center muted-85">lub</div>
       <div class="social">
@@ -226,6 +285,8 @@
     </form>
   </div>
 </div>
+
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
 
 <script type="text/javascript">
 'use strict';
@@ -237,6 +298,19 @@ const INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
 const fmt = n => INT.format(Math.round(Number(n)||0));
 const fmtDate = ts => new Date(ts||Date.now()).toLocaleString('pl-PL');
 function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function toast(msg){
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent = msg;
+  const area = $('.toast-area'); area.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(6px)'; setTimeout(()=>el.remove(),250); }, 2400);
+}
+function download(name, data){
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), {href:url, download:name});
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
 
 /* ===== storage keys (zgodne z innymi stronami) ===== */
 const LS = {
@@ -295,11 +369,10 @@ $('#togglePass').addEventListener('click', ()=>{
 $('#forgot').addEventListener('click', ()=>{
   const u = prompt('Podaj swój identyfikator użytkownika (np. e-mail lub login). Wyślemy lokalny reset (symulacja):');
   if(!u) return;
-  alert('Instrukcje resetu hasła zostały wysłane (symulacja offline).');
+  toast('Instrukcje resetu hasła zostały wysłane (symulacja).');
 });
 
 $('#loginGoogle').addEventListener('click', ()=>{
-  // symulacja: ustawiamy użytkownika i token (ważny 7 dni)
   const name='Google User';
   const token = { user: name, exp: Date.now()+7*24*3600*1000, sig: genSig(USER_HASH,PASS_HASH), idp:'google' };
   localStorage.setItem(LS.authToken, JSON.stringify(token));
@@ -336,13 +409,14 @@ loginForm.addEventListener('submit', async (e)=>{
   }
 });
 
-function afterLogin(name, persisted){
+function afterLogin(name){
   lock.classList.remove('open');
   document.body.style.overflow = '';
   $('#ubName').textContent = name;
   setAvatarFromName(name, $('#ubAvatar'));
   $('#panel').setAttribute('tabindex','-1');
   $('#panel').focus({preventScroll:true});
+  toast('Zalogowano jako ' + name);
 }
 
 /* autologin */
@@ -385,17 +459,26 @@ $('#btnLogout').addEventListener('click', ()=>{
 
 /* ===== KPI ===== */
 function load(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; } }
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function animateNumber(el, to){
+  const from = Number(el.textContent)||0;
+  const start = performance.now();
+  const dur = 420; // ms
+  function step(now){
+    const t = Math.min(1, (now-start)/dur);
+    const val = Math.round(from + (to-from)*(t*t*(3-2*t))); // easeInOut
+    el.textContent = fmt(val);
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 function refreshKPI(){
   const clients = load(LS.clients, []);
   const leads   = load(LS.leads,   []);
-  const cmpSum =
-    ['pumps','boilers','pv','insul','garage']
-      .map(k => load(LS.cmp[k], []).length)
-      .reduce((a,b)=>a+b,0);
-  $('#kpiClients').textContent = clients.length;
-  $('#kpiLeads').textContent   = leads.length;
-  $('#kpiComp').textContent    = cmpSum;
-
+  const cmpSum = ['pumps','boilers','pv','insul','garage'].map(k=>load(LS.cmp[k], []).length).reduce((a,b)=>a+b,0);
+  animateNumber($('#kpiClients'), clients.length);
+  animateNumber($('#kpiLeads'), leads.length);
+  animateNumber($('#kpiComp'), cmpSum);
   // komponenty by cat
   $('#cmp_pumps').textContent  = load(LS.cmp.pumps, []).length;
   $('#cmp_boilers').textContent= load(LS.cmp.boilers, []).length;
@@ -405,10 +488,12 @@ function refreshKPI(){
 }
 
 /* ===== Recent Clients ===== */
-function renderRecentClients(){
+function renderRecentClients(filter=''){
   const tb = $('#tblClients tbody'); tb.innerHTML = '';
   const clients = load(LS.clients, [])
-    .slice().sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,8);
+    .slice().sort((a,b)=>(b.created||0)-(a.created||0))
+    .filter(c => !filter || (c.name||'').toLowerCase().includes(filter.toLowerCase()))
+    .slice(0,8);
   if(!clients.length){
     tb.innerHTML = '<tr><td colspan="5" class="small">Brak danych. Dodaj pierwszego klienta w module „Klienci”.</td></tr>';
     return;
@@ -427,10 +512,12 @@ function renderRecentClients(){
 }
 
 /* ===== Recent Leads ===== */
-function renderRecentLeads(){
+function renderRecentLeads(filter=''){
   const tb = $('#tblLeads tbody'); tb.innerHTML = '';
   const leads = load(LS.leads, [])
-    .slice().sort((a,b)=>(b.created||0)-(a.created||0)).slice(0,8);
+    .slice().sort((a,b)=>(b.created||0)-(a.created||0))
+    .filter(l => !filter || (l.title||'').toLowerCase().includes(filter.toLowerCase()))
+    .slice(0,8);
   if(!leads.length){
     tb.innerHTML = '<tr><td colspan="4" class="small">Brak leadów. Dodaj w module „Lidy”.</td></tr>';
     return;
@@ -449,10 +536,11 @@ function renderRecentLeads(){
 /* ===== Notatka ===== */
 function initNote(){
   const el = $('#note');
+  if(!el) return; // brak elementu -> ignorujemy
   el.value = localStorage.getItem(LS.note) || '';
   el.addEventListener('input', ()=> localStorage.setItem(LS.note, el.value));
-  $('#btnClearNote').addEventListener('click', ()=>{
-    if(confirm('Wyczyścić notatkę?')){ el.value=''; localStorage.removeItem(LS.note); }
+  $('#btnClearNote')?.addEventListener('click', ()=>{
+    if(confirm('Wyczyścić notatkę?')){ el.value=''; localStorage.removeItem(LS.note); toast('Notatka wyczyszczona.'); }
   });
 }
 
@@ -462,14 +550,9 @@ function statusClass(s){
     case 'LEAD': return 'lead';
     case 'ZAPYTANIE': return 'q';
     case 'W TOKU': return 'w';
-$('#loginUser').addEventListener('keydown', e=>{
-  if(e.key==='Enter'){
-    e.preventDefault();
-    const passInput = $('#loginPass');
-    if(passInput) passInput.focus();
-  }
-});
     case 'UTRACONY': return 'l';
+    case 'WYGRAŁ':
+    case 'WYGRANY': return 'c';
     default: return '';
   }
 }
@@ -486,15 +569,126 @@ window.addEventListener('keydown', (e)=>{
     e.preventDefault();
     location.href = 'klienci.html#new';
   }
+  // Ctrl/⌘+K -> fokus na filtr klientów
+  if((e.ctrlKey || e.metaKey) && (e.key==='k' || e.key==='K')){
+    e.preventDefault();
+    $('#filterClients')?.focus();
+  }
+});
+
+/* ===== Filtry ===== */
+$('#filterClients').addEventListener('input', (e)=> renderRecentClients(e.target.value));
+$('#filterLeads').addEventListener('input',   (e)=> renderRecentLeads(e.target.value));
+
+/* ===== Eksport / Import ===== */
+$('#exportClients').addEventListener('click', ()=>{
+  const data = JSON.stringify(load(LS.clients, []), null, 2);
+  download('arkon-klienci.json', data);
+});
+$('#importClients').addEventListener('change', async (e)=>{
+  const file = e.target.files?.[0]; if(!file) return;
+  const text = await file.text();
+  try{ const arr = JSON.parse(text); if(!Array.isArray(arr)) throw 0; save(LS.clients, arr); toast('Zaimportowano klientów.'); refreshAll(); }
+  catch{ alert('Plik niepoprawny. Oczekiwano tablicy JSON.'); }
+  e.target.value='';
+});
+$('#exportLeads').addEventListener('click', ()=>{
+  const data = JSON.stringify(load(LS.leads, []), null, 2);
+  download('arkon-leady.json', data);
+});
+$('#importLeads').addEventListener('change', async (e)=>{
+  const file = e.target.files?.[0]; if(!file) return;
+  const text = await file.text();
+  try{ const arr = JSON.parse(text); if(!Array.isArray(arr)) throw 0; save(LS.leads, arr); toast('Zaimportowano leady.'); refreshAll(); }
+  catch{ alert('Plik niepoprawny. Oczekiwano tablicy JSON.'); }
+  e.target.value='';
+});
+$('#exportAll').addEventListener('click', ()=>{
+  const payload = {
+    clients: load(LS.clients, []),
+    leads: load(LS.leads, []),
+    cmp: {
+      pumps: load(LS.cmp.pumps, []),
+      boilers: load(LS.cmp.boilers, []),
+      pv: load(LS.cmp.pv, []),
+      insul: load(LS.cmp.insul, []),
+      garage: load(LS.cmp.garage, [])
+    },
+    note: localStorage.getItem(LS.note)||''
+  };
+  download('arkon-backup.json', JSON.stringify(payload, null, 2));
+});
+$('#importAll').addEventListener('change', async (e)=>{
+  const file = e.target.files?.[0]; if(!file) return;
+  const text = await file.text();
+  try{
+    const data = JSON.parse(text);
+    if(data.clients) save(LS.clients, data.clients);
+    if(data.leads) save(LS.leads, data.leads);
+    if(data.cmp){
+      if(data.cmp.pumps) save(LS.cmp.pumps, data.cmp.pumps);
+      if(data.cmp.boilers) save(LS.cmp.boilers, data.cmp.boilers);
+      if(data.cmp.pv) save(LS.cmp.pv, data.cmp.pv);
+      if(data.cmp.insul) save(LS.cmp.insul, data.cmp.insul);
+      if(data.cmp.garage) save(LS.cmp.garage, data.cmp.garage);
+    }
+    if(typeof data.note==='string') localStorage.setItem(LS.note, data.note);
+    toast('Zaimportowano backup.');
+    refreshAll();
+  }catch{ alert('Nieprawidłowy plik backupu.'); }
+  e.target.value='';
+});
+
+/* ===== Demo dane ===== */
+$('#btnSeed').addEventListener('click', ()=>{
+  if(!confirm('Załadować przykładowe dane?')) return;
+  const now = Date.now();
+  const clients = [
+    {name:'Teresa Siek', email:'teresa.siek@onet.pl', phone:'+48 665 260 866', status:'W TOKU', tags:['Czyste Powietrze','PC+OC'], created: now-3600_000},
+    {name:'Michalina Mozoła-Satława', email:'misia.filipek@gmail.com', phone:'+48 600 000 000', status:'ZAPYTANIE', tags:['PV','Kocioł'], created: now-2*3600_000},
+    {name:'Gromadka Sp. z o.o.', email:'biuro@gromadka.pl', phone:'76 000 00 00', status:'LEAD', tags:['Izolacje'], created: now-24*3600_000},
+    {name:'Pan Jan Kowalski', email:'jan.kowalski@example.com', phone:'501 000 111', status:'WYGRAŁ', tags:['Pompa ciepła'], created: now-72*3600_000}
+  ];
+  const leads = [
+    {title:'Zapytanie o PV 15 kW', source:'www', status:'NOWY', created: now-40*60_000},
+    {title:'Wymiana kotła + ocieplenie', source:'telefon', status:'KONTAKT', created: now-6*3600_000},
+    {title:'Garaż blaszany 6×5', source:'facebook', status:'NOWY', created: now-2*24*3600_000}
+  ];
+  save(LS.clients, clients);
+  save(LS.leads, leads);
+  save(LS.cmp.pumps, [{id:'P-1'},{id:'P-2'}]);
+  save(LS.cmp.boilers, [{id:'B-1'}]);
+  save(LS.cmp.pv, [{id:'PV-1'},{id:'PV-2'},{id:'PV-3'}]);
+  save(LS.cmp.insul, [{id:'I-1'}]);
+  save(LS.cmp.garage, [{id:'G-1'}]);
+  toast('Załadowano demo.');
+  refreshAll();
+});
+
+$('#btnClearAll').addEventListener('click', ()=>{
+  if(!confirm('Na pewno usunąć WSZYSTKIE dane lokalne?')) return;
+  localStorage.removeItem(LS.clients);
+  localStorage.removeItem(LS.leads);
+  localStorage.removeItem(LS.cmp.pumps);
+  localStorage.removeItem(LS.cmp.boilers);
+  localStorage.removeItem(LS.cmp.pv);
+  localStorage.removeItem(LS.cmp.insul);
+  localStorage.removeItem(LS.cmp.garage);
+  localStorage.removeItem(LS.note);
+  toast('Dane wyczyszczone.');
+  refreshAll();
 });
 
 /* ===== boot ===== */
-refreshKPI();
-renderRecentClients();
-renderRecentLeads();
+function refreshAll(){
+  refreshKPI();
+  renderRecentClients($('#filterClients').value||'');
+  renderRecentLeads($('#filterLeads').value||'');
+}
+refreshAll();
 initNote();
 
-/* dostępność: focus, Enter w loginie */
+/* dostępność: Enter w loginie przechodzi do hasła */
 $('#loginUser').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#loginPass').focus(); }});
 </script>
 </body>

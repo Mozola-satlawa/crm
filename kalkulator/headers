@@ -1,0 +1,7 @@
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer-when-downgrade
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self' 'unsafe-inline' data: https:;
+  Cache-Control: public, max-age=0, must-revalidate
