@@ -111,16 +111,16 @@
         <button id="btnClear" class="btn ghost">Wyczyść</button>
       </div>
       <div class="row mt6">
-        <div class="chips" id="chips">
-          <!-- wypełniane JS -->
-        </div>
+        <div class="chips" id="chips"></div>
         <label class="small ml-auto">
-          118 <div id="recQuickFilter" class="okline mt6 hide"></div>
           <input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi
         </label>
-      </div>121 
+      </div>
+
+      <!-- szybkie rekomendacje (dynamiczne) -->
       <div id="recQuick" class="okline mt6 hide"></div>
-       <div class="row mt6">
+
+      <div class="row mt6">
         <span class="pill">Łącznie: <b id="cntAll">0</b></span>
         <span class="pill">Widocznych: <b id="cntVis">0</b></span>
       </div>
@@ -186,17 +186,18 @@
             <option value="6+">6+ osób (300 l +)</option>
           </select>
         </div>
-<div>
-  <label class="small">VAT</label>
-  <select id="selVat" title="Stawka VAT">
-    <option value="0.08" selected>8%</option>
-    <option value="0.23">23%</option>
-    <option value="0">0%</option>
-  </select>
-</div>
 
-<div>
-  <label class="small">Zawór 3-drogowy</label>
+        <div>
+          <label class="small">VAT</label>
+          <select id="selVat" title="Stawka VAT">
+            <option value="0.08" selected>8%</option>
+            <option value="0.23">23%</option>
+            <option value="0">0%</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="small">Zawór 3-drogowy</label>
           <select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select>
         </div>
         <div>
@@ -215,9 +216,13 @@
           <label class="small">Glikol (monoblok)</label>
           <select id="selGlycol"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select>
         </div>
+        <div>
+          <label class="small">Grzejniki (szt.)</label>
+          <input id="inpRads" type="number" min="0" step="1" value="0" class="w80" placeholder="0">
+        </div>
       </div>
 
-      <!-- NOWE: Dobór mocy (wariant szybki, dokładnie jak prosiłaś) -->
+      <!-- Dobór mocy – wariant prosty -->
       <div class="sep"></div>
       <b>Dobór mocy – wariant prosty</b>
       <div class="row mt8">
@@ -236,45 +241,17 @@
           </select>
         </div>
         <div>
-           function showProposalsFromKw(kw){
-   const box = document.getElementById('recQuick');
-  if(!box) return;
-
-   const v = Number(kw)||0;
-   if(v&lt;=0){
-     box.classList.add('hide');
-    box.innerHTML = '';
-     return;
-   }
-
-   const candidates = HEATPUMPS
-     .slice()
-     .sort((a,b)=&gt; Math.abs(a.pA7 - v) - Math.abs(b.pA7 - v))
-     .filter(h =&gt; h.pA7 &gt;= v*0.9)
-     .slice(0,3);
-
-  if(!candidates.length){
-     box.innerHTML = '&lt;span class="cap"&gt;Brak oczywistych dopasowań dla ~'+ v.toFixed(2) +' kW.&lt;/span&gt;';
-     box.classList.remove('hide');
-     return;
-   }
-
-   const items = candidates.map(h =&gt; `
-     &lt;div class="row mt4"&gt;
-       &lt;div class="flex1"&gt;${h.brand} &lt;b&gt;${h.model}&lt;/b&gt; &lt;span class="cap"&gt;(A7 ${h.pA7} kW, ${h.kind}, ${h.phase||'1F'})&lt;/span&gt;&lt;/div&gt;
-       &lt;button class="btn tiny" data-pick="${h.brand}|${h.model}"&gt;Wybierz&lt;/button&gt;
-     &lt;/div&gt;
-   `).join('');   box.innerHTML = `
-     Propozycje dla ~&lt;b&gt;${v.toFixed(2)} kW&lt;/b&gt;:&lt;br&gt;
-    ${items}  `;   box.classList.remove('hide');
- }
-
-          <input id="outHeatKw" type="text" class="w110" value="0.00" readonly title="Proponowana moc [kW]" placeholder="0.00">
+          <label class="small">Proponowana moc [kW]</label>
+          <input id="outHeatKw" type="text" class="w110" value="0.00" readonly placeholder="0.00">
           <div class="small muted">Liczone: m² × W/m² ÷ 1000, z marginesem 10%.</div>
         </div>
       </div>
 
-      <!-- Dobór mocy – wariant rozbudowany + KPI i rekomendacje -->
+      <!-- tu pojawią się 3 szybkie propozycje -->
+      <div id="recQuickFilter" class="okline mt6 hide"></div>
+      <div id="recQuickList" class="okline mt6 hide"></div>
+
+      <!-- Dobór mocy – wariant rozbudowany -->
       <div class="sep"></div>
       <b>Dobór mocy – wariant rozbudowany</b>
       <div class="row mt8">
@@ -385,80 +362,81 @@
       <div class="footnote mt6">Dane klientów i projekty umów są przechowywane lokalnie w przeglądarce (local/sessionStorage).</div>
     </div>
   </aside>
-</div><script>
+</div>
+
+<script>
 'use strict';
 
 /* ===================== DANE NA SZTYWNO ===================== */
 const HEATPUMPS = [
-  // ===== MIDEA =====
-  {brand:'Midea', model:'M-Thermal Arctic 4.5 kW Monoblok MHC-V4WD2N7-E30', kind:'monoblok', phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M-Thermal PRO 6 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
-  {brand:'Midea', model:'M-Thermal Arctic 6.3 kW Monoblok MHC-V6W/D2N8-E30',  kind:'monoblok', phase:'1F', pA7:6.3, scop:5.0, ref:'R290', noise:55, price:11890, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M-Thermal Arctic 8.4 kW Monoblok MHC-V8W/D2N8-BE30', kind:'monoblok', phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
-  {brand:'Midea', model:'M-Thermal PRO 8 kW Split',                           kind:'split',    phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
-  {brand:'Midea', model:'M-Thermal PRO 8 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
-  {brand:'Midea', model:'M-Thermal 9 kW Monoblok (R32)',                      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
-  {brand:'Midea', model:'M-Thermal 10 kW Monoblok MHC-V10W/D2N8-B',           kind:'monoblok', phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
-  {brand:'Midea', model:'M-Thermal Arctic 10 kW Monoblok MHC-V10WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:10.0,scop:4.9, ref:'R290', noise:56, price:13990, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M-Thermal 12 kW Monoblok (R32)',                     kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
-  {brand:'Midea', model:'M-Thermal 12 kW Monoblok 3F',                        kind:'monoblok', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
-  {brand:'Midea', model:'M-Thermal Arctic 12 kW Monoblok MHC-V12WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
-  {brand:'Midea', model:'M-Thermal Arctic 14 kW Monoblok MHC-V14WD2RN7-E30',  kind:'monoblok', phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
-  {brand:'Midea', model:'M-Thermal PRO 10 kW Split',                          kind:'split',    phase:'1F', pA7:10.0,scop:4.9, ref:'R32', noise:54, price:16980, tags:['PRO','split']},
-  {brand:'Midea', model:'M-Thermal PRO 12 kW Split 3F',                       kind:'split',    phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:55, price:18950, tags:['PRO','split','3F']},
-  {brand:'Midea', model:'M-Thermal PRO 14 kW Split 3F',                       kind:'split',    phase:'3F', pA7:14.0,scop:4.7, ref:'R32', noise:56, price:21990, tags:['PRO','split','3F']},
+  /* ===== MIDEA ===== */
+  {brand:'Midea', model:'M-Thermal Arctic 4.5 kW Monoblok MHC-V4WD2N7-E30',  kind:'monoblok',  phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal PRO 6 kW Monoblok',                        kind:'monoblok',  phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
+  {brand:'Midea', model:'M-Thermal Arctic 6.3 kW Monoblok MHC-V6W/D2N8-E30',  kind:'monoblok',  phase:'1F', pA7:6.3, scop:5.0, ref:'R290', noise:55, price:11890, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 8.4 kW Monoblok MHC-V8W/D2N8-BE30', kind:'monoblok',  phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Split',                           kind:'split',     phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Monoblok',                        kind:'monoblok',  phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
+  {brand:'Midea', model:'M-Thermal 9 kW Monoblok (R32)',                      kind:'monoblok',  phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
+  {brand:'Midea', model:'M-Thermal 10 kW Monoblok MHC-V10W/D2N8-B',           kind:'monoblok',  phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
+  {brand:'Midea', model:'M-Thermal Arctic 10 kW Monoblok MHC-V10WD2RN7-E30',  kind:'monoblok',  phase:'1F', pA7:10.0,scop:4.9, ref:'R290', noise:56, price:13990, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok (R32)',                     kind:'monoblok',  phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok 3F',                        kind:'monoblok',  phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
+  {brand:'Midea', model:'M-Thermal Arctic 12 kW Monoblok MHC-V12WD2RN7-E30',  kind:'monoblok',  phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 14 kW Monoblok MHC-V14WD2RN7-E30',  kind:'monoblok',  phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 10 kW Split',                          kind:'split',     phase:'1F', pA7:10.0,scop:4.9, ref:'R32', noise:54, price:16980, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 12 kW Split 3F',                       kind:'split',     phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:55, price:18950, tags:['PRO','split','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 14 kW Split 3F',                       kind:'split',     phase:'3F', pA7:14.0,scop:4.7, ref:'R32', noise:56, price:21990, tags:['PRO','split','3F']},
   {brand:'Midea', model:'M-Thermal 16 kW Monoblok (R32) M-Thermal-16W/D2N8-BE30', kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:20516, tags:['3F']},
-  {brand:'Midea', model:'M-Thermal PRO 16 kW Monoblok 3F',                    kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:23490, tags:['PRO','3F']},
-  {brand:'Midea', model:'M-Thermal 26 kW Monoblok MHC-V26W/D2RN8-B',          kind:'monoblok', phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
-  {brand:'Midea', model:'M-Thermal All-in-One 8 kW (R32)',                    kind:'all-in-one', phase:'1F', pA7:8.0, scop:4.8, ref:'R32', noise:53, price:18490, tags:['AIO']},
-  {brand:'Midea', model:'M-Thermal All-in-One 12 kW 3F (R32)',                kind:'all-in-one', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:54, price:22990, tags:['AIO','3F']},
-  {brand:'Midea', model:'M-Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok', phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
+  {brand:'Midea', model:'M-Thermal PRO 16 kW Monoblok 3F',                    kind:'monoblok',  phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:23490, tags:['PRO','3F']},
+  {brand:'Midea', model:'M-Thermal 26 kW Monoblok MHC-V26W/D2RN8-B',          kind:'monoblok',  phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
+  {brand:'Midea', model:'M-Thermal All-in-One 8 kW (R32)',                    kind:'all-in-one',phase:'1F', pA7:8.0,scop:4.8, ref:'R32', noise:53, price:18490, tags:['AIO']},
+  {brand:'Midea', model:'M-Thermal All-in-One 12 kW 3F (R32)',                kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:54, price:22990, tags:['AIO','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok',  phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
 
-  // ===== PANASONIC =====
-  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH-MDC05J3E5',            kind:'monoblok', phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J-gen']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH-MDC07J3E5',            kind:'monoblok', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J-gen']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MXC09J3E5 (T-CAP)',    kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T-CAP']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MDC09H3E5',            kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH-MDC12H6E5',           kind:'monoblok', phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
-  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT-ADC07K3E5 (All-in-One)',  kind:'all-in-one', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
-  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT-WC09K3E5',               kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
-  {brand:'Panasonic', model:'Aquarea All-in-One 9 kW 3F',                    kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
-  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                        kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
-  {brand:'Panasonic', model:'Aquarea T-CAP 16 kW 3F Quiet',                  kind:'split',    phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T-CAP','3F']},
+  /* ===== PANASONIC ===== */
+  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH-MDC05J3E5',            kind:'monoblok',  phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH-MDC07J3E5',            kind:'monoblok',  phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MXC09J3E5 (T-CAP)',    kind:'monoblok',  phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T-CAP']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MDC09H3E5',            kind:'monoblok',  phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH-MDC12H6E5',           kind:'monoblok',  phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT-ADC07K3E5 (All-in-One)', kind:'all-in-one',phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
+  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT-WC09K3E5',               kind:'split',     phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea All-in-One 9 kW 3F',                    kind:'all-in-one',phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                        kind:'split',     phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 16 kW 3F Quiet',                  kind:'split',     phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T-CAP','3F']},
 
-  // ===== Dodatkowe Panasonic =====
-  {brand:'Panasonic', model:'Aquarea High Performance 5 kW KIT-WC05J3E5',    kind:'split',    phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:52, price:13250, tags:['High Perf.','split']},
-  {brand:'Panasonic', model:'Aquarea High Performance 12 kW KIT-WC12J3E5',   kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:19890, tags:['High Perf.','split']},
-  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Split Quiet',                kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:21490, tags:['T-CAP','Quiet']},
-  {brand:'Panasonic', model:'Aquarea T-CAP 12 kW Split 3F',                  kind:'split',    phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:55, price:25490, tags:['T-CAP','3F']},
-  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Monoblok WH-MXC09H3E5',      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:21990, tags:['T-CAP','monoblok']},
+  /* ===== Dodatkowe Panasonic ===== */
+  {brand:'Panasonic', model:'Aquarea High Performance 5 kW KIT-WC05J3E5',    kind:'split',     phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:52, price:13250, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea High Performance 12 kW KIT-WC12J3E5',   kind:'split',     phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:19890, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Split Quiet',                kind:'split',     phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:21490, tags:['T-CAP','Quiet']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 12 kW Split 3F',                  kind:'split',     phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:55, price:25490, tags:['T-CAP','3F']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Monoblok WH-MXC09H3E5',      kind:'monoblok',  phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:21990, tags:['T-CAP','monoblok']},
   {brand:'Panasonic', model:'Aquarea K-Generation 7 kW All-in-One 1F',       kind:'all-in-one',phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:52, price:20990, tags:['K-gen','AIO']},
   {brand:'Panasonic', model:'Aquarea K-Generation 12 kW All-in-One 3F',      kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:53, price:28990, tags:['K-gen','AIO','3F']},
-  {brand:'Panasonic', model:'Aquarea Monoblok 16 kW WH-MXC16J9E8 3F',        kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:58, price:27990, tags:['monoblok','3F']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 16 kW WH-MXC16J9E8 3F',        kind:'monoblok',  phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:58, price:27990, tags:['monoblok','3F']},
 
-// ===== GALMET (na sztywno – orientacyjnie) =====
-{brand:'Galmet', model:'PRIMA 6GT Monoblok',     kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
-{brand:'Galmet', model:'PRIMA 8GT Monoblok',     kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
-{brand:'Galmet', model:'PRIMA 10GT Monoblok',    kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
-{brand:'Galmet', model:'PRIMA 12GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']},
-{brand:'Galmet', model:'PRIMA 16GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:57, price:36000, tags:['PRIMA','GT','3F']},
-
-// ===== GALMET SPLIT (na sztywno – orientacyjnie) =====
-{brand:'Galmet', model:'PRIMA S 6GT Split',     kind:'split', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:54, price:22000, tags:['PRIMA','GT','SPLIT']},
-{brand:'Galmet', model:'PRIMA S 8GT Split',     kind:'split', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:54, price:24000, tags:['PRIMA','GT','SPLIT']},
-{brand:'Galmet', model:'PRIMA S 10GT Split',    kind:'split', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:55, price:26000, tags:['PRIMA','GT','SPLIT']},
-{brand:'Galmet', model:'PRIMA S 12GT Split 3F', kind:'split', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:55, price:32000, tags:['PRIMA','GT','SPLIT','3F']},
-{brand:'Galmet', model:'PRIMA S 16GT Split 3F', kind:'split', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:56, price:36000, tags:['PRIMA','GT','SPLIT','3F']},
+  /* ===== GALMET (orientacyjnie) ===== */
+  {brand:'Galmet', model:'PRIMA 6GT Monoblok',     kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 8GT Monoblok',     kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 10GT Monoblok',    kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']},
+  {brand:'Galmet', model:'PRIMA 16GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:57, price:36000, tags:['PRIMA','GT','3F']},
+  /* SPLIT */
+  {brand:'Galmet', model:'PRIMA S 6GT Split',      kind:'split',    phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:54, price:22000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 8GT Split',      kind:'split',    phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:54, price:24000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 10GT Split',     kind:'split',    phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:55, price:26000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 12GT Split 3F',  kind:'split',    phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:55, price:32000, tags:['PRIMA','GT','SPLIT','3F']},
+  {brand:'Galmet', model:'PRIMA S 16GT Split 3F',  kind:'split',    phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:56, price:36000, tags:['PRIMA','GT','SPLIT','3F']},
 ];
 
 /* Bufory i CWU – ceny netto */
 const BUFFERS = { '50':1200, '80':1450, '100':1650, '150':2200, '200':2600, '300':3600 };
 const TANKS_SINGLE = { '150':2450, '200':2900, '250':3400, '300':3800 };
-const TANKS_DUAL   = { '200':3450, '250':3990, '300':4450 }; // dwuwężownicowe
+const TANKS_DUAL   = { '200':3450, '250':3990, '300':4450 };
 
 /* Montaż i model wyceny */
 const RAD_PRICE=750;
-const ONLY_HP_SURCHARGE=4000; // UWAGA: liczona wewnętrznie, ale NIGDZIE nie pokazujemy
+const ONLY_HP_SURCHARGE=4000; // tylko urządzenie – dopłata ukryta
 const PACK_BASE_TARGETNET=38000;
 
 /* ===================== STAN APLIKACJI ===================== */
@@ -480,7 +458,6 @@ const fmt=n=>INTmoney.format(+n||0);
 
 const SAVE_KEY='kp_state_v2';
 function saveState(){
-  // Zapisz Set jako tablicę
   const st = {...state, chipsActive: Array.from(state.chipsActive)};
   const draft = { state: st, basket: state.basket };
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(draft)); }catch(e){}
@@ -519,31 +496,26 @@ function makeChips(){
   box.innerHTML='';
   QUICK_TAGS.forEach(t=>{
     const el=document.createElement('div');
-    el.className='chip'; el.textContent=t;
-    el.dataset.tag=t;
+    el.className='chip'; el.textContent=t; el.dataset.tag=t;
     el.addEventListener('click', ()=>{
       if(state.chipsActive.has(t)) state.chipsActive.delete(t);
       else state.chipsActive.add(t);
       el.classList.toggle('active');
-      renderTable();
-      saveState();
+      renderTable(); saveState();
     });
     if(state.chipsActive.has(t)) el.classList.add('active');
     box.appendChild(el);
   });
 }
-
 function fillFilters(){
   const brands=[...new Set(HEATPUMPS.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
   $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>'<option>'+b+'</option>').join('');
   $('#tagsAll').checked = !!state.tagsAll;
 }
+
 function parsePowerQuery(q){
-  // Wspiera: "10 kW", "8-12", ">=12", "<=9", "10"
   if(!q) return null;
   q = String(q).trim();
-
-  // Porównania: >=, <=, >, <
   const kw = q.match(/^([<>]=?)\s*([0-9]+(?:\.[0-9]+)?)/i);
   if(kw){
     const op = kw[1], val = parseFloat(kw[2]);
@@ -553,22 +525,17 @@ function parsePowerQuery(q){
     if(op === '<')  return p => p < val;
     return null;
   }
-
-  // Zakres: "8-12"
   const range = q.match(/^([0-9]+(?:\.[0-9]+)?)\s*-\s*([0-9]+(?:\.[0-9]+)?)/);
   if(range){
     const a = parseFloat(range[1]), b = parseFloat(range[2]);
     const lo = Math.min(a,b), hi = Math.max(a,b);
     return p => p >= lo && p <= hi;
   }
-
-  // Prosta liczba: "10 kW" (tolerancja)
   const eq = q.match(/^([0-9]+(?:\.[0-9]+)?)/);
   if(eq){
-    const v = parseFloat(eq[1]), tol = 0.6; // tolerancja dopasowania
+    const v = parseFloat(eq[1]), tol = 0.6;
     return p => Math.abs(p - v) <= tol;
   }
-
   return null;
 }
 
@@ -578,20 +545,17 @@ function applyFiltersSort(rows){
   const powerPredicate = parsePowerQuery(q);
 
   rows=rows.filter(p=>{
-    // filtry selectów
     if(brand && p.brand!==brand) return false;
     if(kind && p.kind!==kind) return false;
     if(ref && p.ref!==ref) return false;
     if(ph && p.phase!==ph) return false;
 
-    // chipsy
     if(state.chipsActive.size){
       const tags = new Set([p.kind, p.phase, p.ref, ...(p.tags||[])].filter(Boolean));
       const hits = [...state.chipsActive].map(t=>tags.has(t));
       if(state.tagsAll ? hits.some(x=>!x) : !hits.some(Boolean)) return false;
     }
 
-    // zapytanie tekstowe + moc
     if(q){
       let textHit = [p.brand,p.model,p.ref,p.kind,p.phase,(p.tags||[]).join(' ')].some(v=>(v||'').toLowerCase().includes(q));
       if(powerPredicate){
@@ -631,7 +595,7 @@ function renderTable(){
       <td>${p.ref||''}</td>
       <td>${p.phase||''}</td>
       <td>${p.noise||''}</td>
-      <td>${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</td>
+      <td>${(p.tags||[]).map(t=><span class="tag">${t}</span>).join('')}</td>
     `;
     tb.appendChild(tr);
   });
@@ -663,22 +627,17 @@ function fillSelects(){
   applyHpToUi();
 }
 function applyHpToUi(){
-  // Ustal zaznaczoną pompę na podstawie selekta
   const arr = sortedHp();
   const idx = Number(document.querySelector('#selHp')?.value) || 0;
   state.selectedHp = arr[idx] || state.selectedHp || null;
-
-  // Odśwież widoki zależne od wybranej pompy
   renderPreview();
   renderMustHave();
-  renderBasket();  // tylko odświeżenie sum (bez ingerencji w koszyk)
-
+  renderBasket();
   saveState();
 }
 function activeHp(){ return state.selectedHp; }
 
 function pricePack(hpPrice, bufCost, tankCost, extras){
-  // cena pakietu = cena urządzenia + bufor + zasobnik + dodatki + offset
   return (+hpPrice||0) + (+bufCost||0) + (+tankCost||0) + (+extras||0) + BASE_OFFSET;
 }
 function renderPreview(){
@@ -697,7 +656,6 @@ function renderPreview(){
   else if(b.kind==='all-in-one') hint.textContent='All-in-One: wbudowany zasobnik CWU — zewnętrzny zwykle zbędny.';
   else hint.textContent='Split: glikol nie dotyczy (obieg chłodniczy).';
 
-  // Powierzchnia pokrywana wybraną pompą (dla wybranego standardu)
   const stdW = +($('#selStd')?.value||50);
   const margin=1.15;
   const areaCover = Math.floor((b.pA7*1000)/(stdW*margin));
@@ -716,9 +674,45 @@ function renderMustHave(){
   items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
   if((+state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
   items.push('Rozdzielacz(e) / hydraulika wg wyboru');
-  const r=+state.rads||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN`);
+  const r=+state.rads||0;
+  if(r>0) items.push(`Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN`);
   items.push('Montaż, uruchomienie, konfiguracja sterowania, szkolenie użytkownika');
-  box.innerHTML = '<ul class="small list-offset">'+items.map(t=>`<li>${t}</li>`).join('')+'</ul>';
+  box.innerHTML = `<ul class="small list-offset">${items.map(t=>`<li>${t}</li>`).join('')}</ul>`;
+}
+
+/* ===== Szybka propozycja na podstawie kW ===== */
+function showProposalsFromKw(kw){
+  const box = document.getElementById('recQuickList');
+  if(!box) return;
+  const v = Number(kw)||0;
+  if(v<=0){
+    box.classList.add('hide');
+    box.innerHTML = '';
+    return;
+  }
+  const candidates = HEATPUMPS
+    .slice()
+    .sort((a,b)=> Math.abs(a.pA7 - v) - Math.abs(b.pA7 - v))
+    .filter(h => h.pA7 >= v*0.9)
+    .slice(0,3);
+
+  if(!candidates.length){
+    box.innerHTML = '<span class="cap">Brak oczywistych dopasowań dla ~'+ v.toFixed(2) +' kW.</span>';
+    box.classList.remove('hide');
+    return;
+  }
+
+  const items = candidates.map(h => `
+    <div class="row mt4">
+      <div class="flex1">${h.brand} <b>${h.model}</b>
+        <span class="cap">(A7 ${h.pA7} kW, ${h.kind}, ${h.phase||'1F'})</span>
+      </div>
+      <button class="btn tiny" data-pick="${h.brand}|${h.model}">Wybierz</button>
+    </div>
+  `).join('');
+
+  box.innerHTML = 'Propozycje dla ~<b>' + v.toFixed(2) + ' kW</b>:<br>' + items;
+  box.classList.remove('hide');
 }
 
 function quickSuggest(){
@@ -727,8 +721,10 @@ function quickSuggest(){
   if(area>0 && wpm2>0){
     const kw = (area*wpm2)/1000 * 1.10;
     $('#outHeatKw').value = kw.toFixed(2);
+    showProposalsFromKw(kw);
   }else{
     $('#outHeatKw').value = '0.00';
+    showProposalsFromKw(0);
   }
 }
 
@@ -748,7 +744,6 @@ function recomputeAdvanced(){
   $('#heatLoad').textContent = req_kw.toFixed(2) + ' kW';
   $('#heatTarget').textContent = target.toFixed(2) + ' kW';
 
-  // Propozycje najbardziej zbliżone
   const candidates = HEATPUMPS
     .filter(h=>h.pA7>=target*0.9)
     .slice()
@@ -766,7 +761,6 @@ function recomputeAdvanced(){
   }
   const box=$('#recSummary'); box.innerHTML = parts.join('<br>'); box.classList.remove('hide');
 
-  // Sugerowana pojemność CWU wg osób (podpowiedź)
   const use = $('#selCwuUse').value;
   let suggest = (use==='2-3'?'200–250 l':use==='4-5'?'250–300 l':'300 l +');
   $('#areaHint').textContent = `Sugerowana pojemność CWU dla ${use} osób: ${suggest}.`;
@@ -858,9 +852,7 @@ function pushContractDraft(client){
       pump: b? {brand:b.brand, model:b.model, kind:b.kind, phase:b.phase, pA7:b.pA7, ref:b.ref}:null,
       buffer: state.selectedBuf,
       tank: {type: state.selectedTankType, vol: state.selectedTank},
-      extras:{
-        v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads
-      },
+      extras:{ v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads },
       vat: state.vat
     },
     sizing:{
@@ -876,7 +868,6 @@ function pushContractDraft(client){
   };
   try{
     sessionStorage.setItem('contract_draft', JSON.stringify(payload));
-    // pamiętaj w historii
     const key='contracts_history';
     const hist = JSON.parse(localStorage.getItem(key)||'[]'); hist.push(payload);
     localStorage.setItem(key, JSON.stringify(hist));
@@ -885,14 +876,12 @@ function pushContractDraft(client){
 }
 
 function goToContract(){
-  // jeśli jest wybrany klient w selekcie – dołącz
   const selId = $('#selClient').value;
   let client=null;
   if(selId){
     const c = readClients().find(x=>x.id===selId);
     if(c) client=c;
   }else{
-    // z formularza, jeśli coś wpisano
     const draft = collectClientFromForm();
     if(draft.name) client=draft;
   }
@@ -979,16 +968,22 @@ $('#selCwuType').addEventListener('change', e=>{
 $('#selCwu').addEventListener('change', e=>{ state.selectedTank=e.target.value; renderPreview(); renderMustHave(); saveState(); });
 $('#selCwuUse').addEventListener('change', ()=>{ recomputeAdvanced(); });
 
+// dodatki
 ['selV3d','selSafety','selHydro','selGlycol'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', (e)=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('change', (e)=>{
     state[e.target.id.replace('sel','').toLowerCase()] = Number(e.target.value)||0;
     renderPreview(); renderMustHave(); saveState();
   });
 });
-$('#inpRads').addEventListener('input', e=>{
-  state.rads=Math.max(0,Number(e.target.value)||0);
-  renderPreview(); renderMustHave(); saveState();
-});
+const radsEl = document.getElementById('inpRads');
+if (radsEl) {
+  radsEl.addEventListener('input', e=>{
+    state.rads=Math.max(0,Number(e.target.value)||0);
+    renderPreview(); renderMustHave(); saveState();
+  });
+}
 ['provPct','provAbs'].forEach(id=>{
   document.getElementById(id).addEventListener('input', ()=>{
     state.provPct=Number($('#provPct').value)||0;
@@ -1013,7 +1008,6 @@ $('#btnAddPack').addEventListener('click', ()=>{
 });
 $('#btnAddHp').addEventListener('click', ()=>{
   const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
-  // UWAGA: dopłata 4000 liczona wewnętrznie, ale nigdzie nie jest wyświetlana
   addToBasket(`Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie`, soloPrice(b), 1);
 });
 
@@ -1076,11 +1070,9 @@ $('#btnToContract').addEventListener('click', goToContract);
 $('#btnToContractTop').addEventListener('click', goToContract);
 $('#btnMailTo').addEventListener('click', mailToClient);
 
-/* Quick dobór mocy */
+/* Quick / Advanced dobór mocy */
 $('#inpArea').addEventListener('input', quickSuggest);
 $('#selWperm2').addEventListener('change', quickSuggest);
-
-/* Advanced dobór mocy */
 ['selStd','areaAdv','lossWm2','selCwuUse'].forEach(id=>{
   document.getElementById(id).addEventListener('input', ()=>{ recomputeAdvanced(); renderPreview(); });
   document.getElementById(id).addEventListener('change', ()=>{ recomputeAdvanced(); renderPreview(); });
@@ -1089,19 +1081,14 @@ $('#selWperm2').addEventListener('change', quickSuggest);
 /* ===================== INIT ===================== */
 function init(){
   loadState();
-  fillFilters();
-  makeChips();
-  renderTable();
-  fillSelects();
-  renderBasket();
-  quickSuggest();
-  recomputeAdvanced();
-  populateClientSelect();
-  // odtwórz wybory
+  fillFilters(); makeChips(); renderTable(); fillSelects();
+  renderBasket(); quickSuggest(); recomputeAdvanced(); populateClientSelect();
+
   if(state.selectedHp){
     const arr=sortedHp(); const idx=arr.findIndex(x=>x.brand===state.selectedHp.brand && x.model===state.selectedHp.model);
     if(idx>=0) $('#selHp').value=String(idx);
   }
+  showProposalsFromKw(Number($('#outHeatKw').value||0));
 }
 init();
 </script>
