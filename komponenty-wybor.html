@@ -1,0 +1,181 @@
+<!doctype html><html lang="pl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wybór komponentów → Umowa</title>
+<style>
+  body{margin:0;background:#0b1020;color:#e8edff;font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
+  header{padding:14px 16px;border-bottom:1px solid #22306a;background:#0e1534}
+  .wrap{max-width:1100px;margin:auto;padding:16px}
+  .panel{background:#10183b;border:1px solid #22306a;border-radius:12px;padding:12px;margin:10px 0}
+  .grid{display:grid;gap:10px}
+  @media(min-width:900px){.cols-2{grid-template-columns:1fr 1fr}}
+  label{display:block;font-size:12px;color:#aeb8da;margin-bottom:6px}
+  input,select,button{font:500 15px/1.2 system-ui,Segoe UI,Roboto,Arial}
+  input,select{width:100%;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:10px;color:#e8edff}
+  input.num{text-align:right}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:8px;border-bottom:1px solid #1a244d;text-align:left}
+  th.num,td.num{text-align:right}
+  .right{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}
+  .ghost{background:transparent;border-style:dashed}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;margin:4px 6px 0 0;font-size:12px;color:#aeb8da}
+</style>
+</head>
+<body>
+<header><h2>Komponenty do umowy (sprzedaż gotówkowa)</h2></header>
+<div class="wrap">
+  <!-- Dane klienta (opcjonalnie do wstawienia do umowy) -->
+  <section class="panel grid cols-2">
+    <div><label>Klient<input id="cl_name" placeholder="Imię i nazwisko / firma"></label></div>
+    <div><label>Adres montażu<input id="cl_addr" placeholder="Miejscowość, ulica"></label></div>
+  </section>
+
+  <div class="table-wrap">
+    <div class="right">
+      <span class="pill">Suma netto: <b id="sumNet">0</b> zł</span>
+      <span class="pill">VAT: <select id="vat"><option value="0.08" selected>8%</option><option value="0.23">23%</option></select></span>
+      <span class="pill">Suma brutto: <b id="sumGross">0</b> zł</span>
+    </div>
+
+    <div class="table-wrap mt-10">
+      <table id="tbl">
+        <thead><tr>
+          <th>Kategoria</th>
+          <th>Pozycja / opis</th>
+          <th class="num">Ilość</th>
+          <th class="num">Cena NETTO / j.</th>
+          <th class="num">Wartość NETTO</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr>
+          <td colspan="4" class="num">Suma netto</td>
+          <td class="num"><b id="tNet">0</b></td>
+          <td></td>
+        </tr></tfoot>
+      </table>
+    </div>
+
+    <div class="right mt-10">
+      <button id="btnAdd" class="btn ghost">+ Dodaj pozycję</button>
+      <button id="btnSave" class="btn">→ Zapisz do umowy</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="right start">
+      <span class="quick-label">Szybko dodaj:</span>
+      <button class="btn ghost" data-quick="Pompa ciepła|powietrze/woda 10 kW|1|25000">Pompa ciepła 10 kW</button>
+    </div>
+  </section>
+
+  <!-- Szybkie dodawanie z predefinicji -->
+  <section class="panel">
+    <div class="right start">
+      <span class="quick-label">Szybko dodaj:</span>
+      <button class="btn ghost" data-quick="Pompa ciepła|powietrze/woda 10 kW|1|25000">Pompa ciepła 10 kW</button>
+      <button class="btn ghost" data-quick="Piec|pellet 15 kW|1|12000">Piec pellet 15 kW</button>
+      <button class="btn ghost" data-quick="Fotowoltaika|Zestaw 6 kWp|1|18000">PV 6 kWp</button>
+      <button class="btn ghost" data-quick="Ocieplenie|Ściany – styropian|100|180">Ocieplenie 100 m²</button>
+      <!-- DODATKI -->
+      <button class="btn ghost" data-quick="Dodatek|Rynny|1|150">Rynny</button>
+      <button class="btn ghost" data-quick="Dodatek|Opierzenie|1|200">Opierzenie</button>
+      <button class="btn ghost" data-quick="Dodatek|Parapety|1|120">Parapety</button>
+      <button class="btn ghost" data-quick="Dodatek|Tynk (m²)|0|35">Tynk</button>
+    </div>
+    <div class="pill">Uwaga: jeżeli dodajesz „Tynk (m²)”, do wartości NETTO zostanie doliczone <b>+10%</b> względem m² ocieplenia ścian (jeśli taka pozycja istnieje).</div>
+  </section>
+</div>
+
+<script>
+'use strict';
+const LS_KEY = 'arkon_contract_items_v1';
+const INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+const $ = s=>document.querySelector(s);
+
+function rowTemplate(item, idx){
+  return `<tr data-idx="${idx}">
+    <td><input value="${item.cat}"          data-k="cat"></td>
+    <td><input value="${item.name||''}"     data-k="name"></td>
+    <td class="num"><input class="num" value="${item.qty}"  data-k="qty"  inputmode="decimal"></td>
+    <td class="num"><input class="num" value="${item.price}" data-k="price" inputmode="decimal"></td>
+    <td class="num"><b>${INT.format(Math.round(item.net||0))}</b></td>
+    <td><button class="btn ghost" data-del="${idx}">Usuń</button></td>
+  </tr>`;
+}
+
+let rows = [];
+
+function recompute(){
+  // specjalna zasada dla „Tynk (m²)” – +10% m² od pozycji ocieplenia ścian
+  let styroM2 = 0;
+  rows.forEach(r=>{
+    if((r.cat||'').toLowerCase().includes('ocieplenie') &&
+       (r.name||'').toLowerCase().includes('ścian')){
+      styroM2 += Number(r.qty)||0;
+    }
+  });
+  rows.forEach(r=>{
+    const qty = Number(r.qty)||0, price = Number(r.price)||0;
+    r.net = qty*price;
+  });
+  const tynk = rows.find(r=>(r.cat||'').toLowerCase()==='dodatek' && (r.name||'').toLowerCase().includes('tynk'));
+  if(tynk){
+    const extra = Math.round((styroM2||0) * 35 * 0.10); // 35 zł/m² * 10%
+    tynk.net = Math.round((Number(tynk.qty)||0) * (Number(tynk.price)||0) + extra);
+  }
+
+  // render
+  $('#tbody').innerHTML = rows.map(rowTemplate).join('');
+  // bind
+  $('#tbody').querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const tr=e.target.closest('tr'); const i=+tr.dataset.idx; const k=e.target.dataset.k;
+      rows[i][k]= e.target.value;
+      recompute();
+    });
+  });
+  $('#tbody').querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const i=+e.target.closest('tr').dataset.idx; rows.splice(i,1); recompute();
+    });
+  });
+
+  const sumNet = rows.reduce((a,b)=>a+(Number(b.net)||0),0);
+  const vat = Number($('#vat').value)||0.08;
+  const sumGross = Math.round(sumNet*(1+vat));
+  $('#tNet').textContent = INT.format(sumNet);
+  $('#sumNet').textContent = INT.format(sumNet);
+  $('#sumGross').textContent = INT.format(sumGross);
+}
+
+function addRow(obj){
+  rows.push(Object.assign({cat:'',name:'',qty:1,price:0,net:0}, obj||{}));
+  recompute();
+}
+
+$('#btnAdd').addEventListener('click', ()=> addRow({}));
+document.querySelectorAll('[data-quick]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const [cat,name,qty,price] = b.dataset.quick.split('|');
+    addRow({cat,name,qty:Number(qty||1),price:Number(price||0)});
+  });
+});
+$('#vat').addEventListener('change', recompute);
+
+$('#btnSave').addEventListener('click', ()=>{
+  const payload = {
+    client: { name: $('#cl_name').value.trim(), addr: $('#cl_addr').value.trim() },
+    vat: Number($('#vat').value)||0.08,
+    items: rows.map(r=>({cat:r.cat, name:r.name, qty:+r.qty||0, price:+r.price||0, net:+r.net||0})),
+    sumNet: rows.reduce((a,b)=>a+(+b.net||0),0)
+  };
+  localStorage.setItem(LS_KEY, JSON.stringify(payload));
+  // przejście do umowy
+  location.href = 'umowa2.html'; // podmień na swój plik umowy
+});
+
+// start
+recompute();
+</script>
+</body></html>
