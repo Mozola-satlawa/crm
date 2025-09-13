@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="pl">
 <head>
@@ -15,9 +16,17 @@
   header{padding:16px;border-bottom:1px solid var(--line);background:#0e1534;position:sticky;top:0;z-index:8}
   header h1{margin:0;font-size:22px}
   header .muted{color:var(--muted);font-size:13px}
-  nav{display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#121a44;position:sticky;top:58px;z-index:7}
-  nav a{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
-  nav a:hover{background:#1a2758}
+
+  /* --- NAV: główny pasek + szybkie linki komponentów --- */
+  nav.main{display:flex;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#121a44;position:sticky;top:58px;z-index:7}
+  nav.main a{padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
+  nav.main a:hover{background:#1a2758}
+  nav.sub{display:flex;gap:8px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid #1b285a;background:#0e1538;position:sticky;top:106px;z-index:6}
+  nav.sub a{padding:6px 10px;border-radius:999px;border:1px dashed #2a3a75;color:#cfe0ff}
+  nav.sub a:hover{background:#15235a}
+  .components-label{padding:6px 0}
+  @media (max-width:720px){ nav.sub{display:none} }
+
   .wrap{max-width:1280px;margin:0 auto;padding:16px}
   .grid{display:grid;gap:14px}
   @media(min-width:1100px){ .cols-3{grid-template-columns:repeat(3,1fr)} .cols-2{grid-template-columns:2fr 1fr} .cols-main{grid-template-columns:1.6fr 1.4fr} }
@@ -78,15 +87,45 @@
   /* modal */
   dialog.modal{border:1px solid #2a3a75;background:linear-gradient(180deg,#0f1636,#102048);color:var(--ink);border-radius:12px;padding:12px}
   dialog::backdrop{background:#0008}
+
+  /* footer quick links */
+  .site-footer{max-width:1280px;margin:20px auto;color:#aeb8da}
+  .site-footer .inner{display:flex;gap:8px;flex-wrap:wrap;align-items:center;border:1px solid #1e2a55;border-radius:12px;background:#0e1538;padding:10px 12px}
+  .site-footer a{border:1px solid #2a3a75;border-radius:999px;padding:6px 10px}
+  .site-footer a:hover{background:#14245a}
 </style>
 </head>
 <body>
 <header>
   <h1>ARKON • Pulpit + Kalendarz</h1>
-  <nav>
+
+  <!-- GŁÓWNY pasek aplikacji -->
+  <nav class="main" aria-label="Główne moduły">
     <a href="#inst">🛠 Kalendarz montaży</a>
     <a href="#notes">🗒 Uwagi i notatki</a>
     <a href="kalkulator.html" target="_blank" rel="noopener">🧮 Kalkulator ↗</a>
+
+    <!-- Połączenia z resztą plików -->
+    <a href="komponenty.html">📦 Komponenty (hub)</a>
+    <a href="komponenty-wybor.html">🧩 Generator zestawu</a>
+    <a href="edytor-umowy.html">📄 Umowy — edytor</a>
+    <a href="upload.html">⬆ Przesył plików</a>
+    <a href="dokumenty.html">📚 Dokumenty</a>
+    <a href="klienci.html">👥 Klienci</a>
+  </nav>
+
+  <!-- Szybkie linki do kategorii komponentów -->
+  <nav class="sub" aria-label="Komponenty">
+    <span class="small components-label">Komponenty:</span>
+    <a href="komponenty-pompy.html">Pompy</a>
+    <a href="komponenty-piece.html">Piece</a>
+    <a href="komponenty-piece.html">Piece</a>
+    <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
+    <a href="komponenty-ocieplenie.html">Ocieplenie</a>
+    <a href="komponenty-stolarka.html">Stolarka</a>
+    <a href="komponenty-hydraulika.html">Hydraulika</a>
+    <a href="komponenty-bramy.html">Bramy</a>
+    <a href="komponenty-panele.html">Panele</a>
   </nav>
 </header>
 
@@ -220,7 +259,21 @@
   </aside>
 </main>
 
-<!-- DIALOGI -->
+<!-- Szybkie skróty w stopce (te same co w menu) -->
+<footer class="site-footer">
+  <div class="inner">
+    <span class="small">Szybkie przejścia:</span>
+    <a href="kalkulator.html" target="_blank" rel="noopener">Kalkulator</a>
+    <a href="komponenty.html">Komponenty (hub)</a>
+    <a href="komponenty-wybor.html">Generator zestawu</a>
+    <a href="edytor-umowy.html">Umowy — edytor</a>
+    <a href="upload.html">Przesył plików</a>
+    <a href="dokumenty.html">Dokumenty</a>
+    <a href="klienci.html">Klienci</a>
+  </div>
+</footer>
+
+<!-- DIALOGI (bez zmian) -->
 <dialog id="dlgEvent" class="modal">
   <form method="dialog" id="formEvent" class="grid form-sm">
     <h3>Nowe/Edytuj wydarzenie</h3>
@@ -313,17 +366,21 @@ function download(name, data) {
   const a = Object.assign(document.createElement('a'), { href: url, download: name });
   document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url)
 }
-function escapeHtml(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }
+function escapeHtml(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]) ) }
 function cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0 }
 function pageSlice(arr, state) { const s = (state.page - 1) * state.per; return arr.slice(s, s + state.per) }
 function ymd(d) { const z = n => String(n).padStart(2, '0'); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) }
+function openContractFor(clientName){
+  localStorage.setItem('arkon_selected_client', clientName || '');
+  location.href = 'komponenty-wybor.html';
+}
 
 /* ===== state ===== */
 const clientsState = { sort: { key: 'created', dir: 'desc' }, page: 1, per: 8, filter: '' };
 const leadsState   = { sort: { key: 'created', dir: 'desc' }, page: 1, per: 8, filter: '' };
 const instState    = { sort: { key: 'date', dir: 'asc' } };
 
-/* ===== utils ===== */
+/* ===== Clients ===== */
 function statusClass(s) {
   s = (s || '').toUpperCase();
   if (s === 'W TOKU' || s === 'KONTAKT' || s === 'LEAD') return 'status warn';
@@ -331,12 +388,6 @@ function statusClass(s) {
   if (s === 'WYGRAŁ' || s === 'WYGRANY' || s === 'ZAKOŃCZONY') return 'status ok';
   return 'status';
 }
-function openContractFor(clientName){
-  localStorage.setItem('arkon_selected_client', clientName || '');
-  location.href = 'komponenty-wybor.html';
-}
-
-/* ===== Clients ===== */
 function renderClients() {
   const tb = $('#tblClients tbody'); tb.innerHTML = '';
   let arr = load(LS.clients, []).slice();
@@ -368,11 +419,9 @@ function renderClients() {
   arr = pageSlice(arr, clientsState);
 
   if (!arr.length) { tb.innerHTML = '<tr><td colspan="6" class="small">Brak danych</td></tr>'; return }
-
   arr.forEach(c => {
     const tr = document.createElement('tr');
     const tags = (c.tags || []).slice(0, 3).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
-    const calcUrl = 'kalkulator.html?client=' + encodeURIComponent(c.name || '');
     tr.innerHTML = `
       <td><b>${escapeHtml(c.name || '—')}</b></td>
       <td><span class="${statusClass(c.status)}">${escapeHtml(c.status || '—')}</span></td>
@@ -393,6 +442,7 @@ function renderClients() {
   tb.querySelectorAll('[data-contract]').forEach(b => b.addEventListener('click', () => openContractFor(b.getAttribute('data-contract'))));
   tb.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openClientEditor(b.getAttribute('data-edit'))));
   tb.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => deleteClient(b.getAttribute('data-del'))));
+}
 }
 
 function openClientEditor(name){
@@ -603,12 +653,12 @@ function initNotes() {
 function renderTodos() {
   const ul = $('#todoList'); ul.innerHTML = '';
   const arr = load(LS.todos, []);
-  if (!arr.length) { const li = document.createElement('li'); li.className = 'small'; li.textContent = 'Brak zadań.'; ul.appendChild(li); return }
   arr.forEach((t, i) => {
     const li = document.createElement('li'); li.className = 'row'; li.style.alignItems = 'center'; li.style.justifyContent = 'space-between';
     li.innerHTML = `<div><input type="checkbox" ${t.done ? 'checked' : ''} data-idx="${i}"> <span ${t.done ? 'style="text-decoration:line-through;opacity:.7"' : ''}>${escapeHtml(t.text)}</span></div><div class="row"><span class="small">${new Date(t.created).toLocaleString('pl-PL')}</span> <button type="button" class="btn ghost" data-del="${i}">Usuń</button></div>`;
     ul.appendChild(li);
   });
+
   ul.querySelectorAll('input[type=checkbox]').forEach(ch => ch.addEventListener('change', () => {
     const i = +ch.getAttribute('data-idx'); const arr = load(LS.todos, []); arr[i].done = ch.checked; save(LS.todos, arr); renderTodos();
   }));
@@ -628,14 +678,12 @@ $('#importClients').addEventListener('change', async e => {
   try { const txt = await f.text(); const data = JSON.parse(txt); if (Array.isArray(data)) { save(LS.clients, data); renderClients(); fillClientSelect(); } } catch {}
   e.target.value = '';
 });
-
 $('#exportLeads').addEventListener('click', () => download('arkon-leady.json', JSON.stringify(load(LS.leads, []), null, 2)));
 $('#importLeads').addEventListener('change', async e => {
   const f = e.target.files?.[0]; if (!f) return;
   try { const txt = await f.text(); const data = JSON.parse(txt); if (Array.isArray(data)) { save(LS.leads, data); renderLeads(); } } catch {}
   e.target.value = '';
 });
-
 $('#exportInst').addEventListener('click', () => download('arkon-montaze.json', JSON.stringify(load(LS.inst, []), null, 2)));
 $('#importInst').addEventListener('change', async e => {
   const f = e.target.files?.[0]; if (!f) return;
