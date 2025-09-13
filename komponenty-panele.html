@@ -35,6 +35,12 @@
   .w-120{max-width:120px}
   .small{font-size:12px;color:#aeb8da}
   .right{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+
+  /* Utility classes moved from inline styles */
+  .min-w-360{min-width:360px}
+  .p-0{padding:0}
+  .p-10-12{padding:10px 12px}
+
   @media print{ .no-print{display:none!important} }
 </style>
 </head>
@@ -45,13 +51,14 @@
   <nav class="no-print">
     <a href="index.html">Kalkulator</a>
     <a href="dotacje.html">Dotacje</a>
+    <input id="q" placeholder="🔎 Szukaj… (marka, model, opis)" class="min-w-360">
   </nav>
 </header>
 
 <div class="wrap">
   <div class="card">
     <div class="toolbar">
-      <input id="q" placeholder="🔎 Szukaj… (marka, model, opis)" style="min-width:360px">
+      <input placeholder="🔎 Szukaj… (marka, model, opis)" class="min-w-360">
       <select id="f_brand"><option value="">Marka (wszystkie)</option></select>
       <input id="f_wmin" type="number" placeholder="W min" class="w-120">
       <input id="f_wmax" type="number" placeholder="W max" class="w-120">
@@ -59,13 +66,13 @@
       <button id="btnAdd" class="btn ok">+ Dodaj model</button>
       <button id="btnCSV" class="btn ghost">CSV eksport</button>
       <button id="btnJSON" class="btn ghost">JSON eksport</button>
-      <label class="btn ghost">JSON import <input id="inJSON" type="file" accept="application/json" hidden></label>
+    <div class="card p-0">
       <label class="btn ghost">CSV import <input id="inCSV" type="file" accept=".csv,text/csv" hidden></label>
       <span class="pill">Widocznych: <b id="countVis">0</b></span>
       <span class="pill">Łącznie: <b id="countAll">0</b></span>
     </div>
 
-    <div class="card" style="padding:0">
+    <div class="card p-0">
       <div class="scroll">
         <table>
           <thead id="thead"><tr>
@@ -77,13 +84,12 @@
             <th>Bifacial</th>
             <th>Gwar. prod. [l]</th>
             <th>Gwar. perf. [l]</th>
-            <th class="muted">Cena (ukryta)</th>
             <th>Uwagi</th>
           </tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      <div class="small muted" style="padding:10px 12px">
+      <div class="small muted p-10-12">
         Edytuj w komórkach. Usuń/duplikuj z kolumny „Akcje”. Zmiany zapisują się automatycznie.
         Skróty: <span class="kbd">/</span> wyszukiwarka • <span class="kbd">Alt+N</span> nowy model.
       </div>
