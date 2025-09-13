@@ -1,68 +1,163 @@
 <!doctype html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Komponenty • Pompy ciepła — katalog + konfigurator</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230b8d3b'/%3E%3Ctext x='50' y='62' font-size='60' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif'%3EP%3C/text%3E%3C/svg%3E">
-  <style>
-    :root{--bg:#0b1020;--p1:#121a34;--p2:#172142;--ink:#e8edff;--muted:#aeb8da;--acc:#4cc9f0;--line:#22306a;--card:#0f1533}
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
-    header{padding:14px 16px;border-bottom:1px solid var(--line);background:#0e1534}
-    header h1{margin:0 0 6px;font-size:22px}
-    .wrap{max-width:1500px;margin:auto;padding:16px}
-    .grid{display:grid;gap:12px}
-    @media(min-width:1100px){.cols-2{grid-template-columns:1.6fr 1.1fr}}
-    .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px}
-    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .right{margin-left:auto;display:flex;gap:8px}
-    .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
-    .btn.ghost{background:transparent;border-style:dashed}
-    .btn.ok{background:#194d34;border-color:#2f9762}
-    .btn.warn{background:#3a2a19;border-color:#9d7a33}
-    input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;font:inherit;color:#e8edff}
-    table{width:100%;border-collapse:separate;border-spacing:0}
-    th,td{padding:10px;border-bottom:1px solid #243059;vertical-align:top;text-align:left}
-    th{font-size:12px;color:#aeb8da;position:sticky;top:0;background:#151d46;z-index:1}
-    tbody tr:hover{background:#0d153033}
-    .small{font-size:12px;color:#aeb8da}
-    .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;background:#0d1530;cursor:pointer}
-    .chip.active{background:#233261}
-    .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:13px}
-    .w70{width:70px}.w80{width:80px}.w110{width:110px}.w130{width:130px}.w180{width:180px}
-    .right-align{text-align:right}
-    .okline{padding:8px;border-radius:10px;background:#0f2a22;border:1px solid #155a41;color:#b4ffdd}
-    .warnline{padding:8px;border-radius:10px;background:#3a2a19;border:1px dashed #9d7a33;color:#ffdda1}
-    .hide{display:none}
-    .summary-value{font-weight:800}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Komponenty • Pompy ciepła — katalog + konfigurator + koszyk</title>
+<meta name="description" content="ARKON: katalog pomp ciepła (Midea, Panasonic, Galmet, …), szybki i zaawansowany dobór mocy, konfiguracja zestawu, koszyk, auto-zapis do umowy." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f1533'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-size='40' fill='%234cc9f0' font-family='Segoe UI,Arial,sans-serif'%3EP%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root{
+    --bg:#0b1020; --grad1:#0a0f1e; --grad2:#0c1230;
+    --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da;
+    --accent:#4cc9f0; --ok:#2fbf71; --warn:#ffb84d; --bad:#ff6b6b;
+    --grid:#243059; --card:#0f1533; --line:#1c2750; --chip:#0d1530;
+    --focus:#82c4ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink);
+    background:linear-gradient(180deg,var(--grad1),var(--grad2) 60%,var(--grad1));
+    font:15px/1.55 system-ui,Segoe UI,Roboto,Arial
+  }
+
+  /* header / nav */
+  header{padding:16px;border-bottom:1px solid var(--line);background:#0e1534;position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:22px}
+  header .muted{color:var(--muted);font-size:13px;margin-top:4px}
+  #site-nav{background:#121a44;border-bottom:1px solid var(--line)}
+  #site-nav .nav-wrap{max-width:1500px;margin:auto;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap}
+  #site-nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
+  #site-nav a:hover{background:#1a2758}
+
+  /* layout */
+  .wrap{max-width:1500px;margin:auto;padding:16px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:1200px){ .cols-2{grid-template-columns:1.6fr 1.4fr} }
+
+  /* cards / buttons / form */
+  .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 8px 28px #0005}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .spaced{justify-content:space-between}
+  .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border-style:dashed}
+  .btn.ok{background:#194d34;border-color:#2f9762}
+  .btn.warn{background:#3a2a19;border-color:#9d7a33}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .btn.tiny{font-size:12px;padding:6px 8px;border-radius:8px}
+  .muted{color:var(--muted);font-size:13px}
+  .small{font-size:12px;color:var(--muted)}
+
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:#e8edff;font:inherit}
+  input:focus,select:focus,textarea:focus{border-color:#3e61cc;box-shadow:0 0 0 3px #3e61cc33;outline:0}
+  input.num{text-align:right}
+  .w70{width:70px}.w90{width:90px}.w110{width:110px}.w140{width:140px}.w180{width:180px}.minw220{min-width:220px}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;font-size:13px;color:#aeb8da}
+
+  /* chips / filters */
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .chip{user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:var(--chip)}
+  .chip.active{background:#233261}
+  .chip .x{opacity:.7;margin-left:6px}
+
+  /* tables */
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:10px;border-bottom:1px solid var(--grid);vertical-align:top;text-align:left}
+  th{font-size:12px;color:#aeb8da;position:sticky;top:0;background:#151d46;z-index:1}
+  td.num,th.num{text-align:right}
+  tbody tr:hover{background:#0d153033}
+  .scroll{overflow:auto;max-height:70vh}
+
+  /* sections */
+  .sep{height:1px;background:#243059;margin:10px 0}
+  .okline{padding:8px;border-radius:10px;background:#0f2a22;border:1px solid #155a41;color:#b4ffdd}
+  .warnline{padding:8px;border-radius:10px;background:#3a2a19;border:1px dashed #9d7a33;color:#ffdda1}
+  .hide{display:none}
+  .summary-value{font-weight:800;font-size:18px}
+  .price-preview{font-weight:800;font-size:18px}
+
+  /* footer */
+  footer{max-width:1500px;margin:16px auto 32px;color:#a9b6e6}
+  footer .inner{display:flex;gap:16px;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#0e1740,#0f1a4a)}
+  footer .f-logo{width:40px;height:40px;border-radius:10px;background:#0e1538;display:grid;place-items:center;overflow:hidden}
+  footer .f-logo img{width:100%;height:100%;object-fit:cover}
+
+  /* print */
+  @media print{
+    @page{ size:A4 landscape; margin:10mm }
+    html,body{-webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff}
+    header,#site-nav,.no-print{display:none !important}
+    .wrap{max-width:none;margin:0;padding:0}
+    .card{box-shadow:none;border:1px solid #888;background:#fff}
+    th{background:#eee;color:#000}
+    .muted,.small{color:#000}
+  }
+</style>
 </head>
 <body>
-<header>
-  <div class="row">
-    <a href="index.html" class="btn ghost">← Powrót do pulpitu</a>
-    <div class="right">
-      <button id="btnGoContract" class="btn">Wyślij do umowy (bez przejścia)</button>
-    </div>
+
+<!-- global nav (ładowana z pliku nav.html; jeśli go nie ma – pokazuje się fallback) -->
+<nav id="site-nav" aria-label="Nawigacja serwisu">
+  <div class="nav-wrap">
+    <a href="index.html">Pulpit</a>
+    <a href="kalkulator.html">Kalkulator</a>
+    <a href="komponenty.html">Komponenty • Hub</a>
+    <a href="komponenty-pompy.html" aria-current="page">Pompy</a>
+    <a href="komponenty-piece.html">Piece</a>
+    <a href="komponenty-fotowoltaika.html">Fotowoltaika</a>
+    <a href="komponenty-ocieplenie.html">Ocieplenie</a>
+    <a href="komponenty-stolarka.html">Stolarka</a>
+    <a href="komponenty-hydraulika.html">Hydraulika</a>
+    <a href="umowy.html">Umowy</a>
+    <a href="upload.html">Przesył plików</a>
+    <a href="kalendarz-montaze.html">Kalendarz montaży</a>
+    <a href="klienci.html">Klienci</a>
+    <a href="dokumenty.html">Dokumenty</a>
   </div>
-  <h1>Komponenty • Pompy ciepła — Midea, Panasonic & Galmet</h1>
-  <div class="small">Ceny urządzeń w tabeli są orientacyjne; wycena zestawu po prawej. Zmiany zapisują się automatycznie do szkicu umowy.</div>
+</nav>
+
+<header class="no-print">
+  <h1>Komponenty • Pompy ciepła — katalog + konfigurator</h1>
+  <div class="muted">
+    Katalog modeli (Midea, Panasonic, Galmet, …) z filtrami i dopasowaniem mocy.
+    Po prawej konfigurator zestawu i koszyk. <b>Stan zapisywany lokalnie</b> i
+    <b>automatycznie wysyłany do umowy</b> (najświeższy szkic).
+  </div>
 </header>
 
-<div class="wrap grid cols-2">
-  <!-- KATALOG + FILTRY -->
+<main class="wrap grid cols-2">
+
+  <!-- LEWA KOLUMNA — KATALOG + FILTRY -->
   <section class="grid">
+    <!-- Filtry i wyszukiwarka -->
     <div class="card">
       <div class="row">
-        <input id="q" placeholder="Szukaj: marka, model, tag… + moce: '10 kW', '8-12', '>=12' " style="min-width:260px">
-        <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
-        <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
-        <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
-        <select id="fPhase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
-        <select id="sort">
+        <input id="q" class="minw220" placeholder="🔎 Szukaj: marka, model, czynnik, tag… lub moc (np. '10 kW', '8-12', '>=12')" aria-label="Szukaj" />
+        <select id="fBrand" title="Marka">
+          <option value="">Marka (wszystkie)</option>
+          <!-- wypełnia JS -->
+        </select>
+        <select id="fType" title="Typ">
+          <option value="">Typ</option>
+          <option>monoblok</option>
+          <option>split</option>
+          <option>all-in-one</option>
+        </select>
+        <select id="fRef" title="Czynnik">
+          <option value="">Czynnik</option>
+          <option>R32</option>
+          <option>R290</option>
+        </select>
+        <select id="fPhase" title="Fazy">
+          <option value="">Fazy</option>
+          <option>1F</option>
+          <option>3F</option>
+        </select>
+        <select id="sort" title="Sortowanie">
           <option value="brand.asc">Marka ↑</option>
           <option value="brand.desc">Marka ↓</option>
           <option value="p.asc">Moc ↑</option>
@@ -70,138 +165,329 @@
           <option value="price.asc">Cena urządzenia ↑</option>
           <option value="price.desc">Cena urządzenia ↓</option>
         </select>
-        <button id="btnClear" class="btn ghost">Wyczyść</button>
+        <button id="btnClear" class="btn ghost" type="button">Wyczyść</button>
       </div>
       <div class="row">
-        <div id="chips" class="chips"></div>
-        <label class="small" style="margin-left:auto"><input id="tagsAll" type="checkbox"> dopasuj wszystkie tagi</label>
+        <div class="chips" id="chips" aria-label="Szybkie tagi">
+          <!-- wypełnia JS -->
+        </div>
+        <label class="small" style="margin-left:auto">
+          <input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi
+        </label>
       </div>
+      <div id="recQuick" class="okline mt6 hide" role="status" aria-live="polite"></div>
       <div class="row">
         <span class="pill">Łącznie: <b id="cntAll">0</b></span>
         <span class="pill">Widocznych: <b id="cntVis">0</b></span>
       </div>
-      <div id="recQuick" class="okline mt6 hide"></div>
     </div>
 
-    <div class="card" style="overflow:auto;max-height:72vh">
-      <table>
+    <!-- Tabela katalogu -->
+    <div class="card scroll">
+      <table aria-label="Katalog pomp">
         <thead>
           <tr>
-            <th>Akcje</th><th>Marka / Model</th><th>Typ</th><th>Moc A7 [kW]</th><th>SCOP</th><th>Czynnik</th><th>Fazy</th><th>Hałas</th><th>Uwagi</th>
+            <th>Akcje</th>
+            <th>Marka / Model</th>
+            <th>Typ</th>
+            <th class="num">Moc A7 [kW]</th>
+            <th class="num">SCOP</th>
+            <th>Czynnik</th>
+            <th>Fazy</th>
+            <th>Hałas [dB(A)]</th>
+            <th>Uwagi</th>
           </tr>
         </thead>
-        <tbody id="tbody"></tbody>
+        <tbody id="tbody">
+          <!-- wypełnia JS -->
+        </tbody>
       </table>
-      <div class="small">Uwaga: do kalkulacji brutto używana jest stawka VAT z konfiguratora.</div>
+      <div class="small mt6">Uwaga: ceny urządzeń są użyte w kalkulacji zestawu — nie pokazujemy ich wprost w tabeli.</div>
     </div>
   </section>
 
-  <!-- KONFIGURATOR -->
+  <!-- PRAWA KOLUMNA — KONFIGURATOR + KOSZYK + KLIENT -->
   <aside class="grid">
+    <!-- Konfigurator -->
     <div class="card">
-      <div class="row">
+      <div class="row spaced">
         <b>Konfigurator zestawu</b>
         <div class="right">
-          <button id="btnAddPack" class="btn ok">+ Dodaj ZESTAW</button>
-          <button id="btnAddHp" class="btn warn">+ Sama pompa</button>
+          <button id="btnAddPack" class="btn ok" type="button">+ Dodaj ZESTAW</button>
+          <button id="btnAddHp" class="btn warn" type="button">+ Sama pompa</button>
         </div>
       </div>
 
-      <div class="row">
-        <div><label class="small">Model pompy</label><select id="selHp"></select></div>
-        <div><label class="small">Bufor [l]</label><select id="selBufor"></select></div>
-        <div><label class="small">Typ zasobnika</label><select id="selCwuType"><option value="single">pojedyncza wężownica</option><option value="dual">dwuwężownicowy</option></select></div>
-        <div><label class="small">Zasobnik CWU [l]</label><select id="selCwu"></select></div>
-        <div><label class="small">VAT</label><select id="selVat"><option value="0.08" selected>8%</option><option value="0.23">23%</option><option value="0">0%</option></select></div>
-      </div>
-      <div class="row">
-        <div><label class="small">Zawór 3D</label><select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select></div>
-        <div><label class="small">Grupa bezp.</label><select id="selSafety"><option value="0">w zestawie</option><option value="390">+390</option></select></div>
-        <div><label class="small">Hydraulika</label><select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select></div>
-        <div><label class="small">Glikol (monoblok)</label><select id="selGlycol"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select></div>
-      </div>
-
-      <div class="row">
-        <div class="pill">Cena zestawu (netto): <b id="pricePreview">—</b></div>
-      </div>
-
-      <div class="row">
+      <!-- wybory -->
+      <div class="row mt6">
         <div>
-          <label class="small">Powierzchnia [m²]</label>
-          <input id="inpArea" type="number" class="w110" min="0" value="0">
-          <div class="small">Szybka propozycja mocy z marginesem 10%:
-            <input id="outHeatKw" type="text" class="w80" readonly placeholder="0.00">
-          </div>
+          <label class="small">Model pompy</label>
+          <select id="selHp" class="w180" aria-label="Model pompy"></select>
         </div>
         <div>
-          <label class="small">Straty [W/m²]</label>
-          <select id="selWperm2" class="w130">
-            <option value="35">Nowy (35)</option>
-            <option value="45">Dobra izolacja (45)</option>
-            <option value="50" selected>Modernizacja (50)</option>
-            <option value="60">Słaba izolacja (60)</option>
-            <option value="70">Bardzo stary (70)</option>
+          <label class="small">Bufor [l]</label>
+          <select id="selBufor" class="w110" aria-label="Bufor [l]"></select>
+        </div>
+        <div>
+          <label class="small">Typ zasobnika CWU</label>
+          <select id="selCwuType" class="w140" title="Sugerowany wariant">
+            <option value="single" selected>pojedyncza wężownica</option>
+            <option value="dual">dwuwężownicowy</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Zasobnik CWU [l]</label>
+          <select id="selCwu" class="w110"></select>
+        </div>
+        <div>
+          <label class="small">Cel użycia CWU</label>
+          <select id="selCwuUse" class="w180" title="Sugeruje pojemność">
+            <option value="2-3">2–3 osoby (200–250 l)</option>
+            <option value="4-5" selected>4–5 osób (250–300 l)</option>
+            <option value="6+">6+ osób (300 l +)</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">VAT</label>
+          <select id="selVat" class="w90" title="Stawka VAT">
+            <option value="0.08" selected>8%</option>
+            <option value="0.23">23%</option>
+            <option value="0">0%</option>
           </select>
         </div>
       </div>
 
-      <div id="typeHint" class="okline hide"></div>
-      <div id="galmetHint" class="warnline hide"></div>
+      <!-- dodatki -->
+      <div class="row mt6">
+        <div>
+          <label class="small">Zawór 3-drogowy</label>
+          <select id="selV3d" class="w140"><option value="0">w zestawie</option><option value="450">+450</option></select>
+        </div>
+        <div>
+          <label class="small">Grupa bezpieczeństwa</label>
+          <select id="selSafety" class="w140"><option value="0">w zestawie</option><option value="390">+390</option></select>
+        </div>
+        <div>
+          <label class="small">Hydraulika (rozdzielacze)</label>
+          <select id="selHydro" class="w180">
+            <option value="0">podstawowa</option>
+            <option value="1800">+1 obieg (1800)</option>
+            <option value="3200">dwa obiegi (3200)</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Glikol (monoblok)</label>
+          <select id="selGlycol" class="w140"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select>
+        </div>
+        <div>
+          <label class="small">Grzejniki — ilość [szt.]</label>
+          <input id="inpRads" class="w110 num" inputmode="numeric" min="0" step="1" value="0" placeholder="0" />
+        </div>
+      </div>
+
+      <!-- Dobór mocy — szybki -->
+      <div class="sep"></div>
+      <b>Dobór mocy — wariant szybki</b>
+      <div class="row mt6">
+        <div>
+          <label class="small">Powierzchnia [m²]</label>
+          <input id="inpArea" class="w110 num" type="number" min="0" step="1" value="0" placeholder="np. 120" />
+        </div>
+        <div>
+          <label class="small">Straty ciepła [W/m²]</label>
+          <select id="selWperm2" class="w180" title="Standard budynku">
+            <option value="25">Nowy pasywny — 25</option>
+            <option value="35">Nowy / NZEB — 35</option>
+            <option value="45">Nowszy / dobra izolacja — 45</option>
+            <option value="50" selected>Modernizacja — 50</option>
+            <option value="60">Starszy — 60</option>
+            <option value="70">Bardzo stary — 70</option>
+            <option value="85">Stary nieocieplony — 85</option>
+            <option value="100">Słabo ocieplony — 100</option>
+            <option value="115">Bardzo słabo — 115</option>
+            <option value="129">Ekstremalnie słabo — 129</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Proponowana moc [kW]</label>
+          <input id="outHeatKw" class="w110" type="text" value="0.00" readonly aria-live="polite" />
+          <div class="small muted">Liczenie: m² × W/m² ÷ 1000 × 1.10 (margines 10%).</div>
+        </div>
+      </div>
+      <div id="recQuickFilter" class="okline mt6 hide" role="status" aria-live="polite"></div>
+
+      <!-- Dobór mocy — zaawansowany -->
+      <div class="sep"></div>
+      <b>Dobór mocy — wariant zaawansowany</b>
+      <div class="row mt6">
+        <div>
+          <label class="small">Standard (podpowiedź)</label>
+          <select id="selStd" class="w180">
+            <option value="35">Nowy / NZEB (~35 W/m²)</option>
+            <option value="50" selected>Modernizacja (~50 W/m²)</option>
+            <option value="80">Stary nieocieplony (~80 W/m²)</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Powierzchnia [m²]</label>
+          <input id="areaAdv" class="w110 num" type="number" min="30" step="1" placeholder="np. 120" />
+        </div>
+        <div>
+          <label class="small">Straty [W/m²] (do 129)</label>
+          <input id="lossWm2" class="w110 num" type="number" min="10" max="129" step="1" value="70" />
+        </div>
+      </div>
+      <div id="lossWarn" class="warnline mt6 hide">&gt; 140 W/m² — niezalecane</div>
+
+      <div class="row mt6" style="gap:12px;flex-wrap:wrap">
+        <div class="pill">Obciążenie projektowe: <b id="heatLoad">—</b></div>
+        <div class="pill">Zapas 15%: <b id="heatTarget">—</b></div>
+        <div class="pill">Pow. pokrywana wybraną pompą: <b id="areaByHp">—</b></div>
+      </div>
+      <div id="areaHint" class="small muted mt6"></div>
+      <div id="recSummary" class="okline mt6 hide"></div>
+      <div id="typeHint" class="okline mt6 hide"></div>
+
+      <!-- Podgląd ceny proporcjonalnej -->
+      <div class="sep"></div>
+      <div class="row">
+        <div style="flex:1 1 320px">
+          <div class="muted">Cena zestawu (netto) wg modelu proporcjonalnego</div>
+          <div id="pricePreview" class="price-preview">—</div>
+          <div id="typeHint_inline" class="okline mt6 hide"></div>
+        </div>
+        <div style="min-width:240px">
+          <label class="small">Prowizja handlowca</label>
+          <div class="row">
+            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" class="w90" aria-label="Prowizja %">
+            <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" class="w140" aria-label="Prowizja PLN">
+          </div>
+          <div class="small muted">Możesz wpisać % i/lub PLN (sumują się).</div>
+        </div>
+      </div>
     </div>
 
+    <!-- Must-have / skład -->
+    <div class="card">
+      <b>Skład zestawu (must-have)</b>
+      <div id="mustHave" class="muted mt6">Wybierz pompę, bufor i zasobnik — pokażę proponowany skład.</div>
+    </div>
+
+    <!-- Koszyk -->
     <div class="card">
       <b>Koszyk</b>
-      <table id="basket" class="mt8">
-        <thead><tr><th>Pozycja</th><th class="right-align">Ilość</th><th class="right-align">Cena [PLN]</th><th></th></tr></thead>
-        <tbody></tbody>
+      <table id="basket" class="mt6" aria-label="Koszyk">
+        <thead><tr>
+          <th>Pozycja</th>
+          <th style="width:100px">Ilość</th>
+          <th class="num" style="width:160px">Cena [PLN]</th>
+          <th style="width:90px"></th>
+        </tr></thead>
+        <tbody>
+          <!-- wypełnia JS -->
+        </tbody>
       </table>
+      <div class="sep"></div>
       <div class="row">
-        <div><span class="small">Suma netto</span><div id="sumNet" class="summary-value">0,00 PLN</div></div>
-        <div><span class="small">Prowizja</span><div id="sumProv" class="summary-value">0,00 PLN</div></div>
-        <div><span class="small">Brutto</span><div id="sumGross" class="summary-value">0,00 PLN</div></div>
-      </div>
-      <div class="row">
-        <div class="w180">
-          <label class="small">% prowizji</label>
-          <input id="provPct" type="number" min="0" step="0.1" class="w110">
-        </div>
-        <div class="w180">
-          <label class="small">Prowizja [PLN]</label>
-          <input id="provAbs" type="number" min="0" step="1" class="w110">
-        </div>
+        <div><span class="muted">Suma netto</span><div id="sumNet" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Prowizja</span><div id="sumProv" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" class="summary-value">0,00 PLN</div></div>
         <div class="right">
-          <button id="btnCopy" class="btn ghost">Kopiuj</button>
-          <button id="btnPrint" class="btn ghost">PDF</button>
+          <button id="btnCopy" class="btn ghost" type="button">Kopiuj ofertę</button>
+          <button id="btnPrint" class="btn ghost" type="button">Drukuj / PDF</button>
+          <button id="btnXlsx" class="btn ghost" type="button">Eksport XLSX</button>
+          <button id="btnExportJson" class="btn ghost" type="button">Eksport JSON</button>
+          <button id="btnImportJson" class="btn ghost" type="button">Import JSON</button>
         </div>
       </div>
-    </div>
-
-    <div class="card">
-      <b>Załączniki do umowy (zdjęcia/plik)</b>
-      <div class="row">
-        <input id="filePick" type="file" multiple accept="image/*,.pdf,.doc,.docx">
-        <button id="btnClearFiles" class="btn ghost">Wyczyść</button>
+      <div class="small muted mt6">
+        <b>Auto-zapis do umowy:</b> każdy dodany/zmieniony zestaw zapisuje się do <code>localStorage</code>
+        jako <i>contract_draft_v3</i>. Plik <code>umowa2.html</code> pobiera ostatni szkic automatycznie.
       </div>
-      <div id="filesList" class="small"></div>
     </div>
 
+    <!-- Baza klientów / wysyłka do umowy -->
     <div class="card">
       <b>Dane klienta</b>
-      <div class="row">
-        <input id="clName" class="w180" placeholder="Imię/Nazwa">
-        <input id="clEmail" class="w180" placeholder="E-mail">
-        <input id="clPhone" class="w130" placeholder="Telefon">
-        <input id="clAddr" class="w180" placeholder="Adres">
+      <div class="row mt6">
+        <div>
+          <label class="small">Imię i nazwisko / Firma</label>
+          <input id="clName" class="w180" placeholder="np. Jan Kowalski" autocomplete="name">
+        </div>
+        <div>
+          <label class="small">E-mail</label>
+          <input id="clEmail" class="w180" type="email" placeholder="np. jan@firma.pl" autocomplete="email">
+        </div>
+        <div>
+          <label class="small">Telefon</label>
+          <input id="clPhone" class="w140" placeholder="np. 600123123" autocomplete="tel">
+        </div>
+        <div>
+          <label class="small">NIP (opcjonalnie)</label>
+          <input id="clNip" class="w140" placeholder="NIP" inputmode="numeric">
+        </div>
+        <div style="flex:1 1 320px">
+          <label class="small">Adres (ulica, miasto)</label>
+          <input id="clAddr" placeholder="np. ul. Przykładowa 1, 59-170 Przemków" autocomplete="street-address">
+        </div>
       </div>
-      <div class="row">
-        <button id="btnSaveClient" class="btn ok">Zapisz do bazy</button>
+
+      <div class="row mt6">
+        <button id="btnSaveClient" class="btn ok" type="button">Zapisz klienta do bazy</button>
         <select id="selClient" class="w180"><option value="">— wybierz z bazy —</option></select>
-        <button id="btnLoadClient" class="btn ghost">Wczytaj</button>
+        <button id="btnLoadClient" class="btn ghost" type="button">Wczytaj</button>
+
+        <!-- Ten przycisk zostaje jako manualny fallback; JS i tak będzie auto-pushować szkic -->
+        <button id="btnToContract" class="btn" type="button" title="Wymuś aktualizację szkicu umowy">Wyślij do umowy</button>
+        <button id="btnMailTo" class="btn ghost" type="button">Wyślij ofertę e-mailem</button>
+      </div>
+
+      <div class="small muted mt6">
+        Dane klientów i szkice umów są przechowywane lokalnie w przeglądarce. Szkic jest
+        automatycznie aktualizowany przy każdej zmianie w koszyku/konfiguratorze.
       </div>
     </div>
   </aside>
-</div>
+</main>
 
-<script src="pompy.js"></script>
+<footer class="no-print">
+  <div class="inner">
+    <div class="f-logo" aria-hidden="true">
+      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC">
+    </div>
+    <div>
+      <b>ARKON – Przedsiębiorstwo Wielobranżowe</b><br>
+      59-170 Przemków • ul. Fabryczna 12 C • NIP: 5020038830 • KRS: 0000255361 • tel. 76 831 90 30 • e-mail: biuro@arkon.com.pl
+    </div>
+  </div>
+</footer>
+
+<!-- NAV: automatyczne wstrzyknięcie z nav.html (jeśli plik istnieje w repo/public) -->
+<script>
+(function () {
+  const mount = document.getElementById('site-nav');
+  if (!mount) return;
+  fetch('nav.html', { cache: 'no-cache' })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(html => {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html.trim();
+      const nav = wrap.firstElementChild;
+      if (!nav) return;
+      // podświetlenie aktywnej strony
+      const here = location.pathname.split('/').pop() || 'index.html';
+      nav.querySelectorAll('a').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href === here) a.style.outline = '2px solid var(--accent)';
+      });
+      mount.innerHTML = '';
+      mount.appendChild(nav);
+    })
+    .catch(() => { /* fallback z <nav> już jest */ });
+})();
+</script>
+
+<!-- GŁÓWNY SKRYPT Z LOGIKĄ -->
+<script src="pompy.js" defer></script>
 </body>
 </html>
