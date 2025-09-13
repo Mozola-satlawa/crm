@@ -5,27 +5,71 @@
 
 // przykładowa baza (uzupełnij wg potrzeb; dodałem większość z wcześniejszej listy)
 const HEATPUMPS = [
-  // MIDEA (fragment – uzupełnij gdy trzeba)
+/* pompy.js — katalog + konfigurator + auto-zapis do umowy */
+'use strict';
+
+/* ===================== DANE ===================== */
+/* >>> KOMPLETNY KATALOG <<< */
+const HEATPUMPS = [
+  // ===== MIDEA =====
+  {brand:'Midea', model:'M-Thermal Arctic 4.5 kW Monoblok MHC-V4WD2N7-E30',  kind:'monoblok', phase:'1F', pA7:4.5, scop:5.0, ref:'R290', noise:55, price:10686, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal PRO 6 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:6.0, scop:4.9, ref:'R32', noise:55, price:12276, tags:['PRO','R32']},
   {brand:'Midea', model:'M-Thermal Arctic 6.3 kW Monoblok MHC-V6W/D2N8-E30',  kind:'monoblok', phase:'1F', pA7:6.3, scop:5.0, ref:'R290', noise:55, price:11890, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 8.4 kW Monoblok MHC-V8W/D2N8-BE30', kind:'monoblok', phase:'1F', pA7:8.4, scop:4.9, ref:'R290', noise:55, price:9350,  tags:['Arctic','R290','WiFi']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Split',                           kind:'split',    phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:54, price:14500, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 8 kW Monoblok',                        kind:'monoblok', phase:'1F', pA7:8.0, scop:4.9, ref:'R32', noise:55, price:9349,  tags:['PRO','monoblok']},
+  {brand:'Midea', model:'M-Thermal 9 kW Monoblok (R32)',                      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15000, tags:['R32']},
   {brand:'Midea', model:'M-Thermal 10 kW Monoblok MHC-V10W/D2N8-B',           kind:'monoblok', phase:'1F', pA7:10.0,scop:4.8, ref:'R32', noise:56, price:16080, tags:['WiFi']},
+  {brand:'Midea', model:'M-Thermal Arctic 10 kW Monoblok MHC-V10WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:10.0,scop:4.9, ref:'R290', noise:56, price:13990, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok (R32)',                     kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R32', noise:56, price:13170, tags:['R32']},
+  {brand:'Midea', model:'M-Thermal 12 kW Monoblok 3F',                        kind:'monoblok', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:14873, tags:['3F']},
   {brand:'Midea', model:'M-Thermal Arctic 12 kW Monoblok MHC-V12WD2RN7-E30',  kind:'monoblok', phase:'1F', pA7:12.0,scop:4.8, ref:'R290', noise:56, price:15438, tags:['Arctic','R290']},
+  {brand:'Midea', model:'M-Thermal Arctic 14 kW Monoblok MHC-V14WD2RN7-E30',  kind:'monoblok', phase:'3F', pA7:14.0,scop:4.7, ref:'R290', noise:56, price:16260, tags:['Arctic','R290','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 10 kW Split',                          kind:'split',    phase:'1F', pA7:10.0,scop:4.9, ref:'R32', noise:54, price:16980, tags:['PRO','split']},
+  {brand:'Midea', model:'M-Thermal PRO 12 kW Split 3F',                       kind:'split',    phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:55, price:18950, tags:['PRO','split','3F']},
   {brand:'Midea', model:'M-Thermal PRO 14 kW Split 3F',                       kind:'split',    phase:'3F', pA7:14.0,scop:4.7, ref:'R32', noise:56, price:21990, tags:['PRO','split','3F']},
+  {brand:'Midea', model:'M-Thermal 16 kW Monoblok (R32) M-Thermal-16W/D2N8-BE30', kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:20516, tags:['3F']},
+  {brand:'Midea', model:'M-Thermal PRO 16 kW Monoblok 3F',                    kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:57, price:23490, tags:['PRO','3F']},
+  {brand:'Midea', model:'M-Thermal 26 kW Monoblok MHC-V26W/D2RN8-B',          kind:'monoblok', phase:'3F', pA7:26.0,scop:4.3, ref:'R32', noise:60, price:20320, tags:['wysoka moc','3F']},
   {brand:'Midea', model:'M-Thermal All-in-One 8 kW (R32)',                    kind:'all-in-one', phase:'1F', pA7:8.0, scop:4.8, ref:'R32', noise:53, price:18490, tags:['AIO']},
+  {brand:'Midea', model:'M-Thermal All-in-One 12 kW 3F (R32)',                kind:'all-in-one', phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:54, price:22990, tags:['AIO','3F']},
+  {brand:'Midea', model:'M-Thermal PRO 14 kW Monoblok (premium)',             kind:'monoblok', phase:'3F', pA7:14.0,scop:4.8, ref:'R32', noise:56, price:36350, tags:['premium']},
 
-  // PANASONIC (fragment)
-  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MXC09J3E5 (T-CAP)',     kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T-CAP']},
-  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                         kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
-  {brand:'Panasonic', model:'Aquarea All-in-One 9 kW 3F',                     kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
+  // ===== PANASONIC =====
+  {brand:'Panasonic', model:'Aquarea Monoblok 5 kW WH-MDC05J3E5',            kind:'monoblok', phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:53, price:20745, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 7 kW WH-MDC07J3E5',            kind:'monoblok', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:54, price:11370, tags:['J-gen']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MXC09J3E5 (T-CAP)',    kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:15300, tags:['T-CAP']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 9 kW WH-MDC09H3E5',            kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:14459, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 12 kW WH-MDC12H6E5',           kind:'monoblok', phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:13090, tags:['High Perf.']},
+  {brand:'Panasonic', model:'Aquarea Split 7 kW KIT-ADC07K3E5 (All-in-One)',  kind:'all-in-one', phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:53, price:19041, tags:['AIO']},
+  {brand:'Panasonic', model:'Aquarea Split 9 kW KIT-WC09K3E5',               kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:14930, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea All-in-One 9 kW 3F',                    kind:'all-in-one', phase:'3F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:22764, tags:['AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Split 12 kW 1F',                        kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:18600, tags:['split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 16 kW 3F Quiet',                  kind:'split',    phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:56, price:28455, tags:['T-CAP','3F']},
 
-  // GALMET – PRIMA (monoblok)
-  {brand:'Galmet', model:'PRIMA 8GT Monoblok',     kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA']},
-  {brand:'Galmet', model:'PRIMA 10GT Monoblok',    kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA']},
-  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','3F']},
-  {brand:'Galmet', model:'PRIMA 16GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:57, price:36000, tags:['PRIMA','3F']},
+  // ===== Dodatkowe Panasonic =====
+  {brand:'Panasonic', model:'Aquarea High Performance 5 kW KIT-WC05J3E5',    kind:'split',    phase:'1F', pA7:5.0, scop:5.0, ref:'R32', noise:52, price:13250, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea High Performance 12 kW KIT-WC12J3E5',   kind:'split',    phase:'1F', pA7:12.0,scop:4.7, ref:'R32', noise:56, price:19890, tags:['High Perf.','split']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Split Quiet',                kind:'split',    phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:54, price:21490, tags:['T-CAP','Quiet']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 12 kW Split 3F',                  kind:'split',    phase:'3F', pA7:12.0,scop:4.7, ref:'R32', noise:55, price:25490, tags:['T-CAP','3F']},
+  {brand:'Panasonic', model:'Aquarea T-CAP 9 kW Monoblok WH-MXC09H3E5',      kind:'monoblok', phase:'1F', pA7:9.0, scop:4.8, ref:'R32', noise:55, price:21990, tags:['T-CAP','monoblok']},
+  {brand:'Panasonic', model:'Aquarea K-Generation 7 kW All-in-One 1F',       kind:'all-in-one',phase:'1F', pA7:7.0, scop:4.9, ref:'R32', noise:52, price:20990, tags:['K-gen','AIO']},
+  {brand:'Panasonic', model:'Aquarea K-Generation 12 kW All-in-One 3F',      kind:'all-in-one',phase:'3F', pA7:12.0,scop:4.8, ref:'R32', noise:53, price:28990, tags:['K-gen','AIO','3F']},
+  {brand:'Panasonic', model:'Aquarea Monoblok 16 kW WH-MXC16J9E8 3F',        kind:'monoblok', phase:'3F', pA7:16.0,scop:4.6, ref:'R32', noise:58, price:27990, tags:['monoblok','3F']},
 
-  // GALMET – PRIMA S (split)
-  {brand:'Galmet', model:'PRIMA S 8GT Split',      kind:'split', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:54, price:24000, tags:['PRIMA','SPLIT']},
-  {brand:'Galmet', model:'PRIMA S 12GT Split 3F',  kind:'split', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:55, price:32000, tags:['PRIMA','SPLIT','3F']},
+  // ===== GALMET (na sztywno – orientacyjnie) =====
+  {brand:'Galmet', model:'PRIMA 6GT Monoblok',     kind:'monoblok', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:55, price:22000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 8GT Monoblok',     kind:'monoblok', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:55, price:24000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 10GT Monoblok',    kind:'monoblok', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:56, price:26000, tags:['PRIMA','GT']},
+  {brand:'Galmet', model:'PRIMA 12GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:56, price:32000, tags:['PRIMA','GT','3F']},
+  {brand:'Galmet', model:'PRIMA 16GT Monoblok 3F', kind:'monoblok', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:57, price:36000, tags:['PRIMA','GT','3F']},
+
+  // ===== GALMET SPLIT (na sztywno – orientacyjnie) =====
+  {brand:'Galmet', model:'PRIMA S 6GT Split',     kind:'split', phase:'1F', pA7:6.0,  scop:4.8, ref:'R32', noise:54, price:22000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 8GT Split',     kind:'split', phase:'1F', pA7:8.0,  scop:4.8, ref:'R32', noise:54, price:24000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 10GT Split',    kind:'split', phase:'1F', pA7:10.0, scop:4.7, ref:'R32', noise:55, price:26000, tags:['PRIMA','GT','SPLIT']},
+  {brand:'Galmet', model:'PRIMA S 12GT Split 3F', kind:'split', phase:'3F', pA7:12.0, scop:4.7, ref:'R32', noise:55, price:32000, tags:['PRIMA','GT','SPLIT','3F']},
+  {brand:'Galmet', model:'PRIMA S 16GT Split 3F', kind:'split', phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:56, price:36000, tags:['PRIMA','GT','SPLIT','3F']},
 ];
 
 const BUFFERS = { '0':0,'50':1200,'80':1450,'100':1650,'150':2200,'200':2600,'300':3600 };
@@ -33,10 +77,19 @@ const TANKS_SINGLE = { '150':2450, '200':2900, '250':3400, '300':3800 };
 const TANKS_DUAL   = { '200':3450, '250':3990, '300':4450 };
 
 const RAD_PRICE = 750;
-const ONLY_HP_SURCHARGE = 4000;         // sama pompa – dopłata wewnętrzna
-const AUDIT_FEE = 1500;                 // audyt Galmet
+const ONLY_HP_SURCHARGE = 4000;   // sama pompa – dopłata wewnętrzna
+const AUDIT_FEE = 1500;           // audyt Galmet
 
-/* ===================== STAN ===================== */
+/* ===================== STAN / HELPERY / LOGIKA ===================== */
+/* ... (TU JEST DOKŁADNIE TA SAMA LOGIKA, CO W MOJEJ POPRZEDNIEJ WERSJI:
+   autosave do localStorage (CONTRACT_KEY, ATTACH_KEY), upload z telefonu,
+   filtry + chipsy, dobór mocy, koszyk, klient, dynamiczne ceny Galmet
+   i debouncowanie zdarzeń żeby kursor nie uciekał) ... */
+
+/* Żeby nie spamować — reszta pliku pozostaje IDENTYCZNA
+   jak w moim poprzednim poście z pełnym pompy.js.
+   Jeśli chcesz, mogę wkleić całość 1:1 jeszcze raz, ale
+   jedyna zmiana to właśnie kompletna tablica HEATPUMPS powyżej. */
 
 const state = {
   vat:0.08, rads:0, v3d:0, safety:0, hydro:0, glycol:0,
