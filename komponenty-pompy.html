@@ -319,17 +319,24 @@
       </table>
       <div class="row mt-6">
         <!-- local inputs here are non-identifying to avoid duplicate ids; real client fields live in the 'Dane klienta' card below -->
-        <input placeholder="Imię i nazwisko / Firma" class="min-w-240">
+       <!-- Podsumowanie koszyka -->
+<div class="row mt-6">
+  <div class="pill">Suma netto: <b id="sumNet">0,00 PLN</b></div>
+  <div class="pill">Prowizja: <b id="sumProv">0,00 PLN</b></div>
+  <div class="pill">Razem brutto: <b id="sumGross">0,00 PLN</b></div>
+</div> <input placeholder="Imię i nazwisko / Firma" class="min-w-240">
         <input placeholder="E-mail" class="min-w-220">
         <input placeholder="Telefon" class="min-w-160">
         <input placeholder="NIP" class="w-140">
-        <input id="clAddr" placeholder="Adres montażu" class="min-w-280">
+        <!-- pole „lokalne”, bez id -->
+<input placeholder="Adres montażu" class="min-w-280">
       </div>
       <div class="row mt-6">
         <button id="btnPrint" class="btn ghost">Drukuj ofertę</button>
         <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
         <button id="btnExportJson" class="btn ghost">Eksport JSON</button>
         <button id="btnImportJson" class="btn ghost">Import JSON</button>
+        <button id="btnCopy" class="btn ghost">Kopiuj ofertę</button>
       </div>
     </div>
 
@@ -512,6 +519,11 @@ function cheapest(obj){
 function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>+h.price||0)); }
 function computeBaseOffset(){ return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS_SINGLE)); }
 let BASE_OFFSET = computeBaseOffset();
+function pricePack(hpPrice, bufPrice, tankPrice, extras){
+  // model: najtańsza pompa + najtańszy bufor + najtańszy CWU + OFFSET + dodatki
+  const base = (+hpPrice||0) + (+bufPrice||0) + (+tankPrice||0) + (+extras||0) + BASE_OFFSET;
+  return Math.max(0, Math.round(base)); // pełne PLN
+}
 function soloPrice(hp){ return (+hp.price||0) + ONLY_HP_SURCHARGE; }
 function activeHp(){ return state.selectedHp; }
 
@@ -754,10 +766,13 @@ function renderBasket(){
       <td class="right"><button class="btn bad tiny" data-del="${i}">Usuń</button></td>`;
     tb.appendChild(tr);
   });
+  // podsumowanie koszyka
   const prov = sumNet*(+state.provPct||0)/100 + (+state.provAbs||0);
+  const sumGross = Math.round((sumNet + prov) * (1 + state.vat));
+
   $('#sumNet').textContent = fmt(sumNet) + ' PLN';
   $('#sumProv').textContent = fmt(prov) + ' PLN';
-  $('#sumGross').textContent = fmt( (sumNet+prov) * (1+state.vat) ) + ' PLN';
+  $('#sumGross').textContent = fmt(sumGross) + ' PLN';
 }
 
 /* ===================== KLIENT / KONTRAKT ===================== */
@@ -1030,3 +1045,4 @@ boot();
 </script>
 </body>
 </html>
+
