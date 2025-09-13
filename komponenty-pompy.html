@@ -1,4 +1,72 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Komponenty • Pompy ciepła — katalog + konfigurator + koszyk</title>
+<meta name="description" content="ARKON: katalog pomp ciepła (Midea, Panasonic, Galmet, …), szybki i zaawansowany dobór mocy, konfiguracja zestawu, koszyk, auto-zapis do umowy." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f1533'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-size='40' fill='%234cc9f0' font-family='Segoe UI,Arial,sans-serif'%3EP%3C/text%3E%3C/svg%3E">
 
+<style>
+  :root{
+    --bg:#0b1020; --grad1:#0a0f1e; --grad2:#0c1230;
+    --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da;
+    --accent:#4cc9f0; --ok:#2fbf71; --warn:#ffb84d; --bad:#ff6b6b;
+    --grid:#243059; --card:#0f1533; --line:#1c2750; --chip:#0d1530;
+    --focus:#82c4ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink);
+    background:linear-gradient(180deg,var(--grad1),var(--grad2) 60%,var(--grad1));
+    font:15px/1.55 system-ui,Segoe UI,Roboto,Arial
+  }
+
+  /* header / nav */
+  header{padding:16px;border-bottom:1px solid var(--line);background:#0e1534;position:sticky;top:0;z-index:10}
+  header h1{margin:0;font-size:22px}
+  header .muted{color:var(--muted);font-size:13px;margin-top:4px}
+  #site-nav{background:#121a44;border-bottom:1px solid var(--line)}
+  #site-nav .nav-wrap{max-width:1500px;margin:auto;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap}
+  #site-nav a{color:#cfe1ff;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid #2a3a75}
+  #site-nav a:hover{background:#1a2758}
+
+  /* layout */
+  .wrap{max-width:1500px;margin:auto;padding:16px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:1200px){ .cols-2{grid-template-columns:1.6fr 1.4fr} }
+
+  /* cards / buttons / form */
+  .card{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 8px 28px #0005}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .spaced{justify-content:space-between}
+  .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border-style:dashed}
+  .btn.ok{background:#194d34;border-color:#2f9762}
+  .btn.warn{background:#3a2a19;border-color:#9d7a33}
+  .btn.bad{background:#3a1f2a;border-color:#7b3341}
+  .btn.tiny{font-size:12px;padding:6px 8px;border-radius:8px}
+  .muted{color:var(--muted);font-size:13px}
+  .small{font-size:12px;color:var(--muted)}
+
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  input,select,textarea{background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px 10px;color:#e8edff;font:inherit}
+  input:focus,select:focus,textarea:focus{border-color:#3e61cc;box-shadow:0 0 0 3px #3e61cc33;outline:0}
+  input.num{text-align:right}
+  .w70{width:70px}.w90{width:90px}.w100{width:100px}.w110{width:110px}.w140{width:140px}.w160{width:160px}.w180{width:180px}.minw220{min-width:220px}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;font-size:13px;color:#aeb8da}
+  .ml-auto{margin-left:auto}
+  .gap12{gap:12px}
+  .flex-1-1-320{flex:1 1 320px}
+  .chip{-webkit-user-select:none;-ms-user-select:none;user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:var(--chip)}
+
+  /* chips / filters */
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .chip{-webkit-user-select:none;-ms-user-select:none;user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:var(--chip)}
+  .chip.active{background:#233261}
+  .chip .x{opacity:.7;margin-left:6px}
 
   /* tables */
   table{width:100%;border-collapse:separate;border-spacing:0}
