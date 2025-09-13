@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UMOWA – Uniwersalna (PC / PV / Kocioł) – auto z konfiguratorów</title>
+<style>
+  :root{--bg:#0b1020;--paper:#0f1636;--ink:#e8edff;--muted:#aeb8da;--line:#2a3a75;--grid:#243059}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e);color:var(--ink);font:15px/1.55 system-ui,Segoe UI,Roboto,Arial}
+  header{position:sticky;top:0;z-index:10;background:#10183b;border-bottom:1px solid var(--line);padding:10px 14px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .btn{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .btn.ghost{background:transparent;border-style:dashed}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:6px 10px;color:#aeb8da;font-size:12px}
+  .muted{color:var(--muted)} .tiny{font-size:11.5px;color:#9fb0df}
+  .wrap{max-width:980px;margin:16px auto;padding:0 16px}
+  .doc{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
+  h1,h2,h3{margin:0 0 10px} h1{font-size:22px} h2{font-size:18px;margin-top:14px} h3{font-size:15px;margin-top:10px}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{border:1px solid #31417f;padding:8px;vertical-align:top}
+  th{background:#121e49;color:#cfe1ff;text-align:left}
+  tr:nth-child(even) td{background:#0f1a44}
+  .right-align{text-align:right}
+  .note{background:#0f1b42;border:1px dashed #3a4ca3;border-radius:10px;padding:10px}
+  [contenteditable="true"]{outline:2px dashed #2b3a77;border-radius:6px;padding:4px}
+  @page{size:A4;margin:10mm}
+  @media print{
+    header{display:none!important}
+    html,body{background:#fff!important}
+    body{color:#000!important;font-size:11.5px;line-height:1.25}
+    .wrap{max-width:none;margin:0 auto;padding:0}
+    .doc{background:#fff!important;border:0!important;padding:0}
+    th,td{border:1px solid #000!important;background:#fff!important;color:#000!important;padding:4px 5px}
+    h1{font-size:17px;margin:0 0 4px} h2{font-size:14px;margin:10px 0 4px} h3{font-size:12.5px;margin:6px 0 3px}
+    .tiny{color:#000!important}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div><b>UMOWA – Uniwersalna</b> <span class="tiny">PC / PV / Kocioł – auto z konfiguratorów</span></div>
+    <div>
+      <button id="btnRecalc" class="btn ghost">Przelicz</button>
+      <button id="btnEdit" class="btn ghost">Tryb edycji</button>
+      <button id="btnPrint" class="btn">Drukuj</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<article id="doc" class="doc" contenteditable="false">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+    <span class="pill">Data: <span id="genDate">—</span></span>
+    <span class="pill">Źródło: <span id="sourceInfo">—</span></span>
+  </div>
+
+  <h1>Umowa wykonania/dostawy instalacji</h1>
+  <div class="note" style="margin-bottom:8px">
+    <b>Wykonawca:</b> PW ARKON Czesław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków, NIP: 5020038830, REGON: 020258190, e-mail: biuro@arkoncentrum.pl, tel. 511 514 818.
+  </div>
+  <table>
+    <tbody>
+      <tr><th>Zamawiający</th><td id="clName">—</td></tr>
+      <tr><th>E-mail / Tel.</th><td><span id="clEmail">—</span> / <span id="clPhone">—</span></td></tr>
+      <tr><th>NIP</th><td id="clNip">—</td></tr>
+      <tr><th>Adres montażu</th><td id="clAddr">—</td></tr>
+    </tbody>
+  </table>
+
+  <!-- POMPA CIEPŁA (opcjonalna sekcja) -->
+  <section id="secHP" style="display:none">
+    <h2>1. Pompa ciepła – zakres</h2>
+    <table>
+      <tbody>
+        <tr><th>Model</th><td id="hpModel">—</td></tr>
+        <tr><th>Typ / Fazy / Czynnik</th><td id="hpKind">—</td></tr>
+        <tr><th>Moc (A7) / SCOP / Hałas</th><td id="hpPerf">—</td></tr>
+        <tr><th>Bufor</th><td id="hpBufor">—</td></tr>
+        <tr><th>Zasobnik CWU</th><td id="hpCwu">—</td></tr>
+        <tr><th>Dodatki</th><td id="hpExtras">—</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dobór mocy – informacje z konfiguratora</h3>
+    <table>
+      <tbody>
+        <tr><th>Propozycja szybka</th><td id="szQuick">—</td></tr>
+        <tr><th>Obciążenie projektowe</th><td id="szLoad">—</td></tr>
+        <tr><th>Cel (zapas 15%)</th><td id="szTarget">—</td></tr>
+        <tr><th>Powierzchnia pokrywana</th><td id="szArea">—</td></tr>
+        <tr><th>Standard / Straty</th><td id="szStd">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FOTOWOLTAIKA (opcjonalna sekcja) -->
+  <section id="secPV" style="display:none">
+    <h2>2. Fotowoltaika – zakres</h2>
+    <table>
+      <tbody>
+        <tr><th>Moc instalacji</th><td id="pvPower">—</td></tr>
+        <tr><th>Moduły</th><td id="pvModules">—</td></tr>
+        <tr><th>Inwerter</th><td id="pvInverter">—</td></tr>
+        <tr><th>Konstrukcja / AC/DC</th><td id="pvMounting">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- PIEC / KOCIOŁ (opcjonalna sekcja) -->
+  <section id="secBoiler" style="display:none">
+    <h2>3. Piec / Kocioł – zakres</h2>
+    <table>
+      <tbody>
+        <tr><th>Rodzaj paliwa</th><td id="boFuel">—</td></tr>
+        <tr><th>Marka / Model</th><td id="boModel">—</td></tr>
+        <tr><th>Moc / Klasa</th><td id="boPerf">—</td></tr>
+        <tr><th>Dodatki</th><td id="boExtras">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- KOSZYK (zawsze) -->
+  <section>
+    <h2>Podsumowanie pozycji (koszyk)</h2>
+    <table id="tabItems">
+      <thead>
+        <tr><th>Pozycja</th><th class="right-align">Ilość</th><th class="right-align">Cena NETTO</th><th class="right-align">Wartość NETTO</th></tr>
+      </thead>
+      <tbody id="itemsBody">
+        <tr><td colspan="4" class="tiny muted">Brak pozycji – wróć do konfiguratora.</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3" class="right-align"><b>Suma netto</b></td><td id="sumNet" class="right-align">0,00 PLN</td></tr>
+        <tr><td colspan="3" class="right-align">VAT <span id="vatPct">8</span>%</td><td id="sumVat" class="right-align">0,00 PLN</td></tr>
+        <tr><td colspan="3" class="right-align"><b>Suma brutto</b></td><td id="sumGross" class="right-align">0,00 PLN</td></tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <h2>Warunki (skróty – edytowalne)</h2>
+  <div class="note" contenteditable="true">
+    <p><b>Terminy:</b> Rozpoczęcie: ________. Zakończenie: ________. Terminy mogą ulec zmianie z przyczyn niezależnych (pogoda, dostawy, front robót).</p>
+    <p><b>Płatności:</b> Zaliczka ________ PLN do ________, rachunek: ____________________. Rozliczenie końcowe po odbiorze / wg harmonogramu.</p>
+    <p><b>Gwarancja:</b> Montaż – ________ mies.; urządzenia wg kart producenta. Zgłoszenia: <b>biuro@arkoncentrum.pl</b>, tel. <b>511 514 818</b>.</p>
+  </div>
+
+  <h2>Podpisy</h2>
+  <div style="display:flex;gap:40px;justify-content:space-between;margin-top:18px">
+    <div style="width:46%;text-align:center">
+      ..................................................<br><span class="tiny">Zamawiający</span>
+    </div>
+    <div style="width:46%;text-align:center">
+      ..................................................<br><span class="tiny">Wykonawca – PW ARKON</span>
+    </div>
+  </div>
+</article>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  const INT  = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const INT0 = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+  const $  = s => document.querySelector(s);
+
+  function loadDraft(){
+    let src = 'sessionStorage.contract_draft';
+    let raw = sessionStorage.getItem('contract_draft');
+    if(!raw){ raw = localStorage.getItem('contracts_last'); src = raw ? 'localStorage.contracts_last' : '—'; }
+    if(!raw) return {source:src, data:null};
+    try{ return {source:src, data: JSON.parse(raw)}; } catch{ return {source:'—', data:null}; }
+  }
+
+  function setText(id, val){ const el=$(id); if(!el) return; el.textContent = (val==null || val==='') ? '—' : String(val); }
+
+  function renderClient(d){
+    const c = d?.client || {};
+    setText('#clName',  c.name||'');
+    setText('#clEmail', c.email||'');
+    setText('#clPhone', c.phone||'');
+    setText('#clNip',   c.nip||'');
+    setText('#clAddr',  c.addr||'');
+  }
+
+  function renderHP(d){
+    const p = d?.selection?.pump;
+    if(!p){ $('#secHP').style.display='none'; return; }
+    $('#secHP').style.display='';
+    setText('#hpModel', p.brand ? (p.brand + ' ' + (p.model||'')) : (p.model||''));
+    setText('#hpKind', [p.kind||'—', p.phase||'—', p.ref||'—'].join(' / '));
+    const perf = [];
+    if(p.pA7!=null) perf.push('A7 ' + p.pA7 + ' kW');
+    if(p.scop!=null) perf.push('SCOP ' + p.scop);
+    if(p.noise!=null) perf.push(p.noise + ' dB(A)');
+    setText('#hpPerf', perf.join(' / ') || '—');
+
+    const buf = d?.selection?.buffer;
+    setText('#hpBufor', buf ? (buf + ' l') : '—');
+
+    const t = d?.selection?.tank||{};
+    const cwu = (p.kind === 'all-in-one') ? 'AIO (wbudowany)'
+              : (t.vol ? (t.vol + ' l (' + (t.type==='dual' ? 'dwuwężownicowy':'pojedyncza wężownica') + ')') : '—');
+    setText('#hpCwu', cwu);
+
+    const ex = d?.selection?.extras||{};
+    const extras=[]; if(+ex.v3d>0) extras.push('zawór 3D'); if(+ex.safety>0) extras.push('gr. bezp.');
+    if(+ex.hydro>0) extras.push('hydraulika +'); if(+ex.glycol>0 && p.kind==='monoblok') extras.push('glikol');
+    if(+ex.rads>0) extras.push('grzejniki x'+INT0.format(+ex.rads));
+    setText('#hpExtras', extras.length? extras.join(', ') : '—');
+
+    // sizing jeśli był
+    const s = d?.sizing||{};
+    setText('#szQuick',  s.quickKw ? (s.quickKw + ' kW') : '');
+    setText('#szLoad',   s.heatLoad||'');
+    setText('#szTarget', s.heatTarget||'');
+    setText('#szArea',   s.areaByHp||'');
+    setText('#szStd',    'Standard: ' + (s.std||'—') + ', Straty: ' + (s.lossWm2||'—') + ' W/m², Pow.: ' + (s.areaAdv||'—') + ' m²');
+  }
+
+  function renderPV(d){
+    const pv = d?.selection?.pv;
+    if(!pv){ $('#secPV').style.display='none'; return; }
+    $('#secPV').style.display='';
+    setText('#pvPower', pv.powerKwp!=null ? (pv.powerKwp + ' kWp') : '—');
+    const m = pv.modules||{};
+    setText('#pvModules', [m.brand, m.model, (m.qty!=null ? (m.qty+' szt.') : null)].filter(Boolean).join(' • ') || '—');
+    const inv = pv.inverter||{};
+    setText('#pvInverter', [inv.brand, inv.model, (inv.powerKw!=null ? (inv.powerKw+' kW') : null)].filter(Boolean).join(' • ') || '—');
+    const acdc = pv.acdc || {};
+    const mount = pv.mounting || '';
+    const acdcTxt = [
+      mount,
+      (acdc.ac!=null ? ('AC: ' + acdc.ac + ' m') : null),
+      (acdc.dc!=null ? ('DC: ' + acdc.dc + ' m') : null)
+    ].filter(Boolean).join(' • ');
+    setText('#pvMounting', acdcTxt || '—');
+  }
+
+  function renderBoiler(d){
+    const b = d?.selection?.boiler;
+    if(!b){ $('#secBoiler').style.display='none'; return; }
+    $('#secBoiler').style.display='';
+    setText('#boFuel', b.fuel||'—');
+    setText('#boModel', [b.brand, b.model].filter(Boolean).join(' ') || '—');
+    const perf = [];
+    if(b.powerKw!=null) perf.push(b.powerKw + ' kW');
+    if(b.class) perf.push(b.class);
+    setText('#boPerf', perf.join(' / ') || '—');
+    const ex = b.extras;
+    setText('#boExtras', Array.isArray(ex) ? (ex.join(', ')||'—') : (ex||'—'));
+  }
+
+  function renderItems(d){
+    const body = $('#itemsBody'); body.innerHTML='';
+    const items = Array.isArray(d?.basket) ? d.basket : [];
+    if(!items.length){
+      body.innerHTML = '<tr><td colspan="4" class="tiny muted">Brak pozycji – wróć do konfiguratora.</td></tr>';
+    }else{
+      items.forEach(it=>{
+        const tr=document.createElement('tr');
+        const net = (+it.price||0) * (+it.qty||0);
+        tr.innerHTML = `
+          <td>${String(it.name||'').replace(/</g,'&lt;')}</td>
+          <td class="right-align">${INT0.format(+it.qty||0)}</td>
+          <td class="right-align">${INT.format(+it.price||0)} PLN</td>
+          <td class="right-align">${INT.format(net)} PLN</td>`;
+        body.appendChild(tr);
+      });
+    }
+    const sumNet = items.reduce((a,b)=>a + ((+b.price||0)*(+b.qty||0)), 0);
+    const prov   = +((d?.totals?.prov)||0);
+    const vatPct = Number(d?.selection?.vat ?? 0.08);
+    const base   = sumNet + prov;
+    const vatVal = base * vatPct;
+    const gross  = base + vatVal;
+    $('#sumNet').textContent   = INT.format(base) + ' PLN';
+    $('#vatPct').textContent   = Math.round(vatPct*100);
+    $('#sumVat').textContent   = INT.format(vatVal) + ' PLN';
+    $('#sumGross').textContent = INT.format(gross) + ' PLN';
+  }
+
+  function boot(showAlert){
+    const {source, data} = loadDraft();
+    $('#genDate').textContent = new Date().toLocaleString('pl-PL');
+    $('#sourceInfo').textContent = source;
+    if(!data){ if(showAlert) alert('Brak zapisanego draftu. Otwórz konfigurator i zapisz zestaw.'); return; }
+    renderClient(data);
+    renderHP(data);
+    renderPV(data);
+    renderBoiler(data);
+    renderItems(data);
+  }
+
+  // UI
+  $('#btnRecalc').addEventListener('click', ()=> boot(true));
+  $('#btnEdit').addEventListener('click', ()=>{
+    const on = document.getElementById('doc').getAttribute('contenteditable')==='true';
+    document.getElementById('doc').setAttribute('contenteditable', on?'false':'true');
+  });
+  $('#btnPrint').addEventListener('click', ()=> window.print());
+
+  // start
+  boot(false);
+})();
+</script>
+</body>
+</html>
