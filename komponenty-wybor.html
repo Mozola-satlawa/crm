@@ -1,5 +1,8 @@
-<!doctype html><html lang="pl"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Wybór komponentów → Umowa</title>
 <style>
   body{margin:0;background:#0b1020;color:#e8edff;font:15px/1.5 system-ui,Segoe UI,Roboto,Arial}
@@ -24,7 +27,7 @@
 <body>
 <header><h2>Komponenty do umowy (sprzedaż gotówkowa)</h2></header>
 <div class="wrap">
-  <!-- Dane klienta (opcjonalnie do wstawienia do umowy) -->
+  <!-- Dane klienta -->
   <section class="panel grid cols-2">
     <div><label>Klient<input id="cl_name" placeholder="Imię i nazwisko / firma"></label></div>
     <div><label>Adres montażu<input id="cl_addr" placeholder="Miejscowość, ulica"></label></div>
@@ -62,13 +65,6 @@
     </div>
   </div>
 
-  <section class="panel">
-    <div class="right start">
-      <span class="quick-label">Szybko dodaj:</span>
-      <button class="btn ghost" data-quick="Pompa ciepła|powietrze/woda 10 kW|1|25000">Pompa ciepła 10 kW</button>
-    </div>
-  </section>
-
   <!-- Szybkie dodawanie z predefinicji -->
   <section class="panel">
     <div class="right start">
@@ -93,6 +89,31 @@ const LS_KEY = 'arkon_contract_items_v1';
 const INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
 const $ = s=>document.querySelector(s);
 
+let rows = [];
+
+// zapis i odczyt
+function saveState(){
+  const payload = {
+    client: { name: $('#cl_name').value.trim(), addr: $('#cl_addr').value.trim() },
+    vat: Number($('#vat').value)||0.08,
+    items: rows.map(r=>({cat:r.cat, name:r.name, qty:+r.qty||0, price:+r.price||0, net:+r.net||0})),
+    sumNet: rows.reduce((a,b)=>a+(+b.net||0),0)
+  };
+  localStorage.setItem(LS_KEY, JSON.stringify(payload));
+}
+function loadState(){
+  const txt = localStorage.getItem(LS_KEY);
+  if(!txt) return;
+  try {
+    const data = JSON.parse(txt);
+    $('#cl_name').value = data.client?.name||'';
+    $('#cl_addr').value = data.client?.addr||'';
+    $('#vat').value = data.vat||0.08;
+    rows = data.items||[];
+  } catch(e){}
+}
+
+// szablon wiersza
 function rowTemplate(item, idx){
   return `<tr data-idx="${idx}">
     <td><input value="${item.cat}"          data-k="cat"></td>
@@ -104,10 +125,18 @@ function rowTemplate(item, idx){
   </tr>`;
 }
 
-let rows = [];
-
+// przeliczenia i render
 function recompute(){
-  // specjalna zasada dla „Tynk (m²)” – +10% m² od pozycji ocieplenia ścian
+  // zapamiętaj focus
+  const active = document.activeElement;
+  const sel = active && active.tagName==='INPUT' ? {
+    idx: active.closest('tr')?.dataset.idx,
+    k: active.dataset.k,
+    start: active.selectionStart,
+    end: active.selectionEnd
+  } : null;
+
+  // oblicz netto
   let styroM2 = 0;
   rows.forEach(r=>{
     if((r.cat||'').toLowerCase().includes('ocieplenie') &&
@@ -121,39 +150,51 @@ function recompute(){
   });
   const tynk = rows.find(r=>(r.cat||'').toLowerCase()==='dodatek' && (r.name||'').toLowerCase().includes('tynk'));
   if(tynk){
-    const extra = Math.round((styroM2||0) * 35 * 0.10); // 35 zł/m² * 10%
+    const extra = Math.round((styroM2||0) * 35 * 0.10);
     tynk.net = Math.round((Number(tynk.qty)||0) * (Number(tynk.price)||0) + extra);
   }
 
   // render
   $('#tbody').innerHTML = rows.map(rowTemplate).join('');
-  // bind
+
+  // eventy inputów
   $('#tbody').querySelectorAll('input').forEach(inp=>{
     inp.addEventListener('input', e=>{
       const tr=e.target.closest('tr'); const i=+tr.dataset.idx; const k=e.target.dataset.k;
       rows[i][k]= e.target.value;
-      recompute();
+      recompute(); saveState();
     });
   });
   $('#tbody').querySelectorAll('[data-del]').forEach(btn=>{
     btn.addEventListener('click', e=>{
-      const i=+e.target.closest('tr').dataset.idx; rows.splice(i,1); recompute();
+      const i=+e.target.closest('tr').dataset.idx; rows.splice(i,1); recompute(); saveState();
     });
   });
 
+  // sumy
   const sumNet = rows.reduce((a,b)=>a+(Number(b.net)||0),0);
   const vat = Number($('#vat').value)||0.08;
   const sumGross = Math.round(sumNet*(1+vat));
   $('#tNet').textContent = INT.format(sumNet);
   $('#sumNet').textContent = INT.format(sumNet);
   $('#sumGross').textContent = INT.format(sumGross);
+
+  // przywróć focus
+  if(sel){
+    const inp = document.querySelector(tr[data-idx="${sel.idx}"] [data-k="${sel.k}"]);
+    if(inp){
+      inp.focus();
+      inp.setSelectionRange(sel.start, sel.end);
+    }
+  }
 }
 
 function addRow(obj){
   rows.push(Object.assign({cat:'',name:'',qty:1,price:0,net:0}, obj||{}));
-  recompute();
+  recompute(); saveState();
 }
 
+// obsługa guzików
 $('#btnAdd').addEventListener('click', ()=> addRow({}));
 document.querySelectorAll('[data-quick]').forEach(b=>{
   b.addEventListener('click', ()=>{
@@ -161,21 +202,18 @@ document.querySelectorAll('[data-quick]').forEach(b=>{
     addRow({cat,name,qty:Number(qty||1),price:Number(price||0)});
   });
 });
-$('#vat').addEventListener('change', recompute);
+$('#vat').addEventListener('change', ()=>{ recompute(); saveState(); });
+$('#cl_name').addEventListener('input', saveState);
+$('#cl_addr').addEventListener('input', saveState);
 
 $('#btnSave').addEventListener('click', ()=>{
-  const payload = {
-    client: { name: $('#cl_name').value.trim(), addr: $('#cl_addr').value.trim() },
-    vat: Number($('#vat').value)||0.08,
-    items: rows.map(r=>({cat:r.cat, name:r.name, qty:+r.qty||0, price:+r.price||0, net:+r.net||0})),
-    sumNet: rows.reduce((a,b)=>a+(+b.net||0),0)
-  };
-  localStorage.setItem(LS_KEY, JSON.stringify(payload));
-  // przejście do umowy
-  location.href = 'umowa2.html'; // podmień na swój plik umowy
+  saveState();
+  location.href = 'umowa2.html';
 });
 
 // start
+loadState();
 recompute();
 </script>
-</body></html>
+</body>
+</html>
