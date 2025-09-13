@@ -44,7 +44,7 @@
   .small{font-size:12px;color:#aeb8da}
   .tag{display:inline-block;margin:2px 6px 0 0;padding:3px 8px;border:1px solid #3a4ca3;border-radius:999px;font-size:12px}
   .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-  .chip{user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
+  .chip{-webkit-user-select:none;user-select:none;border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
   .chip.active{background:#233261}
   .sep{height:1px;background:#243059;margin:10px 0}
   .okline{padding:8px;border-radius:10px;background:#0f2a22;border:1px solid #155a41;color:#b4ffdd}
@@ -57,6 +57,24 @@
   .kpi .val{font-weight:800;font-size:18px}
   .panel{background:linear-gradient(180deg,#0e1740,#101d4a);border:1px solid #1c2750;border-radius:12px;padding:12px}
   .doc{background:#0f1636;border:1px solid #2a3a75;border-radius:12px;padding:14px}
+
+  /* utility classes moved from inline styles */
+  .ml-auto{margin-left:auto}
+  .mt-8{margin-top:8px}
+  .mt-6{margin-top:6px}
+  .min-w-380{min-width:380px}
+  .min-w-240{min-width:240px}
+  .min-w-220{min-width:220px}
+  .min-w-160{min-width:160px}
+  .min-w-280{min-width:280px}
+  .w-100{width:100px}
+  .w-120{width:120px}
+  .w-80{width:80px}
+  .w-140{width:140px}
+  .card-scroll{overflow:auto;max-height:70vh}
+  .flex-grow{flex:1 1 auto}
+  .no-margin{margin:0}
+
   @media print{
     header,#site-nav,.no-print{display:none!important}
     body{background:#fff;color:#000}
@@ -89,13 +107,15 @@
   <!-- LEWA: KATALOG + FILTRY -->
   <section class="grid">
     <div class="card">
-      <div class="row">
+        <label class="tiny ml-auto"><input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi</label>
         <input id="q" class="search" placeholder="Szukaj: marka, model, tag… lub moc: 10 / 8-12 / >=9">
         <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
         <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
         <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
         <select id="fPhase"><option value="">Fazy</option><option>1F</option><option>3F</option></select>
-        <select id="sort">
+      <div id="recQuick" class="okline hide mt-8"></div>
+
+        <select id="sort" class="min-w-160">
           <option value="brand.asc">Marka ↑</option>
           <option value="brand.desc">Marka ↓</option>
           <option value="p.asc">Moc A7 ↑</option>
@@ -107,16 +127,14 @@
       </div>
       <div class="row">
         <div class="chips" id="chips"></div>
-        <label class="tiny" style="margin-left:auto"><input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi</label>
       </div>
       <div class="row">
         <span class="pill">Łącznie: <b id="cntAll">0</b></span>
         <span class="pill">Widocznych: <b id="cntVis">0</b></span>
       </div>
-      <div id="recQuick" class="okline hide" style="margin-top:8px"></div>
-    </div>
+      <div id="recQuickUI" class="okline hide mt-8"></div>
 
-    <div class="card" style="overflow:auto;max-height:70vh">
+    <div class="card card-scroll">
       <table>
         <thead>
           <tr>
@@ -152,7 +170,7 @@
       <div class="row">
         <div>
           <label class="tiny">Model pompy</label>
-          <select id="selHp" style="min-width:380px"></select>
+          <select id="selHp" class="min-w-380"></select>
         </div>
         <div>
           <label class="tiny">Bufor</label>
@@ -187,16 +205,14 @@
       </div>
 
       <div class="row">
-        <div>
+          <input id="inpRads" title="Ilość grzejników" type="number" min="0" step="1" value="0" class="w-100">
           <label class="tiny">Zawór 3-drogowy</label>
           <select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select>
-        </div>
         <div>
           <label class="tiny">Grupa bezpieczeństwa</label>
           <select id="selSafety"><option value="0">w zestawie</option><option value="390">+390</option></select>
         </div>
         <div>
-          <label class="tiny">Hydraulika</label>
           <select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select>
         </div>
         <div>
@@ -205,7 +221,7 @@
         </div>
         <div>
           <label class="tiny">Grzejniki (szt.)</label>
-          <input id="inpRads" type="number" min="0" step="1" value="0" style="width:100px">
+          <input id="inpRadsDuplicate" type="number" min="0" step="1" value="0" class="w-100" title="Liczba grzejników (szt.)" placeholder="Ilość">
         </div>
       </div>
 
@@ -214,45 +230,48 @@
       <div class="row">
         <div>
           <label class="tiny">Powierzchnia domu [m²]</label>
-          <input id="inpArea" type="number" min="0" step="1" value="0" style="width:120px">
+          <input id="inpArea" title="Powierzchnia domu w m²" type="number" min="0" step="1" value="0" class="w-120">
         </div>
-        <div>
+          <input id="outHeatKw" title="Proponowana moc w kW" type="text" value="0.00" readonly class="w-120">
           <label class="tiny">Straty ciepła [W/m²]</label>
           <select id="selWperm2" title="Wybierz standard">
             <option value="35">Nowy/NZEB — 35</option>
-            <option value="45">Nowszy — 45</option>
             <option value="50" selected>Modernizacja — 50</option>
             <option value="60">Starszy — 60</option>
             <option value="70">Bardzo stary — 70</option>
             <option value="80">~80</option>
             <option value="90">~90</option>
             <option value="100">~100</option>
-            <option value="110">~110</option>
-            <option value="120">~120</option>
-            <option value="129">~129</option>
           </select>
-        </div>
+          <input id="areaAdv" title="Powierzchnia (advanced) [m²]" type="number" min="20" step="1" value="120" class="w-120">
+          <input id="lossWm2" title="Straty W/m²" type="number" min="10" max="129" step="1" value="70" class="w-120">
         <div>
           <label class="tiny">Proponowana moc [kW]</label>
-          <input id="outHeatKw" type="text" value="0.00" readonly style="width:120px">
+          <input id="outHeatKwPreview" type="text" value="0.00" readonly class="w-120" title="Proponowana moc (podgląd)">
           <div class="tiny muted">m² × W/m² ÷ 1000 × 1.10</div>
         </div>
       </div>
-      <div id="recQuickUI" class="okline hide" style="margin-top:8px"></div>
 
       <div class="sep"></div>
       <b>Dobór mocy — wariant rozbudowany</b>
-      <div class="row">
-        <div>
+      <div id="lossWarn" class="warnline hide mt-8">Uwaga: &gt; 140 W/m² — niezalecane; rozważ audyt/ocieplenie.</div>
+
+      <div class="kpi mt-8">
           <label class="tiny">Powierzchnia [m²]</label>
-          <input id="areaAdv" type="number" min="20" step="1" value="120" style="width:120px">
+          <!-- advanced area input is defined above (id="areaAdv"); show a readonly preview here to avoid duplicate id -->
+          <div class="flex-grow">
+            <label for="areaAdvPreview" class="tiny">Powierzchnia (podgląd) [m²]</label>
+            <input id="areaAdvPreview" type="number" min="20" step="1" value="120" class="w-120" disabled title="Podgląd powierzchni w m²" placeholder="m²">
+          </div>
         </div>
-        <div>
-          <label class="tiny">Straty [W/m²] (do 129)</label>
-          <input id="lossWm2" type="number" min="10" max="129" step="1" value="70" style="width:120px">
-        </div>
-        <div>
+
+      <div>
+        <!-- single recSummary/typeHint elements (unique ids) -->
+      </div>
+
+      <div>
           <label class="tiny">Standard (skrót)</label>
+        <div class="flex-grow">
           <select id="selStd">
             <option value="35">Nowy/NZEB (~35)</option>
             <option value="50" selected>Modernizacja (~50)</option>
@@ -260,71 +279,70 @@
           </select>
         </div>
       </div>
-      <div id="lossWarn" class="warnline hide" style="margin-top:8px">Uwaga: &gt; 140 W/m² — niezalecane; rozważ audyt/ocieplenie.</div>
-      <div class="kpi" style="margin-top:8px">
+
+      <div class="row mt-6">
+        <input id="provPct" title="Prowizja procentowa" type="number" min="0" step="0.1" placeholder="%" class="w-80">
+        <input id="provAbs" title="Prowizja w PLN" type="number" min="0" step="1" placeholder="PLN" class="w-120">
+      </div>
+
+      <div class="row mt-8">
         <div class="box"><div class="tiny muted">Obciążenie projektowe</div><div id="heatLoad" class="val">—</div></div>
         <div class="box"><div class="tiny muted">Zapas 15%</div><div id="heatTarget" class="val">—</div></div>
         <div class="box"><div class="tiny muted">Pow. pokrywana wybraną pompą</div><div id="areaByHp" class="val">—</div></div>
       </div>
-      <div id="recSummary" class="okline hide" style="margin-top:8px"></div>
-      <div id="typeHint" class="okline hide" style="margin-top:8px"></div>
+
+      <div id="recSummary" class="okline hide mt-8"></div>
+      <div id="typeHint" class="okline hide mt-8"></div>
 
       <div class="sep"></div>
       <div class="row">
-        <div style="flex:1 1 auto">
-          <div class="muted tiny">Cena zestawu (netto) wg modelu proporcjonalnego</div>
-          <div id="pricePreview" class="summary-value">—</div>
-        </div>
-        <div>
-          <label class="tiny">Prowizja % / PLN</label>
-          <div class="row">
-            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" style="width:80px">
-            <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" style="width:120px">
-          </div>
-        </div>
+        <div class="muted tiny mt-6">Wybierz pompę, bufor i CWU — pokażę skład.</div>
+        <div class="muted tiny">Cena zestawu (netto) wg modelu proporcjonalnego</div>
+        <div id="pricePreview" class="summary-value">—</div>
       </div>
+
       <div class="tiny muted">Uwaga: „tylko pompa” zawiera wewnętrzny narzut instalacyjny (nie pokazujemy go klientowi).</div>
     </div>
 
     <!-- MUST-HAVE -->
     <div class="card">
       <b>Skład zestawu (must-have)</b>
-      <div id="mustHave" class="muted tiny" style="margin-top:6px">Wybierz pompę, bufor i CWU — pokażę skład.</div>
+      <div id="mustHave" class="muted tiny mt-6">Wybierz pompę, bufor i CWU — pokażę skład.</div>
     </div>
 
     <!-- KOSZYK -->
     <div class="card">
       <b>Koszyk</b>
-      <table id="basket" style="margin-top:8px">
+      <table id="basket" class="mt-8">
         <thead><tr><th>Pozycja</th><th class="right">Ilość</th><th class="right">Cena [PLN]</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="sep"></div>
-      <div class="row">
-        <div><div class="muted tiny">Suma netto</div><div id="sumNet" class="summary-value">0,00 PLN</div></div>
-        <div><div class="muted tiny">Prowizja</div><div id="sumProv" class="summary-value">0,00 PLN</div></div>
-        <div><div class="muted tiny">Brutto (z VAT)</div><div id="sumGross" class="summary-value">0,00 PLN</div></div>
-        <div class="right no-print">
-          <button id="btnCopy" class="btn ghost">Kopiuj ofertę</button>
-          <button id="btnPrint" class="btn ghost">Drukuj ofertę</button>
-          <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
-          <button id="btnExportJson" class="btn ghost">Eksport JSON</button>
-          <button id="btnImportJson" class="btn ghost">Import JSON</button>
-        </div>
+      <div class="row mt-6">
+        <!-- local inputs here are non-identifying to avoid duplicate ids; real client fields live in the 'Dane klienta' card below -->
+        <input placeholder="Imię i nazwisko / Firma" class="min-w-240">
+        <input placeholder="E-mail" class="min-w-220">
+        <input placeholder="Telefon" class="min-w-160">
+        <input placeholder="NIP" class="w-140">
+        <input id="clAddr" placeholder="Adres montażu" class="min-w-280">
+      </div>
+      <div class="row mt-6">
+        <button id="btnPrint" class="btn ghost">Drukuj ofertę</button>
+        <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
+        <button id="btnExportJson" class="btn ghost">Eksport JSON</button>
+        <button id="btnImportJson" class="btn ghost">Import JSON</button>
       </div>
     </div>
 
     <!-- KLIENT + UMOWA -->
     <div class="card">
       <b>Dane klienta</b>
-      <div class="row" style="margin-top:6px">
-        <input id="clName"  placeholder="Imię i nazwisko / Firma" style="min-width:240px">
-        <input id="clEmail" placeholder="E-mail" style="min-width:220px">
-        <input id="clPhone" placeholder="Telefon" style="min-width:160px">
-        <input id="clNip"   placeholder="NIP" style="width:140px">
-        <input id="clAddr"  placeholder="Adres montażu" style="min-width:280px">
-      </div>
-      <div class="row" style="margin-top:6px">
+        <h3 class="no-margin">Umowa — podgląd</h3>
+        <input id="clName"  placeholder="Imię i nazwisko / Firma" class="min-w-240">
+        <input id="clEmail" placeholder="E-mail" class="min-w-220">
+        <input id="clPhone" placeholder="Telefon" class="min-w-160">
+        <input id="clNip"   placeholder="NIP" class="w-140">
+      <div class="contractBody tiny mt-8"></div>
+      <div class="row mt-6">
         <button id="btnSaveClient" class="btn ok">Zapisz klienta</button>
         <button id="btnToContract" class="btn">Wyślij do umowy (auto)</button>
         <button id="btnMailTo" class="btn ghost">Wyślij ofertę e-mailem</button>
@@ -335,12 +353,12 @@
     <!-- PODGLĄD UMOWY (W TEJ SAMEJ STRONIE) -->
     <div class="panel doc">
       <div class="row spaced">
-        <h3 style="margin:0">Umowa — podgląd</h3>
+        <h3 class="no-margin">Umowa — podgląd</h3>
         <div class="right no-print">
           <button id="btnPrintContract" class="btn ghost">Drukuj umowę</button>
         </div>
       </div>
-      <div id="contractBody" class="tiny" style="margin-top:8px"></div>
+      <div class="contractBody tiny mt-8"></div>
     </div>
   </aside>
 </main>
@@ -513,7 +531,7 @@ function makeChips(){
 }
 function fillFilters(){
   const brands = [...new Set(HEATPUMPS.map(x=>x.brand))].sort((a,b)=>a.localeCompare(b,'pl',{sensitivity:'base'}));
-  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=><option>${b}</option>).join('');
+  $('#fBrand').innerHTML = '<option value="">Marka (wszystkie)</option>' + brands.map(b=>`<option>${b}</option>`).join('');
 }
 function parsePowerQuery(q){
   if(!q) return null; q = String(q).trim();
@@ -560,55 +578,61 @@ function applyFiltersSort(rows){
   }
   return rows;
 }
+function optionsForTanks(){
+  const src = state.selectedTankType === 'dual' ? TANKS_DUAL : TANKS_SINGLE;
+  return Object.keys(src);
+}
+
+function fillSelects(){
+  // POMPY
+  const arr = sortedHp();
+  const s = $('#selHp');
+  s.innerHTML = arr.map((x,i)=>`<option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>`).join('');
+  state.selectedHp = state.selectedHp || arr[0] || null;
+  // ensure select reflects selectedHp if present
+  const selIndex = arr.indexOf(state.selectedHp);
+  if (selIndex >= 0) s.value = String(selIndex);
+
+  // BUFOR
+  const b = $('#selBufor');
+  b.innerHTML = Object.entries(BUFFERS).map(([code,obj])=>`<option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>`).join('');
+  if (!BUFFERS[state.selectedBuf]) state.selectedBuf = 'B-EM-100';
+  b.value = state.selectedBuf;
+
+  // CWU
+  const t = $('#selCwu');
+  const src = state.selectedTankType === 'dual' ? TANKS_DUAL : TANKS_SINGLE;
+  t.innerHTML = Object.entries(src).map(([code,obj])=>`<option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>`).join('');
+  if (!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
+  t.value = state.selectedTank;
+
+  applyHpToUi();
+}
+
 function renderTable(){
   const rows = applyFiltersSort(HEATPUMPS.slice());
   $('#cntAll').textContent = HEATPUMPS.length;
   $('#cntVis').textContent = rows.length;
   const tb = $('#tbody'); tb.innerHTML = '';
-  rows.forEach(p=>{
+
+  // render rows
+  rows.forEach(p => {
     const tr = document.createElement('tr');
+    const tags = (p.tags || []).join(', ');
     tr.innerHTML = `
       <td><button class="btn tiny" data-pick="${p.brand}|${p.model}">Wybierz</button></td>
-      <td><b>${p.brand}</b><div class="small">${p.model}</div></td>
-      <td>${p.kind}</td>
-      <td>${p.pA7}</td>
-      <td>${p.scop||''}</td>
-      <td>${p.ref||''}</td>
-      <td>${p.phase||''}</td>
-      <td>${p.noise||''}</td>
-      <td>${(p.tags||[]).map(t=><span class="tag">${t}</span>).join('')}</td>`;
+      <td>${p.brand} <b>${p.model}</b></td>
+      <td>${p.kind || ''}</td>
+      <td>${p.pA7 != null ? p.pA7 : ''}</td>
+      <td>${p.scop != null ? p.scop : ''}</td>
+      <td>${p.ref || ''}</td>
+      <td>${p.phase || ''}</td>
+      <td>${p.noise != null ? p.noise : ''}</td>
+      <td class="small">${tags}</td>
+    `;
     tb.appendChild(tr);
   });
 }
-
-/* ===================== SELECTY / PODGLĄD ===================== */
-function optionsForTanks(){
-  const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  return Object.keys(src);
-}
-function fillSelects(){
-  // POMPY
-  const arr=sortedHp();
-  const s=$('#selHp');
-  s.innerHTML = arr.map((x,i)=><option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>).join('');
-  state.selectedHp = state.selectedHp || arr[0] || null;
-
-  // BUFOR
-  const b=$('#selBufor');
-  b.innerHTML = Object.entries(BUFFERS).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
-  if(!BUFFERS[state.selectedBuf]) state.selectedBuf = 'B-EM-100';
-  b.value = state.selectedBuf;
-
-  // CWU
-  const t=$('#selCwu');
-  const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  t.innerHTML = Object.entries(src).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
-  if(!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
-  t.value = state.selectedTank;
-
-  applyHpToUi();
-}
-function pricePack(hpPrice, bufCost, tankCost, extras){ return (+hpPrice||0) + (+bufCost||0) + (+tankCost||0) + (+extras||0) + BASE_OFFSET; }
 function renderPreview(){
   const hp=activeHp(); if(!hp){ $('#pricePreview').textContent='—'; return; }
   const bufObj = BUFFERS[state.selectedBuf];
@@ -620,7 +644,7 @@ function renderPreview(){
 
   const extras=(+state.v3d||0)+(+state.safety||0)+(+state.hydro||0)+(+state.glycol||0)+((+state.rads||0)*RAD_PRICE);
   const sum=pricePack(hp.price,bufCost,tankCost,extras);
-  $('#pricePreview').textContent = ${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN);
+  $('#pricePreview').textContent = `${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN)`;
 
   const hint=$('#typeHint'); hint.classList.remove('hide');
   if(hp.kind==='monoblok') hint.textContent='Monoblok: przy ryzyku zamarzania przewidź glikol na odcinku zewnętrznym.';
@@ -643,21 +667,20 @@ function renderMustHave(){
   }
 
   const items=[];
-  items.push(Pompa ciepła — ${hp.brand} ${hp.model} (${hp.kind}, ${hp.phase||'1F'}));
-  items.push(Bufor — ${bufObj.label});
+  items.push(`Pompa ciepła — ${hp.brand} ${hp.model} (${hp.kind}, ${hp.phase||'1F'})`);
+  items.push(`Bufor — ${bufObj.label}`);
   if(hp.kind==='all-in-one') items.push('Zasobnik CWU — AIO (wbudowany)');
-  else if(bufObj?.type==='combo') items.push(Zasobnik CWU — w pakiecie combo (${bufObj.cwu} l));
-  else items.push(Zasobnik CWU — ${tankObj?.label||'-'});
+  else if(bufObj?.type==='combo') items.push(`Zasobnik CWU — w pakiecie combo (${bufObj.cwu} l)`);
+  else items.push(`Zasobnik CWU — ${tankObj?.label||'-'}`);
   items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
   if((+state.glycol)>0 && hp.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
   items.push('Rozdzielacze / hydraulika wg wyboru');
-  const r=+state.rads||0; if(r>0) items.push(Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN);
+  const r=+state.rads||0; if(r>0) items.push(`Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN`);
   items.push('Montaż, uruchomienie, konfiguracja, szkolenie użytkownika');
-  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">' + items.map(t=><li>${t}</li>).join('') + '</ul>';
+  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">' + items.map(t=>`<li>${t}</li>`).join('') + '</ul>';
 }
 function applyHpToUi(){ renderPreview(); renderMustHave(); renderBasket(); persist(); }
 
-/* ===================== DOBÓR MOCY ===================== */
 function quickSuggest(){
   const area = +($('#inpArea')?.value||0);
   const wpm2 = +($('#selWperm2')?.value||0);
@@ -674,16 +697,16 @@ function quickSuggest(){
     .filter(h => h.pA7 >= v*0.9).slice(0,3);
 
   if (!candidates.length){
-    box.innerHTML = <span class="tiny">Brak oczywistego dopasowania dla ~${v.toFixed(2)} kW.</span>;
+    box.innerHTML = `<span class="tiny">Brak oczywistego dopasowania dla ~${v.toFixed(2)} kW.</span>`;
     box.classList.remove('hide');
     box2.classList.add('hide');
     return;
   }
-  box.innerHTML = 'Propozycje (szybkie): ' + candidates.map(h=>${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW, ${h.kind}, ${h.phase||'1F'})</span>).join(' • ');
+  box.innerHTML = 'Propozycje (szybkie): ' + candidates.map(h=>`${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW, ${h.kind}, ${h.phase||'1F'})</span>`).join(' • ');
   box.classList.remove('hide');
 
   box2.innerHTML = candidates.map(h=>
-    <div class="row"><div style="flex:1 1 auto">${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW)</span></div><button class="btn tiny" data-pick="${h.brand}|${h.model}">Wybierz</button></div>
+    `<div class="row"><div style="flex:1 1 auto">${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW)</span></div><button class="btn tiny" data-pick="${h.brand}|${h.model}">Wybierz</button></div>`
   ).join('');
   box2.classList.remove('hide');
 }
@@ -701,13 +724,12 @@ function recomputeAdvanced(){
 
   const candidates = HEATPUMPS.filter(h=>h.pA7>=target*0.9)
     .slice().sort((a,b)=>Math.abs(a.pA7-target)-Math.abs(b.pA7-target)).slice(0,3);
-
   const parts = [
-    Szac. obciążenie: <b>${req_kw.toFixed(2)} kW</b>,
-    Z zapasem 15%: <b>${target.toFixed(2)} kW</b>
+    `Szac. obciążenie: <b>${req_kw.toFixed(2)} kW</b>`,
+    `Z zapasem 15%: <b>${target.toFixed(2)} kW</b>`
   ];
   parts.push(candidates.length
-    ? ('Propozycje: ' + candidates.map(h=>${h.brand} ${h.model} <span class="tiny">(A7 ${h.pA7} kW)</span>).join(' • '))
+    ? ('Propozycje: ' + candidates.map(h=>`${h.brand} ${h.model} <span class="tiny">(A7 ${h.pA7} kW)</span>`).join(' • '))
     : '<span class="tiny" style="color:#ff9">Brak oczywistego dopasowania — rozważ wyższą moc lub inny model.</span>');
   const box=$('#recSummary'); box.innerHTML = parts.join('<br>'); box.classList.remove('hide');
 }
@@ -748,53 +770,52 @@ function buildOfferSummary(){
 }
 function collectClient(){
   state.client = {
-    name: $('#clName').value.trim(),
-    email: $('#clEmail').value.trim(),
-    phone: $('#clPhone').value.trim(),
-    nip: $('#clNip').value.trim(),
-    addr: $('#clAddr').value.trim(),
+    name: $('#clName')?.value.trim() || '',
+    email: $('#clEmail')?.value.trim() || '',
+    phone: $('#clPhone')?.value.trim() || '',
+    nip: $('#clNip')?.value.trim() || '',
+    addr: $('#clAddr')?.value.trim() || '',
   };
 }
 function pushContractDraft(){
   collectClient();
-  const hp=activeHp();
+  const hp = activeHp();
   const {sum, prov, gross} = buildOfferSummary();
   const payload = {
     createdAt: new Date().toISOString(),
     client: state.client,
     selection: {
-      pump: hp? {brand:hp.brand, model:hp.model, kind:hp.kind, phase:hp.phase, pA7:hp.pA7, ref:hp.ref}:null,
+      pump: hp ? {brand:hp.brand, model:hp.model, kind:hp.kind, phase:hp.phase, pA7:hp.pA7, ref:hp.ref} : null,
       buffer: state.selectedBuf,
-      tank: {type: state.selectedTankType, vol: state.selectedTank},
-      extras:{ v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads },
+      tank: { type: state.selectedTankType, vol: state.selectedTank },
+      extras: { v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads },
       vat: state.vat
     },
     sizing: {
-      quickKw: $('#outHeatKw').value,
-      std: $('#selStd').value,
-      areaAdv: $('#areaAdv').value,
-      lossWm2: $('#lossWm2').value,
-      heatLoad: $('#heatLoad').textContent,
-      heatTarget: $('#heatTarget').textContent,
-      areaByHp: $('#areaByHp').textContent
+      quickKw: $('#outHeatKw')?.value || '',
+      std: $('#selStd')?.value || '',
+      areaAdv: $('#areaAdv')?.value || '',
+      lossWm2: $('#lossWm2')?.value || '',
+      heatLoad: $('#heatLoad')?.textContent || '',
+      heatTarget: $('#heatTarget')?.textContent || '',
+      areaByHp: $('#areaByHp')?.textContent || ''
     },
     basket: state.basket,
-    totals:{sum, prov, gross}
+    totals: { sum, prov, gross }
   };
   try{
     sessionStorage.setItem('contract_draft', JSON.stringify(payload));
-    localStorage.setItem('contracts_last', JSON.stringify(payload));
   }catch(e){}
   return payload;
 }
 function updateContractPreview(){
   const p = pushContractDraft();
-  const el = $('#contractBody');
-  const itemsHtml = (p.basket||[]).map(i=>
-    <tr><td>${i.name}</td><td class="right">${i.qty}</td><td class="right">${fmt(i.price)} PLN</td><td class="right">${fmt(i.price*i.qty)} PLN</td></tr>
+  const els = document.querySelectorAll('.contractBody');
+  const itemsHtml = (p.basket||[]).map(i =>
+    `<tr><td>${i.name}</td><td class="right">${i.qty}</td><td class="right">${fmt(i.price)} PLN</td><td class="right">${fmt(i.price*i.qty)} PLN</td></tr>`
   ).join('') || '<tr><td colspan="4" class="tiny muted">Koszyk pusty.</td></tr>';
-  el.innerHTML = `
-    <div class="row"><div><b>Klient:</b> ${p.client?.name||'—'} ${p.client?.nip?('• NIP: '+p.client.nip):''}<br><b>Adres montażu:</b> ${p.client?.addr||'—'}<br><b>Kontakt:</b> ${p.client?.email||''} ${p.client?.phone?('• '+p.client.phone):''}</div><div class="right"><b>Data:</b> ${(new Date(p.createdAt)).toLocaleString('pl-PL')}</div></div>
+  const html = `
+    <div class="row"><div><b>Klient:</b> ${p.client?.name||'—'} ${p.client?.nip ? ('• NIP: ' + p.client.nip) : ''}<br><b>Adres montażu:</b> ${p.client?.addr||'—'}<br><b>Kontakt:</b> ${p.client?.email||''} ${p.client?.phone ? ('• ' + p.client.phone) : ''}</div><div class="right"><b>Data:</b> ${(new Date(p.createdAt)).toLocaleString('pl-PL')}</div></div>
     <div class="sep"></div>
     <table><thead><tr><th>Pozycja</th><th class="right">Ilość</th><th class="right">Cena NETTO</th><th class="right">Wartość NETTO</th></tr></thead><tbody>${itemsHtml}</tbody></table>
     <div class="row" style="margin-top:8px">
@@ -805,6 +826,7 @@ function updateContractPreview(){
     </div>
     <div class="tiny muted" style="margin-top:6px">Dobór mocy: szybki ~${p.sizing.quickKw||'-'} kW; obciążenie: ${p.sizing.heatLoad||'-'} (zapas: ${p.sizing.heatTarget||'-'}); pokrywana pow.: ${p.sizing.areaByHp||'-'}.</div>
   `;
+  els.forEach(el => { el.innerHTML = html; });
 }
 
 /* ===================== PERSIST ===================== */
@@ -857,11 +879,10 @@ document.addEventListener('click', e=>{
 
 // Selecty konfiguratora
 $('#selHp').addEventListener('change', ()=>{ const arr=sortedHp(); state.selectedHp = arr[+$('#selHp').value||0]; applyHpToUi(); });
-$('#selBufor').addEventListener('change', e=>{ state.selectedBuf=e.target.value; renderPreview(); renderMustHave(); persist(); });
 $('#selCwuType').addEventListener('change', e=>{
   state.selectedTankType = e.target.value;
   const t=$('#selCwu'); const src = state.selectedTankType==='dual'? TANKS_DUAL : TANKS_SINGLE;
-  t.innerHTML = Object.entries(src).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
+  t.innerHTML = Object.entries(src).map(([code,obj])=>`<option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>`).join('');
   if (!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
   t.value = state.selectedTank;
   renderPreview(); renderMustHave(); persist();
@@ -884,7 +905,6 @@ $('#selWperm2').addEventListener('change', quickSuggest);
   document.getElementById(id).addEventListener('change', ()=>{ recomputeAdvanced(); renderPreview(); });
 });
 
-// Dodawanie do koszyka
 $('#btnAddPack').addEventListener('click', ()=>{
   const hp = activeHp(); if(!hp){ alert('Wybierz pompę.'); return; }
 
@@ -903,17 +923,17 @@ $('#btnAddPack').addEventListener('click', ()=>{
 
   let cwuLabel = '';
   if(hp.kind==='all-in-one') cwuLabel = 'AIO CWU';
-  else if(bufObj?.type==='combo') cwuLabel = CWU w combo (${bufObj.cwu} l);
-  else cwuLabel = (tankObj?.label ? CWU ${tankObj.label} : 'CWU — dobór na miejscu');
+  else if(bufObj?.type==='combo') cwuLabel = `CWU w combo (${bufObj.cwu} l)`;
+  else cwuLabel = (tankObj?.label ? `CWU ${tankObj.label}` : 'CWU — dobór na miejscu');
 
-  const name = Zestaw: ${hp.brand} ${hp.model} + ${bufObj?.label||'bufor'} + ${cwuLabel}${rlabel}${elabel};
+  const name = `Zestaw: ${hp.brand} ${hp.model} + ${bufObj?.label||'bufor'} + ${cwuLabel}${rlabel}${elabel}`;
+  addToBasket(name, price, 1);
   addToBasket(name, price, 1);
 });
 $('#btnAddHp').addEventListener('click', ()=>{
   const hp=activeHp(); if(!hp){ alert('Wybierz pompę.'); return; }
-  addToBasket(Pompa ciepła: ${hp.brand} ${hp.model} — tylko urządzenie, soloPrice(hp), 1);
+  addToBasket(`Pompa ciepła: ${hp.brand} ${hp.model} — tylko urządzenie`, soloPrice(hp), 1);
 });
-// Ilości / usuwanie
 document.addEventListener('input', e=>{
   if(e.target && e.target.matches && e.target.matches('[data-qty]')){
     const i=Number(e.target.getAttribute('data-qty'));
