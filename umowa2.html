@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
@@ -44,6 +43,28 @@
     border-bottom:1px solid #4a5bb6; padding:1px 2px; line-height:1.6;
   }
   [contenteditable="true"] .fill{outline-offset:2px}
+
+  /* utility width classes to avoid inline styles */
+  .w-6ch  { --w:6ch; }
+  .w-8ch  { --w:8ch; }
+  .w-10ch { --w:10ch; }
+  .w-12ch { --w:12ch; }
+  .w-14ch { --w:14ch; }
+  .w-16ch { --w:16ch; }
+  .w-18ch { --w:18ch; }
+  .w-20ch { --w:20ch; }
+  .w-24ch { --w:24ch; }
+  .w-28ch { --w:28ch; }
+  .w-30ch { --w:30ch; }
+  .w-34ch { --w:34ch; }
+  .w-36ch { --w:36ch; }
+  .w-40ch { --w:40ch; }
+  .w-42ch { --w:42ch; }
+  .w-48ch { --w:48ch; }
+  .w-68ch { --w:68ch; }
+
+  /* small layout helper */
+  .mt-10 { margin-top:10px; }
 
   /* Wiersze, podpisy, ramki */
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -111,47 +132,35 @@
 
     /* pokaż stopkę z numerem stron */
     .print-footer{display:block}
-    .vat-amt-out{ color:#000!important }
+  .vat-amt-out{ color:#000!important }
   }
+
+  /* Table styles moved from inline */
+  table.contract-table{ width:100%; border-collapse:collapse; }
+  table.contract-table[border="1"]{ border:1px solid #000; }
+  table.contract-table th, table.contract-table td{ padding:6px; vertical-align:top; }
+  tbody#contractItems td.contract-empty{ text-align:center; color:#666; }
+  .right-align{ text-align:right; }
+
 </style>
 </head>
 <body>
   <nav>
-    <a href="index.html">← Pulpit</a>
-    <a href="klienci.html">Klienci</a>
-    <a href="upload.html">Przesył dokumentów</a>
+        Nr umowy: <span class="fill w-18ch" data-bind="contract.no"></span>
+        • Data: <span class="fill w-16ch" data-bind="contract.date"></span>
+        • Miejsce: <span class="fill w-20ch" data-bind="city"></span>
   </nav>
 
   <div class="wrap">
-    <div class="card toolbar">
-      <div class="row">
-        <button class="btn" onclick="window.print()">Drukuj / PDF</button>
-        <button class="btn ok" id="btnToggleEdit">Zablokuj/odblokuj edycję</button>
-        <button class="btn ghost" id="btnRecalc">Przelicz sumy</button>
-        <span class="pill">Podstawianie z Klienci: <b id="mergeState">auto</b></span>
-      </div>
-      <div class="row small">
-        Otworzono: <span id="now"></span> • URL param: <code>?clientId=…</code>
-      </div>
-    </div>
-
-    <!-- DOKUMENT -->
-    <div id="doc" class="doc" contenteditable="true">
-      <h1 class="center">UMOWA O WYKONANIE ROBÓT / DOSTAWĘ I MONTAŻ</h1>
-      <p class="center small">
-        Nr umowy: <span class="fill" data-bind="contract.no" style="--w:18ch"></span>
-        • Data: <span class="fill" data-bind="contract.date" style="--w:16ch"></span>
-        • Miejsce: <span class="fill" data-bind="city" style="--w:20ch"></span>
-      </p>
 
       <h2>§1. Strony umowy</h2>
       <div class="box">
         <p><b>Wykonawca:</b> PW ARKON Czesław i Krystyna Sobaniak sp.j., ul. Fabryczna 12C, 59-170 Przemków, NIP: 5020038830, REGON: 020258190, e-mail: biuro@arkoncentrum.pl, tel. 511 514 818.</p>
         <p><b>Zamawiający (Klient):</b>
-          <span class="fill" data-bind="client.name" style="--w:48ch"></span>,
-          adres: <span class="fill" data-bind="client.address" style="--w:48ch"></span>,
-          e-mail: <span class="fill" data-bind="client.email" style="--w:28ch"></span>,
-          tel.: <span class="fill" data-bind="client.phone" style="--w:20ch"></span>.
+          <span class="fill w-48ch" data-bind="client.name"></span>,
+          adres: <span class="fill w-48ch" data-bind="client.address"></span>,
+          e-mail: <span class="fill w-28ch" data-bind="client.email"></span>,
+          tel.: <span class="fill w-20ch" data-bind="client.phone"></span>.
         </p>
       </div>
 
@@ -169,65 +178,65 @@
       <h3>3.1. Pompa ciepła</h3>
       <table aria-label="Pompa ciepła" class="component">
         <tbody>
-          <tr><th>Producent / Model</th><td><span class="fill" style="--w:40ch"></span></td></tr>
-          <tr><th>Moc [kW]</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>Jedn. zewnętrzna / wewnętrzna</th><td><span class="fill" style="--w:30ch"></span></td></tr>
-          <tr><th>Bufor / Zawór 3D</th><td><span class="fill" style="--w:24ch"></span></td></tr>
-          <tr><th>Ilość [szt.]</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Producent / Model</th><td><span class="fill w-40ch"></span></td></tr>
+          <tr><th>Moc [kW]</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>Jedn. zewnętrzna / wewnętrzna</th><td><span class="fill w-30ch"></span></td></tr>
+          <tr><th>Bufor / Zawór 3D</th><td><span class="fill w-24ch"></span></td></tr>
+          <tr><th>Ilość [szt.]</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
       </table>
-      <p class="small">Dodatki PC: zasobnik c.w.u. <span class="fill" style="--w:10ch"></span> l, naczynie przeponowe <span class="fill" style="--w:8ch"></span> l, zawory odcinające <span class="fill" style="--w:10ch"></span>, izolacje <span class="fill" style="--w:10ch"></span>, uruchomienie serwisowe <span class="fill" style="--w:12ch"></span>.</p>
+      <p class="small">Dodatki PC: zasobnik c.w.u. <span class="fill w-10ch"></span> l, naczynie przeponowe <span class="fill w-8ch"></span> l, zawory odcinające <span class="fill w-10ch"></span>, izolacje <span class="fill w-10ch"></span>, uruchomienie serwisowe <span class="fill w-12ch"></span>.</p>
 
       <!-- 3.2 Piec / Kocioł -->
       <h3>3.2. Piec / Kocioł</h3>
       <table aria-label="Piec / Kocioł" class="component">
         <tbody>
-          <tr><th>Typ (gaz/elek/stałe)</th><td><span class="fill" style="--w:28ch"></span></td></tr>
-          <tr><th>Marka / Model</th><td><span class="fill" style="--w:40ch"></span></td></tr>
-          <tr><th>Moc [kW]</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>Klasa / Sprawność</th><td><span class="fill" style="--w:24ch"></span></td></tr>
-          <tr><th>Komplet armatury</th><td><span class="fill" style="--w:28ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Typ (gaz/elek/stałe)</th><td><span class="fill w-28ch"></span></td></tr>
+          <tr><th>Marka / Model</th><td><span class="fill w-40ch"></span></td></tr>
+          <tr><th>Moc [kW]</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>Klasa / Sprawność</th><td><span class="fill w-24ch"></span></td></tr>
+          <tr><th>Komplet armatury</th><td><span class="fill w-28ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
       </table>
-      <p class="small">Dodatki kotłowni: pompa obiegowa <span class="fill" style="--w:12ch"></span>, pompa cyrkulacyjna <span class="fill" style="--w:12ch"></span>, zawór mieszający <span class="fill" style="--w:12ch"></span>, grupa bezpieczeństwa <span class="fill" style="--w:12ch"></span>, komin/spalinowy <span class="fill" style="--w:16ch"></span>.</p>
+      <p class="small">Dodatki kotłowni: pompa obiegowa <span class="fill w-12ch"></span>, pompa cyrkulacyjna <span class="fill w-12ch"></span>, zawór mieszający <span class="fill w-12ch"></span>, grupa bezpieczeństwa <span class="fill w-12ch"></span>, komin/spalinowy <span class="fill w-16ch"></span>.</p>
 
       <!-- 3.3 Fotowoltaika -->
       <h3>3.3. Fotowoltaika</h3>
       <table aria-label="Fotowoltaika" class="component">
         <tbody>
-          <tr><th>Moduły (producent / model)</th><td><span class="fill" style="--w:42ch"></span></td></tr>
-          <tr><th>Ilość [szt.]</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>Moc instalacji [kWp]</th><td><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>Inwerter (model / moc)</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Konstrukcja montażowa</th><td><span class="fill" style="--w:30ch"></span></td></tr>
-          <tr><th>Zabezpieczenia AC/DC</th><td><span class="fill" style="--w:26ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Moduły (producent / model)</th><td><span class="fill w-42ch"></span></td></tr>
+          <tr><th>Ilość [szt.]</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>Moc instalacji [kWp]</th><td><span class="fill w-16ch"></span></td></tr>
+          <tr><th>Inwerter (model / moc)</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Konstrukcja montażowa</th><td><span class="fill w-30ch"></span></td></tr>
+          <tr><th>Zabezpieczenia AC/DC</th><td><span class="fill w-26ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
       </table>
-      <p class="small">Okablowanie DC <span class="fill" style="--w:8ch"></span> m, AC <span class="fill" style="--w:8ch"></span> m, uziemienie <span class="fill" style="--w:10ch"></span>, monitoring <span class="fill" style="--w:12ch"></span>, typ dachu/pokrycia <span class="fill" style="--w:28ch"></span>.</p>
+      <p class="small">Okablowanie DC <span class="fill w-8ch"></span> m, AC <span class="fill w-8ch"></span> m, uziemienie <span class="fill w-10ch"></span>, monitoring <span class="fill w-12ch"></span>, typ dachu/pokrycia <span class="fill w-28ch"></span>.</p>
 
       <!-- 3.4 Ocieplenie -->
       <h3>3.4. Ocieplenie</h3>
       <table aria-label="Ocieplenie" class="component">
         <tbody>
-          <tr><th>Materiał (styropian/wełna/PUR)</th><td><span class="fill" style="--w:34ch"></span></td></tr>
-          <tr><th>Grubość [cm]</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>λ</th><td><span class="fill" style="--w:10ch"></span></td></tr>
-          <tr><th>Powierzchnia [m²]</th><td><span class="fill" style="--w:14ch"></span></td></tr>
-          <tr><th>System/tynk</th><td><span class="fill" style="--w:24ch"></span></td></tr>
-          <tr><th>Obróbki/Parapety</th><td><span class="fill" style="--w:24ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Materiał (styropian/wełna/PUR)</th><td><span class="fill w-34ch"></span></td></tr>
+          <tr><th>Grubość [cm]</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>λ</th><td><span class="fill w-10ch"></span></td></tr>
+          <tr><th>Powierzchnia [m²]</th><td><span class="fill w-14ch"></span></td></tr>
+          <tr><th>System/tynk</th><td><span class="fill w-24ch"></span></td></tr>
+          <tr><th>Obróbki/Parapety</th><td><span class="fill w-24ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
       </table>
 
@@ -236,75 +245,75 @@
       <table aria-label="Stolarka i dodatki" class="component">
         <tbody id="group-grzejnik">
           <tr><th colspan="2">Grzejnik / typ</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-rozdzielacz">
           <tr><th colspan="2">Rozdzielacz / obiegi</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-rury">
           <tr><th colspan="2">Rury / prowadzenie</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-okna">
           <tr><th colspan="2">Okna</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-drzwi">
           <tr><th colspan="2">Drzwi</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-garaz">
           <tr><th colspan="2">Bramy garażowe</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-rekuperacja">
           <tr><th colspan="2">Rekuperacja ścienna</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-klimatyzacja">
           <tr><th colspan="2">Klimatyzacja</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
         <tbody id="group-inne">
           <tr><th colspan="2">Inne (audyt, demontaż, utylizacja)</th></tr>
-          <tr><th>Parametry</th><td><span class="fill" style="--w:36ch"></span></td></tr>
-          <tr><th>Ilość</th><td><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill" style="--w:16ch"></span></td></tr>
-          <tr><th>VAT</th><td class="sum-vat"><span class="fill" style="--w:8ch"></span></td></tr>
-          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill" style="--w:16ch"></span></td></tr>
+          <tr><th>Parametry</th><td><span class="fill w-36ch"></span></td></tr>
+          <tr><th>Ilość</th><td><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Cena netto</th><td class="sum-netto"><span class="fill w-16ch"></span></td></tr>
+          <tr><th>VAT</th><td class="sum-vat"><span class="fill w-8ch"></span></td></tr>
+          <tr><th>Brutto</th><td class="sum-brutto"><span class="fill w-16ch"></span></td></tr>
         </tbody>
       </table>
 
@@ -312,20 +321,20 @@
       <ol>
         <li>
           Wynagrodzenie łączone za przedmiot umowy (netto):
-          <b><span id="sumNet" class="fill" style="--w:24ch"></span></b> zł;
-          kwota VAT łącznie: <b><span id="sumVatAmt" class="fill" style="--w:16ch"></span></b> zł;
-          stawka VAT (średnia ważona): <b><span id="sumVatPct" class="fill" style="--w:6ch"></span></b> %;
-          wartość brutto: <b><span id="sumGross" class="fill" style="--w:24ch"></span></b> zł.
+          <b><span id="sumNet" class="fill w-24ch"></span></b> zł;
+          kwota VAT łącznie: <b><span id="sumVatAmt" class="fill w-16ch"></span></b> zł;
+          stawka VAT (średnia ważona): <b><span id="sumVatPct" class="fill w-6ch"></span></b> %;
+          wartość brutto: <b><span id="sumGross" class="fill w-24ch"></span></b> zł.
         </li>
-        <li>Zaliczka: <span class="fill" style="--w:16ch"></span> zł, płatna do dnia: <span class="fill" style="--w:14ch"></span>, na rachunek: <span class="fill" style="--w:36ch"></span>.</li>
-        <li>Harmonogram płatności (jeśli dotyczy): I etap <span class="fill" style="--w:8ch"></span>% do dnia <span class="fill" style="--w:12ch"></span>; II etap <span class="fill" style="--w:8ch"></span>% do dnia <span class="fill" style="--w:12ch"></span>; końcowa <span class="fill" style="--w:8ch"></span>% po odbiorze.</li>
-        <li>Jeżeli Zamawiający korzysta z dofinansowania (np. „Czyste Powietrze”), strony uzgadniają, że: <span class="fill" style="--w:68ch"></span></li>
+        <li>Zaliczka: <span class="fill w-16ch"></span> zł, płatna do dnia: <span class="fill w-14ch"></span>, na rachunek: <span class="fill w-36ch"></span>.</li>
+        <li>Harmonogram płatności (jeśli dotyczy): I etap <span class="fill w-8ch"></span>% do dnia <span class="fill w-12ch"></span>; II etap <span class="fill w-8ch"></span>% do dnia <span class="fill w-12ch"></span>; końcowa <span class="fill w-8ch"></span>% po odbiorze.</li>
+        <li>Jeżeli Zamawiający korzysta z dofinansowania (np. „Czyste Powietrze”), strony uzgadniają, że: <span class="fill w-68ch"></span></li>
         <li>W przypadku opóźnienia w płatności Wykonawca może naliczyć odsetki ustawowe za opóźnienie oraz wstrzymać prace do czasu uregulowania należności.</li>
       </ol>
 
       <h2>§5. Terminy</h2>
       <ol>
-        <li>Rozpoczęcie prac: <span class="fill" style="--w:18ch"></span>. Zakończenie: <span class="fill" style="--w:18ch"></span>.</li>
+        <li>Rozpoczęcie prac: <span class="fill w-18ch"></span>. Zakończenie: <span class="fill w-18ch"></span>.</li>
         <li>Terminy mogą ulec zmianie w przypadku: braku dostępu do frontu robót, nieprzewidzianych warunków technicznych, siły wyższej, opóźnień po stronie Zamawiającego, opóźnień dostaw niezawinionych przez Wykonawcę.</li>
       </ol>
 
@@ -337,14 +346,14 @@
 
       <h2>§7. Gwarancja i rękojmia</h2>
       <ol>
-        <li>Wykonawca udziela gwarancji na montaż na okres <span class="fill" style="--w:10ch"></span> miesięcy od daty odbioru. Gwarancja producenta na urządzenia zgodnie z kartą gwarancyjną.</li>
+        <li>Wykonawca udziela gwarancji na montaż na okres <span class="fill w-10ch"></span> miesięcy od daty odbioru. Gwarancja producenta na urządzenia zgodnie z kartą gwarancyjną.</li>
         <li>Wady należy zgłaszać e-mailowo na adres: <b>biuro@arkoncentrum.pl</b> lub telefonicznie: <b>511 514 818</b>, opisując objawy, datę i numer umowy.</li>
         <li>Wady usuwane będą w rozsądnym terminie, z uwzględnieniem dostępności części. Gwarancja nie obejmuje: uszkodzeń mechanicznych, szkód z winy użytkownika, braku przeglądów i eksploatacji niezgodnej z instrukcją, przepięć, zalania, szkód losowych.</li>
         <li>Uprawnienia z gwarancji nie wyłączają uprawnień z rękojmi przysługujących konsumentowi na podstawie Kodeksu cywilnego.</li>
       </ol>
 
       <h2>§8. Reklamacje</h2>
-      <p>Reklamacje Zamawiający składa na piśmie lub e-mailem na adres Wykonawcy. Wykonawca potwierdzi przyjęcie reklamacji i udzieli odpowiedzi w terminie <span class="fill" style="--w:8ch"></span> dni roboczych.</p>
+      <p>Reklamacje Zamawiający składa na piśmie lub e-mailem na adres Wykonawcy. Wykonawca potwierdzi przyjęcie reklamacji i udzieli odpowiedzi w terminie <span class="fill w-8ch"></span> dni roboczych.</p>
 
       <h2>§9. Prawo odstąpienia</h2>
       <ol>
@@ -360,7 +369,7 @@
       </ol>
 
       <h2>§11. Kary umowne</h2>
-      <p>Za zwłokę z winy Wykonawcy w wykonaniu przedmiotu umowy kary wynoszą <span class="fill" style="--w:8ch"></span>% wynagrodzenia brutto za każdy dzień zwłoki, nie więcej niż <span class="fill" style="--w:8ch"></span>%. Analogiczne kary mogą dotyczyć zwłoki Zamawiającego w zapewnieniu frontu robót/płatnościach.</p>
+      <p>Za zwłokę z winy Wykonawcy w wykonaniu przedmiotu umowy kary wynoszą <span class="fill w-8ch"></span>% wynagrodzenia brutto za każdy dzień zwłoki, nie więcej niż <span class="fill w-8ch"></span>%. Analogiczne kary mogą dotyczyć zwłoki Zamawiającego w zapewnieniu frontu robót/płatnościach.</p>
 
       <h2>§12. Siła wyższa</h2>
       <p>Strony nie ponoszą odpowiedzialności za niewykonanie umowy w zakresie spowodowanym wystąpieniem siły wyższej (w szczególności: klęski żywiołowe, wojna, epidemie, przerwy w dostawach, akty władzy publicznej). Terminy ulegają odpowiedniemu przedłużeniu.</p>
@@ -380,34 +389,83 @@
         <li>W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego i właściwe przepisy szczególne.</li>
         <li>Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.</li>
         <li>Spory będzie rozstrzygał sąd powszechny właściwy według przepisów – dla konsumenta zgodnie z właściwością ogólną; w pozostałych przypadkach sąd właściwy dla siedziby Wykonawcy.</li>
-        <li>Umowę sporządzono w <span class="fill" style="--w:8ch"></span> jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
+        <li>Umowę sporządzono w <span class="fill w-8ch"></span> jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.</li>
       </ol>
 
-      <div class="signRow">
-        <div class="sign">
-          ..................................................<br>
-          <span class="small">Podpis Zamawiającego</span>
-        </div>
-        <div class="sign">
-          ..................................................<br>
-          <span class="small">Podpis Wykonawcy – PW ARKON</span>
-        </div>
+    <div class="signRow">
+      <div class="sign">
+        ..................................................<br>
+        <span class="small">Podpis Zamawiającego</span>
+      </div>
+      <div class="sign">
+        ..................................................<br>
+        <span class="small">Podpis Wykonawcy – PW ARKON</span>
       </div>
     </div>
 
-    <p class="small" style="margin-top:10px">
-      Podpowiedź: wypełnij pola podkreślone bezpośrednio w tekście. Jeśli otworzysz z <code>klienci.html</code> (przycisk „📄 Umowa 2”), pola <i>Klient</i>/<i>adres</i>/<i>e-mail</i>/<i>telefon</i> uzupełnią się automatycznie z bazy.  
-      Użyj przycisku „Przelicz sumy”, aby wypełnić §4 na podstawie tabel z §3.
-    </p>
-  </div>
+<table class="contract-table" border="1" cellpadding="6">
+  <thead>
+    <tr><th>Kategoria</th><th>Pozycja / opis</th><th>Ilość</th><th>Cena netto</th><th>Wartość netto</th></tr>
+  </thead>
+  <tbody id="contractItems">
+    <tr><td colspan="5" class="contract-empty">Brak – wypełnij w „Komponenty do umowy”.</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td colspan="4" class="right-align"><b>Suma netto</b></td><td id="sumNetCell">0</td></tr>
+    <tr><td colspan="4" class="right-align">VAT <span id="vatPct">8</span>%</td><td id="vatVal">0</td></tr>
+    <tr><td colspan="4" class="right-align"><b>Suma brutto</b></td><td id="sumGrossCell">0</td></tr>
+  </tfoot>
+</table>
 
+<p>
+  Zamawiający: <span id="clientName">—</span><br>
+  Adres montażu: <span id="clientAddr">—</span>
+</p>
+
+<script>
+(function(){
+  const INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
+  const LS_KEY = 'arkon_contract_items_v1';
+  let raw = localStorage.getItem(LS_KEY);
+  if(!raw){ console.warn('Brak danych kontraktu'); return; }
+  let d; try{ d=JSON.parse(raw) }catch(e){ console.warn('Błędny JSON'); return; }
+
+  document.getElementById('clientName').textContent = d.client?.name || '—';
+  document.getElementById('clientAddr').textContent = d.client?.addr || '—';
+
+  const tb = document.getElementById('contractItems');
+  tb.innerHTML = '';
+  (d.items||[]).forEach(it=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.cat||''}</td>
+      <td>${it.name||''}</td>
+      <td style="text-align:right">${INT.format(it.qty||0)}</td>
+      <td style="text-align:right">${INT.format(it.price||0)}</td>
+      <td style="text-align:right">${INT.format(it.net||0)}</td>`;
+    tb.appendChild(tr);
+  });
+
+  const vat = Number(d.vat||0.08);
+  const sumNet = Number(d.sumNet||0);
+  const vatVal = Math.round(sumNet*vat);
+  const sumGross = sumNet + vatVal;
+  document.getElementById('sumNetCell').textContent   = INT.format(sumNet);
+  document.getElementById('vatPct').textContent       = Math.round(vat*100);
+  document.getElementById('vatVal').textContent       = INT.format(vatVal);
+  document.getElementById('sumGrossCell').textContent = INT.format(sumGross);
+})();
+</script>
   <!-- Stopka drukowana -->
   <div class="print-footer" aria-hidden="true">
     <div class="line">
       <span>PW ARKON • Umowa</span>
-      <span class="pnum"></span>
-      <span id="printDate"></span>
     </div>
+  </div>
+</div>
+
+  <!-- Stopka drukowana -->
+  <div class="print-footer" aria-hidden="true">
   </div>
 
 <script>
