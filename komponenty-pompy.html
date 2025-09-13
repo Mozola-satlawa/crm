@@ -1,11 +1,10 @@
-
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Komponenty • Pompy ciepła — katalog + konfigurator + umowa</title>
-<meta name="description" content="ARKON: katalog pomp (Midea, Panasonic, Galmet), konfigurator zestawu, dobór mocy, koszyk, klient, podgląd umowy i druk — wszystko w jednym pliku.">
+<meta name="description" content="Katalog pomp (Midea, Panasonic, Galmet), bufory i CWU, konfigurator zestawu, dobór mocy, koszyk, klient i podgląd umowy w jednej stronie.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f1533'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-size='40' fill='%234cc9f0' font-family='Segoe UI,Arial,sans-serif'%3EP%3C/text%3E%3C/svg%3E">
 <style>
   :root{
@@ -57,7 +56,6 @@
   .kpi .box{background:#0d1530;border:1px solid #28356c;border-radius:12px;padding:10px}
   .kpi .val{font-weight:800;font-size:18px}
   .panel{background:linear-gradient(180deg,#0e1740,#101d4a);border:1px solid #1c2750;border-radius:12px;padding:12px}
-  /* Umowa (podgląd/druk) */
   .doc{background:#0f1636;border:1px solid #2a3a75;border-radius:12px;padding:14px}
   @media print{
     header,#site-nav,.no-print{display:none!important}
@@ -157,7 +155,7 @@
           <select id="selHp" style="min-width:380px"></select>
         </div>
         <div>
-          <label class="tiny">Bufor [l]</label>
+          <label class="tiny">Bufor</label>
           <select id="selBufor"></select>
         </div>
         <div>
@@ -168,7 +166,7 @@
           </select>
         </div>
         <div>
-          <label class="tiny">Zasobnik CWU [l]</label>
+          <label class="tiny">Zasobnik CWU</label>
           <select id="selCwu"></select>
         </div>
         <div>
@@ -226,7 +224,7 @@
             <option value="50" selected>Modernizacja — 50</option>
             <option value="60">Starszy — 60</option>
             <option value="70">Bardzo stary — 70</option>
-            <option value="80">Słaba izolacja — 80</option>
+            <option value="80">~80</option>
             <option value="90">~90</option>
             <option value="100">~100</option>
             <option value="110">~110</option>
@@ -350,7 +348,7 @@
 <script>
 'use strict';
 
-/* ===== Nawigacja z nav.html (jeśli istnieje) ===== */
+/* ===== (opcjonalnie) nawigacja z nav.html ===== */
 (function () {
   const mount = document.getElementById('site-nav');
   if (!mount) return;
@@ -360,7 +358,6 @@
       const wrap = document.createElement('div'); wrap.innerHTML = html.trim();
       const nav = wrap.firstElementChild;
       if (!nav) return;
-      // podświetl aktywną stronę
       try {
         const here = location.pathname.split('/').pop() || 'index.html';
         nav.querySelectorAll('a[href]').forEach(a => {
@@ -369,7 +366,7 @@
       } catch {}
       mount.appendChild(nav);
     })
-    .catch(()=>{ /* cicho jeśli brak nav.html */ });
+    .catch(()=>{});
 })();
 
 /* ===================== DANE / KONFIG ===================== */
@@ -427,18 +424,55 @@ const HEATPUMPS = [
   {brand:'Galmet', model:'PRIMA S 16GT Split 3F',  kind:'split',    phase:'3F', pA7:16.0, scop:4.6, ref:'R32', noise:56, price:36000, tags:['PRIMA','GT','SPLIT','3F']},
 ];
 
-const QUICK_TAGS = ['R290','R32','monoblok','split','all-in-one','1F','3F','WiFi','premium','T-CAP','High Perf.','PRIMA','AIO','K-gen','wysoka moc'];
-const BUFFERS = { '50':1200, '80':1450, '100':1650, '150':2200, '200':2600, '300':3600 };
-const TANKS_SINGLE = { '150':2450, '200':2900, '250':3400, '300':3800 };
-const TANKS_DUAL   = { '200':3450, '250':3990, '300':4450 };
+const QUICK_TAGS = [
+  'R290','R32','monoblok','split','all-in-one','1F','3F','WiFi','premium',
+  'T-CAP','High Perf.','PRIMA','AIO','K-gen','wysoka moc'
+];
+
+/* Bufory – rozszerzone */
+const BUFFERS = {
+  'B-EM-50' : {vol:50,  type:'emalia', label:'Bufor 50 l — emalia',          price:  950},
+  'B-EM-80' : {vol:80,  type:'emalia', label:'Bufor 80 l — emalia',          price: 1200},
+  'B-EM-100': {vol:100, type:'emalia', label:'Bufor 100 l — emalia',         price: 1450},
+  'B-EM-150': {vol:150, type:'emalia', label:'Bufor 150 l — emalia',         price: 1850},
+  'B-EM-200': {vol:200, type:'emalia', label:'Bufor 200 l — emalia',         price: 2250},
+  'B-EM-300': {vol:300, type:'emalia', label:'Bufor 300 l — emalia',         price: 3050},
+
+  'B-INOX-80' : {vol:80,  type:'inox', label:'Bufor 80 l — INOX',             price: 1650},
+  'B-INOX-100': {vol:100, type:'inox', label:'Bufor 100 l — INOX',            price: 1990},
+  'B-INOX-200': {vol:200, type:'inox', label:'Bufor 200 l — INOX',            price: 2850},
+  'B-INOX-300': {vol:300, type:'inox', label:'Bufor 300 l — INOX',            price: 3790},
+
+  'B-WEZ-100': {vol:100, type:'wez',  coil:1.0, label:'Bufor 100 l z wężownicą (1.0 m²)', price: 2150},
+  'B-WEZ-200': {vol:200, type:'wez',  coil:1.5, label:'Bufor 200 l z wężownicą (1.5 m²)', price: 2890},
+  'B-WEZ-300': {vol:300, type:'wez',  coil:2.2, label:'Bufor 300 l z wężownicą (2.2 m²)', price: 3690},
+
+  'B-COMBO-200': {vol:200, type:'combo', cwu:100, label:'Combo 200 l (bufor+CWU 100 l)', price: 4490},
+  'B-COMBO-300': {vol:300, type:'combo', cwu:120, label:'Combo 300 l (bufor+CWU 120 l)', price: 5290},
+};
+
+/* CWU – SINGLE */
+const TANKS_SINGLE = {
+  'S-150-1.0': {vol:150, coil:1.0, label:'150 l • 1.0 m²', price: 2450},
+  'S-200-1.2': {vol:200, coil:1.2, label:'200 l • 1.2 m²', price: 2920},
+  'S-250-1.6': {vol:250, coil:1.6, label:'250 l • 1.6 m²', price: 3390},
+  'S-300-2.0': {vol:300, coil:2.0, label:'300 l • 2.0 m²', price: 3850},
+};
+/* CWU – DUAL */
+const TANKS_DUAL = {
+  'D-200-2x1.0': {vol:200, coil:'2×1.0', label:'200 l • 2×1.0 m²', price: 3490},
+  'D-250-2x1.2': {vol:250, coil:'2×1.2', label:'250 l • 2×1.2 m²', price: 3990},
+  'D-300-2x1.5': {vol:300, coil:'2×1.5', label:'300 l • 2×1.5 m²', price: 4490},
+};
+
 const RAD_PRICE = 750;
-const ONLY_HP_SURCHARGE = 4000;              // tylko urządzenie — wewnętrzny narzut
-const PACK_BASE_TARGETNET = 38000;           // model proporcjonalny (bazowy netto)
+const ONLY_HP_SURCHARGE = 4000;
+const PACK_BASE_TARGETNET = 38000;
 
 /* ===================== STAN ===================== */
 const state = {
   vat: 0.08, v3d:0, safety:0, hydro:0, glycol:0, rads:0,
-  selectedHp: null, selectedBuf: '100', selectedTankType: 'single', selectedTank: '200',
+  selectedHp: null, selectedBuf: 'B-EM-100', selectedTankType: 'single', selectedTank: 'S-200-1.2',
   provPct:0, provAbs:0,
   chipsActive: new Set(), tagsAll:false,
   basket: [],
@@ -448,16 +482,20 @@ const state = {
 const INTmoney = new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
 const INTint   = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
 const fmt = n => INTmoney.format(+n||0);
-
-/* ===================== HELPERY ===================== */
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ===================== HELPERY ===================== */
 function sortedHp(){ return HEATPUMPS.slice().sort((a,b)=> a.brand.localeCompare(b.brand,'pl') || a.pA7-b.pA7); }
-function cheapest(obj){ return Math.min(...Object.values(obj).map(Number)); }
+function cheapest(obj){
+  const vals = Object.values(obj).map(v => typeof v === 'number' ? v : (v?.price||Infinity));
+  return Math.min(...vals);
+}
 function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>+h.price||0)); }
 function computeBaseOffset(){ return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS_SINGLE)); }
 let BASE_OFFSET = computeBaseOffset();
 function soloPrice(hp){ return (+hp.price||0) + ONLY_HP_SURCHARGE; }
+function activeHp(){ return state.selectedHp; }
 
 /* ===================== FILTRY / LISTA ===================== */
 function makeChips(){
@@ -549,59 +587,73 @@ function optionsForTanks(){
   return Object.keys(src);
 }
 function fillSelects(){
+  // POMPY
   const arr=sortedHp();
-  const s=$('#selHp'); s.innerHTML = arr.map((x,i)=><option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>).join('');
+  const s=$('#selHp');
+  s.innerHTML = arr.map((x,i)=><option value="${i}">${x.brand} ${x.model} • ${x.kind} • A7 ${x.pA7} kW</option>).join('');
   state.selectedHp = state.selectedHp || arr[0] || null;
 
-  const b=$('#selBufor'); b.innerHTML = Object.keys(BUFFERS).map(v=><option value="${v}">${v} l • ${INTint.format(BUFFERS[v])} PLN</option>).join('');
-  if(!state.selectedBuf) state.selectedBuf='100'; b.value=state.selectedBuf;
+  // BUFOR
+  const b=$('#selBufor');
+  b.innerHTML = Object.entries(BUFFERS).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
+  if(!BUFFERS[state.selectedBuf]) state.selectedBuf = 'B-EM-100';
+  b.value = state.selectedBuf;
 
-  const t=$('#selCwu'); const src = state.selectedTankType==='dual'? TANKS_DUAL : TANKS_SINGLE;
-  t.innerHTML = Object.keys(src).map(v=><option value="${v}">${v} l • ${INTint.format(src[v])} PLN</option>).join('');
-  if (!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
+  // CWU
+  const t=$('#selCwu');
+  const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  t.innerHTML = Object.entries(src).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
+  if(!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
   t.value = state.selectedTank;
 
   applyHpToUi();
 }
-function activeHp(){ return state.selectedHp; }
 function pricePack(hpPrice, bufCost, tankCost, extras){ return (+hpPrice||0) + (+bufCost||0) + (+tankCost||0) + (+extras||0) + BASE_OFFSET; }
 function renderPreview(){
-  const b=activeHp(); if(!b){ $('#pricePreview').textContent='—'; return; }
-  const bufKey=state.selectedBuf;
-  const tankKey=state.selectedTank;
-  const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  const bufCost=BUFFERS[bufKey]||0;
-  const tankCost=(b.kind==='all-in-one')?0:(tankSrc[tankKey]||0);
-  const extras=(+state.v3d||0)+(+state.safety||0)+(+state.hydro||0)+(+state.glycol||0)+((+state.rads||0)*RAD_PRICE);
-  const sum=pricePack(b.price,bufCost,tankCost,extras);
-  $('#pricePreview').textContent = fmt(sum) + ' PLN netto (brutto: ' + fmt(sum*(1+state.vat)) + ' PLN)';
+  const hp=activeHp(); if(!hp){ $('#pricePreview').textContent='—'; return; }
+  const bufObj = BUFFERS[state.selectedBuf];
+  const bufCost = bufObj ? +bufObj.price : 0;
 
-  // podpowiedzi
+  const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
+  const tankObj = tankSrc[state.selectedTank];
+  const tankCost = (hp.kind==='all-in-one' || bufObj?.type==='combo') ? 0 : (tankObj ? +tankObj.price : 0);
+
+  const extras=(+state.v3d||0)+(+state.safety||0)+(+state.hydro||0)+(+state.glycol||0)+((+state.rads||0)*RAD_PRICE);
+  const sum=pricePack(hp.price,bufCost,tankCost,extras);
+  $('#pricePreview').textContent = ${fmt(sum)} PLN netto (brutto: ${fmt(sum*(1+state.vat))} PLN);
+
   const hint=$('#typeHint'); hint.classList.remove('hide');
-  if(b.kind==='monoblok') hint.textContent='Monoblok: ryzyko zamarzania – rozważ glikol na odcinku zewnętrznym.';
-  else if(b.kind==='all-in-one') hint.textContent='All-in-One: zasobnik CWU wbudowany – zewnętrzny zwykle zbędny.';
+  if(hp.kind==='monoblok') hint.textContent='Monoblok: przy ryzyku zamarzania przewidź glikol na odcinku zewnętrznym.';
+  else if(hp.kind==='all-in-one') hint.textContent='All-in-One: zasobnik CWU wbudowany — zewnętrzny zwykle zbędny.';
   else hint.textContent='Split: glikol nie dotyczy (obieg chłodniczy).';
 
-  // Powierzchnia pokrywana wybraną pompą (dla wybranego standardu)
   const stdW = +($('#selStd')?.value||50);
   const margin=1.15;
-  const areaCover = Math.floor((b.pA7*1000)/(stdW*margin));
+  const areaCover = Math.floor((hp.pA7*1000)/(stdW*margin));
   $('#areaByHp').textContent = areaCover>0 ? (areaCover + ' m²') : '—';
 }
 function renderMustHave(){
-  const b=activeHp(); const buf=state.selectedBuf; const t=state.selectedTank; const box=$('#mustHave');
-  if(!b||!buf||!t){ box.textContent='Wybierz pompę, bufor i CWU — pokażę skład.'; return; }
-  const items=[];
-  items.push(Pompa ciepła — ${b.brand} ${b.model} (${b.kind}, ${b.phase||'1F'}));
-  items.push(Bufor — ${buf} l);
+  const hp=activeHp(); const box=$('#mustHave');
+  const bufObj = BUFFERS[state.selectedBuf];
   const tankSrc = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  items.push(b.kind==='all-in-one' ? 'Zasobnik CWU — AIO (wbudowany)' : Zasobnik CWU — ${state.selectedTank} l (${state.selectedTankType==='dual'?'dwuwężownicowy':'pojedyncza wężownica'}));
+  const tankObj = tankSrc[state.selectedTank];
+
+  if(!hp || !bufObj || (!tankObj && hp.kind!=='all-in-one' && bufObj?.type!=='combo')){
+    box.textContent='Wybierz pompę, bufor i CWU — pokażę skład.'; return;
+  }
+
+  const items=[];
+  items.push(Pompa ciepła — ${hp.brand} ${hp.model} (${hp.kind}, ${hp.phase||'1F'}));
+  items.push(Bufor — ${bufObj.label});
+  if(hp.kind==='all-in-one') items.push('Zasobnik CWU — AIO (wbudowany)');
+  else if(bufObj?.type==='combo') items.push(Zasobnik CWU — w pakiecie combo (${bufObj.cwu} l));
+  else items.push(Zasobnik CWU — ${tankObj?.label||'-'});
   items.push('Armatura: zawór 3D, grupa bezpieczeństwa, zawory serwisowe');
-  if((+state.glycol)>0 && b.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
-  items.push('Rozdzielacze/hydraulika wg wyboru');
+  if((+state.glycol)>0 && hp.kind==='monoblok') items.push('Glikol do obiegu zewnętrznego (monoblok)');
+  items.push('Rozdzielacze / hydraulika wg wyboru');
   const r=+state.rads||0; if(r>0) items.push(Montaż grzejników: ${r} × ${INTint.format(RAD_PRICE)} PLN);
   items.push('Montaż, uruchomienie, konfiguracja, szkolenie użytkownika');
-  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">'+items.map(t=><li>${t}</li>).join('')+'</ul>';
+  box.innerHTML = '<ul class="small" style="margin:6px 0 0 18px">' + items.map(t=><li>${t}</li>).join('') + '</ul>';
 }
 function applyHpToUi(){ renderPreview(); renderMustHave(); renderBasket(); persist(); }
 
@@ -611,21 +663,28 @@ function quickSuggest(){
   const wpm2 = +($('#selWperm2')?.value||0);
   const kw = (area>0 && wpm2>0) ? (area*wpm2)/1000 * 1.10 : 0;
   $('#outHeatKw').value = kw.toFixed(2);
-  // szybkie propozycje
-  const box = $('#recQuick'); const v = +kw || 0;
-  if (!v){ box.classList.add('hide'); box.textContent=''; return; }
+
+  const v = kw || 0;
+  const box = $('#recQuick');
+  const box2 = $('#recQuickUI');
+  if (!v){ box.classList.add('hide'); box.textContent=''; box2.classList.add('hide'); box2.textContent=''; return; }
+
   const candidates = HEATPUMPS
     .slice().sort((a,b)=> Math.abs(a.pA7 - v) - Math.abs(b.pA7 - v))
     .filter(h => h.pA7 >= v*0.9).slice(0,3);
+
   if (!candidates.length){
     box.innerHTML = <span class="tiny">Brak oczywistego dopasowania dla ~${v.toFixed(2)} kW.</span>;
-    box.classList.remove('hide'); return;
+    box.classList.remove('hide');
+    box2.classList.add('hide');
+    return;
   }
   box.innerHTML = 'Propozycje (szybkie): ' + candidates.map(h=>${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW, ${h.kind}, ${h.phase||'1F'})</span>).join(' • ');
   box.classList.remove('hide');
-  // UI nad selektorem
-  const box2 = $('#recQuickUI');
-  box2.innerHTML = candidates.map(h=><div class="row"><div style="flex:1 1 auto">${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW)</span></div><button class="btn tiny" data-pick="${h.brand}|${h.model}">Wybierz</button></div>).join('');
+
+  box2.innerHTML = candidates.map(h=>
+    <div class="row"><div style="flex:1 1 auto">${h.brand} <b>${h.model}</b> <span class="tiny">(A7 ${h.pA7} kW)</span></div><button class="btn tiny" data-pick="${h.brand}|${h.model}">Wybierz</button></div>
+  ).join('');
   box2.classList.remove('hide');
 }
 function recomputeAdvanced(){
@@ -658,7 +717,7 @@ function addToBasket(name, price, qty=1){
   const i=state.basket.findIndex(x=>x.name===name && Math.abs(x.price-price)<0.01);
   if(i>=0) state.basket[i].qty += qty;
   else state.basket.push({name, price, qty});
-  renderBasket(); persist(); updateContractPreview(); // auto do umowy
+  renderBasket(); persist(); updateContractPreview();
 }
 function renderBasket(){
   const tb=$('#basket tbody'); tb.innerHTML='';
@@ -679,7 +738,7 @@ function renderBasket(){
   $('#sumGross').textContent = fmt( (sumNet+prov) * (1+state.vat) ) + ' PLN';
 }
 
-/* ===================== KLIENT / MAIL / KONTRAKT ===================== */
+/* ===================== KLIENT / KONTRAKT ===================== */
 function buildOfferSummary(){
   const sum = state.basket.reduce((a,b)=>a+b.price*b.qty,0);
   const prov = sum*(+state.provPct||0)/100 + (+state.provAbs||0);
@@ -698,13 +757,13 @@ function collectClient(){
 }
 function pushContractDraft(){
   collectClient();
-  const b=activeHp();
-  const {sum, prov, gross, lines} = buildOfferSummary();
+  const hp=activeHp();
+  const {sum, prov, gross} = buildOfferSummary();
   const payload = {
     createdAt: new Date().toISOString(),
     client: state.client,
     selection: {
-      pump: b? {brand:b.brand, model:b.model, kind:b.kind, phase:b.phase, pA7:b.pA7, ref:b.ref}:null,
+      pump: hp? {brand:hp.brand, model:hp.model, kind:hp.kind, phase:hp.phase, pA7:hp.pA7, ref:hp.ref}:null,
       buffer: state.selectedBuf,
       tank: {type: state.selectedTankType, vol: state.selectedTank},
       extras:{ v3d: state.v3d, safety: state.safety, hydro: state.hydro, glycol: state.glycol, rads: state.rads },
@@ -731,7 +790,9 @@ function pushContractDraft(){
 function updateContractPreview(){
   const p = pushContractDraft();
   const el = $('#contractBody');
-  const itemsHtml = (p.basket||[]).map(i=><tr><td>${i.name}</td><td class="right">${i.qty}</td><td class="right">${fmt(i.price)} PLN</td><td class="right">${fmt(i.price*i.qty)} PLN</td></tr>).join('') || '<tr><td colspan="4" class="tiny muted">Koszyk pusty.</td></tr>';
+  const itemsHtml = (p.basket||[]).map(i=>
+    <tr><td>${i.name}</td><td class="right">${i.qty}</td><td class="right">${fmt(i.price)} PLN</td><td class="right">${fmt(i.price*i.qty)} PLN</td></tr>
+  ).join('') || '<tr><td colspan="4" class="tiny muted">Koszyk pusty.</td></tr>';
   el.innerHTML = `
     <div class="row"><div><b>Klient:</b> ${p.client?.name||'—'} ${p.client?.nip?('• NIP: '+p.client.nip):''}<br><b>Adres montażu:</b> ${p.client?.addr||'—'}<br><b>Kontakt:</b> ${p.client?.email||''} ${p.client?.phone?('• '+p.client.phone):''}</div><div class="right"><b>Data:</b> ${(new Date(p.createdAt)).toLocaleString('pl-PL')}</div></div>
     <div class="sep"></div>
@@ -746,7 +807,7 @@ function updateContractPreview(){
   `;
 }
 
-/* ===================== PERSIST (LS) ===================== */
+/* ===================== PERSIST ===================== */
 const SAVE_KEY='kp_state_v3';
 function persist(){
   try{
@@ -757,9 +818,7 @@ function persist(){
 function restore(){
   try{
     const raw = localStorage.getItem(SAVE_KEY); if(!raw) return;
-    const d = JSON.parse(raw);
-    if (!d) return;
-    // scal
+    const d = JSON.parse(raw); if (!d) return;
     state.vat = d.vat ?? state.vat;
     state.v3d = d.v3d||0; state.safety=d.safety||0; state.hydro=d.hydro||0; state.glycol=d.glycol||0; state.rads=d.rads||0;
     state.selectedBuf = d.selectedBuf||state.selectedBuf;
@@ -802,7 +861,7 @@ $('#selBufor').addEventListener('change', e=>{ state.selectedBuf=e.target.value;
 $('#selCwuType').addEventListener('change', e=>{
   state.selectedTankType = e.target.value;
   const t=$('#selCwu'); const src = state.selectedTankType==='dual'? TANKS_DUAL : TANKS_SINGLE;
-  t.innerHTML = Object.keys(src).map(v=><option value="${v}">${v} l • ${INTint.format(src[v])} PLN</option>).join('');
+  t.innerHTML = Object.entries(src).map(([code,obj])=><option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>).join('');
   if (!src[state.selectedTank]) state.selectedTank = Object.keys(src)[0];
   t.value = state.selectedTank;
   renderPreview(); renderMustHave(); persist();
@@ -827,20 +886,32 @@ $('#selWperm2').addEventListener('change', quickSuggest);
 
 // Dodawanie do koszyka
 $('#btnAddPack').addEventListener('click', ()=>{
-  const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
-  const bufKey=state.selectedBuf; const tankKey=state.selectedTank;
+  const hp = activeHp(); if(!hp){ alert('Wybierz pompę.'); return; }
+
+  const bufObj = BUFFERS[state.selectedBuf];
+  const bufCost = bufObj ? +bufObj.price : 0;
+
   const src = state.selectedTankType==='dual' ? TANKS_DUAL : TANKS_SINGLE;
-  const bufCost = BUFFERS[bufKey]||0;
-  const tankCost = (b.kind==='all-in-one')? 0 : (src[tankKey]||0);
+  const tankObj = src[state.selectedTank];
+  const tankCost = (hp.kind==='all-in-one' || bufObj?.type==='combo') ? 0 : (tankObj ? +tankObj.price : 0);
+
   const extras = (+state.v3d||0) + (+state.safety||0) + (+state.hydro||0) + (+state.glycol||0) + ((+state.rads||0)*RAD_PRICE);
-  const price = pricePack(b.price, bufCost, tankCost, extras);
-  const labels=[]; if(+state.v3d>0) labels.push('zawór 3D'); if(+state.safety>0) labels.push('gr. bezp.'); if(+state.hydro>0) labels.push('hydraulika+'); if(+state.glycol>0 && b.kind==='monoblok') labels.push('glikol');
+  const price = pricePack(hp.price, bufCost, tankCost, extras);
+
+  const labels=[]; if(+state.v3d>0) labels.push('zawór 3D'); if(+state.safety>0) labels.push('gr. bezp.'); if(+state.hydro>0) labels.push('hydraulika+'); if(+state.glycol>0 && hp.kind==='monoblok') labels.push('glikol');
   const rlabel = state.rads? ` + grzejniki x${state.rads}` : ''; const elabel = labels.length? ` + ${labels.join(', ')}` : '';
-  addToBasket(Zestaw: ${b.brand} ${b.model} + bufor ${bufKey} l + ${(b.kind==='all-in-one' ? 'AIO CWU' : ('CWU '+tankKey+' l ('+(state.selectedTankType==='dual'?'dual':'single')+')'))}${rlabel}${elabel}, price, 1);
+
+  let cwuLabel = '';
+  if(hp.kind==='all-in-one') cwuLabel = 'AIO CWU';
+  else if(bufObj?.type==='combo') cwuLabel = CWU w combo (${bufObj.cwu} l);
+  else cwuLabel = (tankObj?.label ? CWU ${tankObj.label} : 'CWU — dobór na miejscu');
+
+  const name = Zestaw: ${hp.brand} ${hp.model} + ${bufObj?.label||'bufor'} + ${cwuLabel}${rlabel}${elabel};
+  addToBasket(name, price, 1);
 });
 $('#btnAddHp').addEventListener('click', ()=>{
-  const b=activeHp(); if(!b){ alert('Wybierz pompę.'); return; }
-  addToBasket(Pompa ciepła: ${b.brand} ${b.model} — tylko urządzenie, soloPrice(b), 1);
+  const hp=activeHp(); if(!hp){ alert('Wybierz pompę.'); return; }
+  addToBasket(Pompa ciepła: ${hp.brand} ${hp.model} — tylko urządzenie, soloPrice(hp), 1);
 });
 // Ilości / usuwanie
 document.addEventListener('input', e=>{
