@@ -2,9 +2,9 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Komponenty • Pompy ciepła — Midea, Panasonic, Galmet (pełny katalog)</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Komponenty • Pompy ciepła — Midea, Panasonic, Galmet</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230b8d3b'/%3E%3Ctext x='50' y='62' font-size='60' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif'%3EP%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#0b1020;--p1:#121a34;--p2:#172142;--ink:#e8edff;--muted:#aeb8da;
@@ -49,30 +49,31 @@
   .warnline{padding:8px;border-radius:10px;background:#3a2a19;border:1px dashed #9d7a33;color:#ffdda1}
   .search{min-width:260px}
   .card.scroll{overflow:auto;max-height:70vh}
-  .top-link{margin-top:8px}
   .hide{display:none}
   .flex1{flex:1}
   .minw240{min-width:240px}
+  .summary-value{font-weight:800;font-size:18px}
   .right-align{text-align:right}
-  .list-offset{margin:6px 0 0 18px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .chip{border:1px solid #3a4ca3;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;background:#0d1530}
+  .chip.active{background:#233261}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#12224f;border:1px solid #3a4ca3;border-radius:10px;padding:8px 12px;z-index:20}
 </style>
 
-<!-- XLSX do eksportu -->
+<!-- XLSX -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <header>
     <div class="row spaced">
-      <a href="index.html" class="btn ghost top-link">← Powrót do pulpitu</a>
+      <a href="index.html" class="btn ghost">← Pulpit</a>
       <div class="right">
-        <button id="btnToContractTop" class="btn ghost" title="Zapisz draft i przejdź do umowy">Wyślij do umowy →</button>
+        <button id="btnAttach" class="btn ghost">+ Dodaj zdjęcie/plik do umowy</button>
+        <input id="fileAttach" type="file" accept="image/*,.pdf" capture="environment" hidden>
       </div>
     </div>
     <h1>Komponenty • Pompy ciepła — Midea, Panasonic &amp; Galmet</h1>
-    <div class="muted">
-      Ceny wpisane <b>na sztywno</b>. Model proporcjonalny: najtańszy pakiet (pompa + bufor min + CWU min) =
-      <b>38&nbsp;000 PLN netto</b>. Każdy droższy element podnosi cenę o <b>różnicę</b>.
-    </div>
+    <div class="muted">Ceny urządzeń są na sztywno. Zestaw liczony proporcjonalnie. Galmet: <b>8–10 kW = 36 500</b>, <b>12–16 kW = 38 000</b> (podłogówka) + opcjonalny <b>audyt 1 500</b>.</div>
   </header>
 
 <div class="wrap grid cols-2">
@@ -80,7 +81,7 @@
   <section class="grid">
     <div class="card">
       <div class="row">
-        <input id="q" class="search" placeholder="🔎 Szukaj: marka, model, tag… / '10 kW', '8-12', '>=12'">
+        <input id="q" class="search" placeholder="🔎 Szukaj: marka, model, tag, oraz po mocy: '10 kW', '8-12', '>=12'">
         <select id="fBrand"><option value="">Marka (wszystkie)</option></select>
         <select id="fType"><option value="">Typ</option><option>monoblok</option><option>split</option><option>all-in-one</option></select>
         <select id="fRef"><option value="">Czynnik</option><option>R32</option><option>R290</option></select>
@@ -90,42 +91,33 @@
           <option value="brand.desc">Marka ↓</option>
           <option value="p.asc">Moc ↑</option>
           <option value="p.desc">Moc ↓</option>
-          <option value="price.asc">Cena urządzenia ↑</option>
-          <option value="price.desc">Cena urządzenia ↓</option>
+          <option value="price.asc">Cena urz. ↑</option>
+          <option value="price.desc">Cena urz. ↓</option>
         </select>
         <button id="btnClear" class="btn ghost">Wyczyść</button>
-        <label class="small" style="margin-left:auto"><input type="checkbox" id="tagsAll"> dopasuj <b>wszystkie</b> tagi</label>
       </div>
-      <div class="row" style="margin-top:6px">
-        <div id="chips" class="row"></div>
+      <div class="chips" id="chips"></div>
+      <div class="row">
         <span class="pill">Łącznie: <b id="cntAll">0</b></span>
         <span class="pill">Widocznych: <b id="cntVis">0</b></span>
       </div>
-      <div id="recQuick" class="okline hide" style="margin-top:8px"></div>
     </div>
 
     <div class="card scroll">
       <table>
         <thead>
           <tr>
-            <th>Akcje</th>
-            <th>Marka / Model</th>
-            <th>Typ</th>
-            <th>Moc A7 [kW]</th>
-            <th>SCOP</th>
-            <th>Czynnik</th>
-            <th>Fazy</th>
-            <th>Hałas [dB(A)]</th>
-            <th>Uwagi</th>
+            <th>Akcje</th><th>Marka / Model</th><th>Typ</th><th>Moc A7 [kW]</th>
+            <th>SCOP</th><th>Czynnik</th><th>Fazy</th><th>Hałas [dB(A)]</th><th>Uwagi</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
       </table>
-      <div class="small muted" style="margin-top:6px">Uwaga: ceny urządzeń nie są pokazywane w tabeli (do wyceny użyj konfiguratora po prawej).</div>
+      <div class="small muted">Uwaga: ceny urządzeń nie są pokazywane w tabeli (wycena po prawej).</div>
     </div>
   </section>
 
-  <!-- PRAWA: Konfigurator + koszyk -->
+  <!-- PRAWA: Konfigurator -->
   <aside class="grid">
     <div class="card">
       <div class="row spaced">
@@ -136,96 +128,80 @@
         </div>
       </div>
 
-      <div class="row" style="margin-top:8px">
+      <div class="row">
         <div><label class="small">Model pompy</label><select id="selHp"></select></div>
         <div><label class="small">Bufor [l]</label><select id="selBufor"></select></div>
         <div><label class="small">Typ zasobnika CWU</label>
-          <select id="selCwuType"><option value="single" selected>pojedyncza wężownica</option><option value="dual">dwuwężownicowy</option></select>
+          <select id="selCwuType"><option value="single" selected>pojedyncza</option><option value="dual">dwuwężownicowy</option></select>
         </div>
         <div><label class="small">Zasobnik CWU [l]</label><select id="selCwu"></select></div>
-        <div><label class="small">Cel użycia CWU</label>
-          <select id="selCwuUse"><option value="2-3">2–3 osoby (200–250 l)</option><option value="4-5" selected>4–5 osób (250–300 l)</option><option value="6+">6+ osób (300+ l)</option></select>
+        <div><label class="small">VAT</label>
+          <select id="selVat"><option value="0.08" selected>8%</option><option value="0.23">23%</option><option value="0">0%</option></select>
         </div>
-        <div><label class="small">VAT</label><select id="selVat"><option value="0.08" selected>8%</option><option value="0.23">23%</option><option value="0">0%</option></select></div>
-        <div><label class="small">Zawór 3-drogowy</label><select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select></div>
-        <div><label class="small">Grupa bezpieczeństwa</label><select id="selSafety"><option value="0">w zestawie</option><option value="390">+390</option></select></div>
-        <div><label class="small">Hydraulika (rozdzielacze)</label><select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select></div>
-        <div><label class="small">Glikol (monoblok)</label><select id="selGlycol"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select></div>
+        <div><label class="small">Instalacja</label>
+          <select id="selInstall"><option value="podlogowka" selected>podłogówka</option><option value="grzejniki">grzejniki</option><option value="mieszana">mieszana</option></select>
+        </div>
+        <div style="min-width:220px">
+          <label class="small">Audyt Galmet</label>
+          <label class="small"><input id="chkAudit" type="checkbox" checked> dolicz +1 500 netto</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div><label class="small">Zawór 3D</label><select id="selV3d"><option value="0">w zestawie</option><option value="450">+450</option></select></div>
+        <div><label class="small">Grupa bezp.</label><select id="selSafety"><option value="0">w zestawie</option><option value="390">+390</option></select></div>
+        <div><label class="small">Hydraulika</label><select id="selHydro"><option value="0">podstawowa</option><option value="1800">+1 obieg (1800)</option><option value="3200">dwa obiegi (3200)</option></select></div>
+        <div><label class="small">Glikol</label><select id="selGlycol"><option value="0">nie</option><option value="600">30 l (600)</option><option value="900">50 l (900)</option></select></div>
       </div>
 
       <div class="sep"></div>
-      <b>Dobór mocy — wariant prosty</b>
-      <div class="row" style="margin-top:8px">
+      <b>Dobór mocy – szybki</b>
+      <div class="row">
         <div><label class="small">Powierzchnia [m²]</label><input id="inpArea" type="number" min="0" step="1" value="0" style="width:110px"></div>
         <div><label class="small">Straty [W/m²]</label>
-          <select id="selWperm2" style="width:140px"><option value="35">Nowy — 35</option><option value="45">Nowszy — 45</option><option value="50" selected>Modernizacja — 50</option><option value="60">Starszy — 60</option><option value="70">Bardzo stary — 70</option></select>
+          <select id="selWperm2" style="width:130px">
+            <option value="35">Nowy — 35</option><option value="45">Dobry — 45</option>
+            <option value="50" selected>Modernizacja — 50</option><option value="60">Starszy — 60</option><option value="70">Bardzo stary — 70</option>
+          </select>
         </div>
-        <div>
-          <label class="small">Propozycja mocy [kW]</label>
-          <input id="outHeatKw" type="text" value="0.00" readonly style="width:110px">
-          <div class="small muted">m² × W/m² ÷ 1000 × 1.10</div>
-        </div>
+        <div><label class="small">Propozycja [kW]</label><input id="outHeatKw" type="text" value="0.00" readonly style="width:110px"></div>
       </div>
 
-      <div id="typeHint" class="okline hide" style="margin-top:8px"></div>
-
-      <div class="sep"></div>
-      <b>Dobór mocy — wariant rozbudowany</b>
-      <div class="row" style="margin-top:8px">
-        <div><label class="small">Standard</label>
-          <select id="selStd"><option value="35">Nowy/NZEB (~35)</option><option value="50" selected>Modernizacja (~50)</option><option value="80">Stary (~80)</option></select>
-        </div>
-        <div><label class="small">Powierzchnia [m²]</label><input id="areaAdv" type="number" min="30" step="1" style="width:110px"></div>
-        <div><label class="small">Straty [W/m²]</label><input id="lossWm2" type="number" value="70" min="10" step="5" style="width:110px"></div>
-      </div>
-      <div id="lossWarn" class="warnline hide" style="margin-top:8px">&gt; 140 W/m² — niezalecane</div>
-      <div class="row" style="margin-top:8px">
-        <span class="pill">Obciążenie projektowe: <b id="heatLoad">—</b></span>
-        <span class="pill">Zapas 15%: <b id="heatTarget">—</b></span>
-        <span class="pill">Pow. pokrywana wybraną pompą: <b id="areaByHp">—</b></span>
-      </div>
-      <div id="areaHint" class="small muted" style="margin-top:6px"></div>
-      <div id="recSummary" class="okline hide" style="margin-top:8px"></div>
+      <div id="typeHint" class="okline hide"></div>
 
       <div class="sep"></div>
       <div class="row">
         <div class="flex1">
-          <div class="muted">Cena zestawu (netto) wg modelu proporcjonalnego</div>
-          <div id="pricePreview" style="font-weight:800;font-size:18px">—</div>
+          <div class="muted">Cena zestawu (netto)</div>
+          <div id="pricePreview" class="summary-value">—</div>
         </div>
         <div class="minw240">
           <label class="small">Prowizja handlowca</label>
           <div class="row">
-            <input id="provPct" type="number" min="0" step="0.1" placeholder="%" style="width:80px">
+            <input id="provPct" type="number" min="0" step="0.1" placeholder="% (procent)" style="width:80px">
             <input id="provAbs" type="number" min="0" step="1" placeholder="PLN" style="width:130px">
           </div>
-          <div class="small muted">Możesz wpisać % i/lub PLN (sumują się).</div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <b>Skład zestawu (must-have)</b>
-      <div id="mustHave" class="muted" style="margin-top:6px">Wybierz pompę, bufor i zasobnik — pokażę skład.</div>
-    </div>
+    <div class="card"><b>Skład zestawu (must-have)</b><div id="mustHave" class="muted" style="margin-top:6px">Wybierz pompę, bufor i zasobnik — pokażę skład.</div></div>
 
     <div class="card">
       <b>Koszyk</b>
-      <table id="basket" class="mt8">
+      <table id="basket" style="margin-top:8px">
         <thead><tr><th>Pozycja</th><th>Ilość</th><th class="right">Cena [PLN]</th><th></th></tr></thead>
         <tbody></tbody>
       </table>
       <div class="sep"></div>
       <div class="row">
-        <div><span class="muted">Suma netto</span><div id="sumNet" style="font-weight:800;font-size:18px">0,00 PLN</div></div>
-        <div><span class="muted">Prowizja</span><div id="sumProv" style="font-weight:800;font-size:18px">0,00 PLN</div></div>
-        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" style="font-weight:800;font-size:18px">0,00 PLN</div></div>
+        <div><span class="muted">Suma netto</span><div id="sumNet" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Prowizja</span><div id="sumProv" class="summary-value">0,00 PLN</div></div>
+        <div><span class="muted">Brutto (z VAT)</span><div id="sumGross" class="summary-value">0,00 PLN</div></div>
         <div class="right">
           <button id="btnCopy" class="btn ghost">Kopiuj ofertę</button>
           <button id="btnPrint" class="btn ghost">Drukuj / PDF</button>
           <button id="btnXlsx" class="btn ghost">Eksport XLSX</button>
-          <button id="btnExportJson" class="btn ghost">Eksport JSON</button>
-          <button id="btnImportJson" class="btn ghost">Import JSON</button>
         </div>
       </div>
     </div>
@@ -236,22 +212,21 @@
         <div><label class="small">Imię i nazwisko / Firma</label><input id="clName" placeholder="np. Jan Kowalski" style="width:180px"></div>
         <div><label class="small">E-mail</label><input id="clEmail" placeholder="np. jan@firma.pl" style="width:180px"></div>
         <div><label class="small">Telefon</label><input id="clPhone" placeholder="np. 600123123" style="width:130px"></div>
-        <div><label class="small">NIP (opcjonalnie)</label><input id="clNip" placeholder="NIP" style="width:130px"></div>
         <div><label class="small">Adres</label><input id="clAddr" placeholder="ulica, miasto" style="width:220px"></div>
       </div>
       <div class="row" style="margin-top:6px">
-        <button id="btnSaveClient" class="btn ok">Zapisz klienta do bazy</button>
-        <select id="selClient" style="width:240px"><option value="">— wybierz z bazy —</option></select>
+        <button id="btnSaveClient" class="btn ok">Zapisz klienta</button>
+        <select id="selClient" style="width:260px"><option value="">— wybierz z bazy —</option></select>
         <button id="btnLoadClient" class="btn ghost">Wczytaj</button>
-        <button id="btnToContract" class="btn">Wyślij do umowy</button>
-        <button id="btnMailTo" class="btn ghost">Wyślij ofertę e-mailem</button>
+        <a class="btn ghost" href="umowa2.html" target="_blank" rel="noopener">Podgląd umowy ↗</a>
       </div>
-      <div class="small muted" style="margin-top:6px">Dane klientów i projekty umów są lokalne (local/sessionStorage).</div>
+      <div class="small muted" style="margin-top:6px">Wszystko trzymane lokalnie (localStorage / sessionStorage). Zmiany zapisują się <b>automatycznie do umowy</b>.</div>
     </div>
   </aside>
 </div>
 
-<!-- LOGIKA -->
-<script src="pompy.js" defer></script>
+<div id="toast" class="toast hide">Zapisano do umowy</div>
+
+<script src="pompy.js"></script>
 </body>
 </html>
