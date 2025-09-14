@@ -377,7 +377,8 @@
 
 <script>
 'use strict';
-
+// >>> USTAW TU NAZWĘ PLIKU UMOWY <<<
+const CONTRACT_URL = 'umowa_all.html'; // albo 'umowa.html' – jak się u Ciebie nazywa
 /* ===== (opcjonalnie) nawigacja z nav.html ===== */
 (function () {
   const mount = document.getElementById('site-nav');
@@ -516,20 +517,38 @@ const fmt = n => INTmoney.format(+n||0);
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 
-/* ===================== HELPERY ===================== */
-function sortedHp(){ return HEATPUMPS.slice().sort((a,b)=> a.brand.localeCompare(b.brand,'pl') || a.pA7-b.pA7); }
+// najtańsza pompa danej marki
+function sortedHp(){
+  return HEATPUMPS.slice().sort((a,b)=> a.brand.localeCompare(b.brand,'pl') || a.pA7 - b.pA7);
+}
 function cheapest(obj){
-  const vals = Object.values(obj).map(v => typeof v === 'number' ? v : (v?.price||Infinity));
+  const vals = Object.values(obj).map(v => typeof v === 'number' ? v : (v?.price || Infinity));
   return Math.min(...vals);
 }
-function cheapestPumpPrice(){ return Math.min(...HEATPUMPS.map(h=>+h.price||0)); }
-function computeBaseOffset(){ return PACK_BASE_TARGETNET - (cheapestPumpPrice() + cheapest(BUFFERS) + cheapest(TANKS_SINGLE)); }
-let BASE_OFFSET = computeBaseOffset();
-function pricePack(hpPrice, bufPrice, tankPrice, extras){
-  // model: najtańsza pompa + najtańszy bufor + najtańszy CWU + OFFSET + dodatki
-  const base = (+hpPrice||0) + (+bufPrice||0) + (+tankPrice||0) + (+extras||0) + BASE_OFFSET;
+function cheapestPumpPrice(){
+  return Math.min(...HEATPUMPS.map(h => +h.price || 0));
+}
+function cheapestPumpPriceByBrand(brand){
+  const arr = HEATPUMPS.filter(h=>h.brand===brand).map(h=>+h.price||Infinity);
+  return arr.length ? Math.min(...arr) : cheapestPumpPrice();
+}
+
+// offset liczony per marka – tak, aby najtańszy zestaw tej marki = PACK_BASE_TARGETNET
+function baseOffsetForBrand(brand){
+  const baseCheapest = cheapestPumpPriceByBrand(brand) + cheapest(BUFFERS) + cheapest(TANKS_SINGLE);
+  return PACK_BASE_TARGETNET - baseCheapest;
+}
+
+// uwaga: można podać obiekt pompy lub samą cenę; gdy podamy cenę, offset liczymy wg aktualnie wybranej pompy
+function pricePack(hpOrPrice, bufPrice, tankPrice, extras){
+  const hpObj   = (hpOrPrice && typeof hpOrPrice==='object') ? hpOrPrice : activeHp();
+  const hpPrice = (hpObj && typeof hpOrPrice==='object') ? (+hpObj.price||0) : (+hpOrPrice||0);
+  const brand   = hpObj?.brand;
+  const offset  = baseOffsetForBrand(brand||activeHp()?.brand||'');
+  const base    = hpPrice + (+bufPrice||0) + (+tankPrice||0) + (+extras||0) + offset;
   return Math.max(0, Math.round(base)); // pełne PLN
 }
+
 function soloPrice(hp){ return (+hp.price||0) + ONLY_HP_SURCHARGE; }
 function activeHp(){ return state.selectedHp; }
 
@@ -862,13 +881,21 @@ function pushContractDraft(){
       heatTarget: $('#heatTarget')?.textContent || '',
       areaByHp: $('#areaByHp')?.textContent || ''
     },
-    basket: state.basket,
-    totals: { sum, prov, gross }
+     basket: state.basket,
+    totals: { sum, prov, gross },
   };
-  try{
-    sessionStorage.setItem('contract_draft', JSON.stringify(payload));
-  }catch(e){}
-  return payload;
+ try {
+  // podgląd na tej stronie
+  sessionStorage.setItem('contract_draft', JSON.stringify(payload));
+  // kopia „ostatniego” drafu
+  localStorage.setItem('contracts_last', JSON.stringify(payload));
+  // to czyta umowa2.html
+  localStorage.setItem('contractData', JSON.stringify(payload));
+} catch (e) {
+  // cicho ignorujemy błąd zapisu (np. wyłączony storage)
+}
+
+return payload;
 }
 function updateContractPreview(){
   const p = pushContractDraft();
