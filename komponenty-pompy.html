@@ -340,22 +340,27 @@
       </div>
     </div>
 
-    <!-- KLIENT + UMOWA -->
-    <div class="card">
-      <b>Dane klienta</b>
-        <h3 class="no-margin">Umowa — podgląd</h3>
-        <input id="clName"  placeholder="Imię i nazwisko / Firma" class="min-w-240">
-        <input id="clEmail" placeholder="E-mail" class="min-w-220">
-        <input id="clPhone" placeholder="Telefon" class="min-w-160">
-        <input id="clNip"   placeholder="NIP" class="w-140">
-      <div class="contractBody tiny mt-8"></div>
-      <div class="row mt-6">
-        <button id="btnSaveClient" class="btn ok">Zapisz klienta</button>
-        <button id="btnToContract" class="btn">Wyślij do umowy (auto)</button>
-        <button id="btnMailTo" class="btn ghost">Wyślij ofertę e-mailem</button>
-      </div>
-      <div class="tiny muted">Po dodaniu ZESTAWU, draft umowy zapisuje się automatycznie. Poniżej masz podgląd umowy do druku.</div>
-    </div>
+  <!-- KLIENT + UMOWA -->
+<div class="card">
+  <b>Dane klienta</b>
+  <h3 class="no-margin">Umowa — podgląd</h3>
+
+  <input id="clName"  placeholder="Imię i nazwisko / Firma" class="min-w-240">
+  <input id="clEmail" placeholder="E-mail" class="min-w-220">
+  <input id="clPhone" placeholder="Telefon" class="min-w-160">
+  <input id="clNip"   placeholder="NIP" class="w-140">
+  <input id="clAddr"  placeholder="Adres montażu" class="min-w-280"> <!-- NOWE POLE -->
+
+  <div class="contractBody tiny mt-8"></div>
+
+  <div class="row mt-6">
+    <button id="btnSaveClient"   class="btn ok">Zapisz klienta</button>
+    <button id="btnToContract"   class="btn">Wyślij do umowy</button> <!-- NOWY PRZYCISK -->
+    <button id="btnMailTo"       class="btn ghost">Wyślij ofertę e-mailem</button>
+  </div>
+
+  <div class="tiny muted">Po dodaniu ZESTAWU, draft umowy zapisuje się automatycznie. Poniżej masz podgląd umowy do druku.</div>
+</div>
 
     <!-- PODGLĄD UMOWY (W TEJ SAMEJ STRONIE) -->
     <div class="panel doc">
@@ -610,7 +615,12 @@ function fillSelects(){
   b.innerHTML = Object.entries(BUFFERS).map(([code,obj])=>`<option value="${code}">${obj.label} • ${INTint.format(obj.price)} PLN</option>`).join('');
   if (!BUFFERS[state.selectedBuf]) state.selectedBuf = 'B-EM-100';
   b.value = state.selectedBuf;
-
+$('#selBufor').addEventListener('change', e=>{
+  state.selectedBuf = e.target.value;
+  renderPreview(); 
+  renderMustHave(); 
+  persist();
+});
   // CWU
   const t = $('#selCwu');
   const src = state.selectedTankType === 'dual' ? TANKS_DUAL : TANKS_SINGLE;
@@ -620,7 +630,28 @@ function fillSelects(){
 
   applyHpToUi();
 }
+function quickSuggest(){
+  const area = +($('#inpArea')?.value||0);
+  const wpm2 = +($('#selWperm2')?.value||0);
+  const kw = (area>0 && wpm2>0) ? (area*wpm2)/1000 * 1.10 : 0;
+  $('#outHeatKw').value = kw.toFixed(2);
+  const prev = $('#outHeatKwPreview'); 
+  if (prev) prev.value = kw.toFixed(2);
+  // ...reszta bez zmian
+}
 
+function mirrorAreaAdv(){
+  const src = $('#areaAdv'), dst = $('#areaAdvPreview');
+  if (src && dst) dst.value = src.value;
+}
+
+['areaAdv'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{ 
+    recomputeAdvanced(); 
+    renderPreview(); 
+    mirrorAreaAdv(); 
+  });
+});
 function renderTable(){
   const rows = applyFiltersSort(HEATPUMPS.slice());
   $('#cntAll').textContent = HEATPUMPS.length;
@@ -783,6 +814,21 @@ function buildOfferSummary(){
   const lines = state.basket.map(it=>'• ' + it.name + ' × ' + it.qty + ' | ' + fmt(it.price) + ' PLN');
   return {sum, prov, gross, lines};
 }
+// Wyślij do umowy: zapisz pełny draft do localStorage i przejdź na umowa2.html
+const btnToContract = document.getElementById('btnToContract');
+if (btnToContract) {
+  btnToContract.addEventListener('click', () => {
+    // zbuduj payload (używa Twojej funkcji pushContractDraft)
+    const payload = pushContractDraft(); 
+    try {
+      localStorage.setItem('contractData', JSON.stringify(payload)); // klucz zgodny z umowa2.html
+    } catch (e) {
+      alert('Błąd zapisu do localStorage: ' + (e?.message || e));
+      return;
+    }
+    window.location.href = 'umowa2.html';
+  });
+}
 function collectClient(){
   state.client = {
     name: $('#clName')?.value.trim() || '',
@@ -903,7 +949,15 @@ $('#selCwuType').addEventListener('change', e=>{
   renderPreview(); renderMustHave(); persist();
 });
 $('#selCwu').addEventListener('change', e=>{ state.selectedTank=e.target.value; renderPreview(); renderMustHave(); persist(); });
-$('#selVat').addEventListener('change', e=>{ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); updateContractPreview(); persist(); });
+$('#selVat').addEventListener('change', e=>{ state.vat=Number(e.target.value)||0.08; renderPreview(); renderBasket(); updateContractPreview(); persist(); });function setRads(v){
+  state.rads = Math.max(0, Number(v) || 0);
+  const a = $('#inpRads'), b = $('#inpRadsDuplicate');
+  if (a && a !== document.activeElement) a.value = state.rads;
+  if (b && b !== document.activeElement) b.value = state.rads;
+  renderPreview(); renderMustHave(); persist();
+}
+$('#inpRads').addEventListener('input', e=> setRads(e.target.value));
+$('#inpRadsDuplicate').addEventListener('input', e=> setRads(e.target.value));
 ['selV3d','selSafety','selHydro','selGlycol'].forEach(id=>{
   document.getElementById(id).addEventListener('change', (e)=>{
     state[e.target.id.replace('sel','').toLowerCase()] = Number(e.target.value)||0;
@@ -942,7 +996,6 @@ $('#btnAddPack').addEventListener('click', ()=>{
   else cwuLabel = (tankObj?.label ? `CWU ${tankObj.label}` : 'CWU — dobór na miejscu');
 
   const name = `Zestaw: ${hp.brand} ${hp.model} + ${bufObj?.label||'bufor'} + ${cwuLabel}${rlabel}${elabel}`;
-  addToBasket(name, price, 1);
   addToBasket(name, price, 1);
 });
 $('#btnAddHp').addEventListener('click', ()=>{
@@ -1008,7 +1061,6 @@ $('#btnImportJson').addEventListener('click', ()=>{
 
 // Klient & kontrakt
 $('#btnSaveClient').addEventListener('click', ()=>{ collectClient(); persist(); updateContractPreview(); alert('Zapisano dane klienta.'); });
-$('#btnToContract').addEventListener('click', ()=>{ updateContractPreview(); alert('Zapisano do umowy (draft).'); });
 $('#btnMailTo').addEventListener('click', ()=>{
   collectClient();
   const {sum, prov, gross, lines} = buildOfferSummary();
@@ -1024,25 +1076,54 @@ $('#btnMailTo').addEventListener('click', ()=>{
   location.href = mail;
 });
 $('#btnPrintContract').addEventListener('click', ()=> window.print());
-
+if (btnToContract) {
+  btnToContract.addEventListener('click', () => {
+    const payload = pushContractDraft();
+    try {
+      localStorage.setItem('contractData', JSON.stringify(payload));
+      window.location.href = 'umowa2.html';
+    } catch (err) {
+      alert('Błąd zapisu do localStorage: ' + (err?.message || err));
+    }
+  });
+}
 /* ===================== INIT ===================== */
 function boot(){
   restore();
-  makeChips(); fillFilters(); renderTable(); fillSelects(); renderBasket();
-  // odtwórz klienta
-  $('#clName').value=state.client.name||''; $('#clEmail').value=state.client.email||''; $('#clPhone').value=state.client.phone||'';
-  $('#clNip').value=state.client.nip||''; $('#clAddr').value=state.client.addr||'';
-  // VAT/prowizje
-  $('#selVat').value=String(state.vat||0.08);
-  $('#provPct').value=state.provPct||''; $('#provAbs').value=state.provAbs||'';
-  $('#tagsAll').checked = !!state.tagsAll;
+
+  // UI / listy
+  makeChips();
+  fillFilters();
+  renderTable();
+  fillSelects();
+  renderBasket();
+
+  // odtwórz klienta (bezpieczne przypisania)
+  const nm = $('#clName'), em = $('#clEmail'), ph = $('#clPhone'), np = $('#clNip'), ad = $('#clAddr');
+  if (nm) nm.value = state.client.name  || '';
+  if (em) em.value = state.client.email || '';
+  if (ph) ph.value = state.client.phone || '';
+  if (np) np.value = state.client.nip   || '';
+  if (ad) ad.value = state.client.addr  || '';
+
+  // VAT / prowizje (UI)
+  const vatSel = $('#selVat');
+  if (vatSel) vatSel.value = String(state.vat ?? 0.08);
+  const pPct = $('#provPct'), pAbs = $('#provAbs');
+  if (pPct) pPct.value = state.provPct || '';
+  if (pAbs) pAbs.value = state.provAbs || '';
+  const tAll = $('#tagsAll');
+  if (tAll) tAll.checked = !!state.tagsAll;
+
   // szybki/adv dobór
-  quickSuggest(); recomputeAdvanced();
-  // kontrakt podgląd
+  quickSuggest();
+  recomputeAdvanced();
+
+  // podgląd umowy
   updateContractPreview();
 }
+
 boot();
 </script>
 </body>
 </html>
-
