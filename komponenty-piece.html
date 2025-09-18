@@ -129,6 +129,7 @@
               <option value="DEFRO">DEFRO (pellet)</option>
               <option value="Stalmark">Stalmark (pellet)</option>
               <option value="LAZAR">LAZAR (zgazowujące drewno)</option>
+              <option value="LAZAR_PELLET">LAZAR (pellet)</option>
             </select>
             <select id="boiler" aria-labelledby="boilerLabel" title="Model kotła"></select>
           </div>
@@ -287,6 +288,9 @@
           Źródło: <code>localStorage["arkon_components_boilers_v2"]</code>. Filtrujemy tylko: <b>Ferroli</b>, <b>DEFRO</b>, <b>Stalmark</b>, <b>LAZAR</b>.<br>
           Preferencje przez <code>arkon_return_to</code>, <code>arkon_pref_brand</code>, <code>arkon_pref_fuel</code>.
           Wybór: <code>arkon_selected_boiler_id</code> lub <code>postMessage</code> (<code>type:"ARKON_BOILER_SELECTED"</code>).
+       const ALLOWED_BRANDS = ['Ferroli','DEFRO','Stalmark','LAZAR']; 
+// ewentualnie:
+/// const ALLOWED_BRANDS = ['Ferroli','DEFRO','Stalmark','LAZAR','HKS LAZAR'];
         </div>
         <!-- ▲▲▲ KONIEC MOSTKA ▲▲▲ -->
 
@@ -374,6 +378,14 @@
       { model:'DSpell 20 kW',      power:20, fuel:'drewno', price:26279.00 },
       { model:'DSpell 30 kW',      power:30, fuel:'drewno', price:28990.00 }
     ];
+    const LAZAR_PELLET = [
+  { model:'SmartFire 11/150 STD', power:11, fuel:'pellet', price:21574.20 },
+  { model:'SmartFire 15/240 EXC', power:15, fuel:'pellet', price:26666.40 },
+  { model:'SmartFire 22/440 STD', power:22, fuel:'pellet', price:23800.50 },
+  { model:'PelletFocus PF20/470', power:20, fuel:'pellet', price:23247.50 }
+  // ...itd. wg PDF
+];
+
 
     // Zasobniki i akcesoria
     const TANKS = { '120':2100, '150':2450, '200':2900, '300':3800 };
@@ -418,18 +430,20 @@
     const fmt = n => INT2.format(Number(n)||0);
 
     /* ===== Helpers ===== */
-    function modelsForBrand(b){
-      if(b==='Ferroli') return FERROLI;
-      if(b==='DEFRO') return DEFRO;
-      if(b==='Stalmark') return STALMARK;
-      if(b==='LAZAR') return LAZAR;
-      return [];
-    }
+function modelsForBrand(b){
+  if(b==='Ferroli')  return FERROLI;
+  if(b==='DEFRO')    return DEFRO;
+  if(b==='Stalmark') return STALMARK;
+  if(b==='LAZAR')    return LAZAR; // drewno (zgazowujące)
+  if(b==='LAZAR_PELLET') return modelsFromArkon('LAZAR','pellet'); // << DODANE
+  return [];
+}
     function fuelOfBrand(b){
       if(b==='Ferroli') return 'gaz-kondensacyjny';
       if(b==='DEFRO') return 'pellet';
       if(b==='Stalmark') return 'pellet';
       if(b==='LAZAR') return 'drewno';
+      if(b==='LAZAR_PELLET') return 'pellet';        // << DODANE
       return '';
     }
     function requiresBuffer(boiler){
@@ -728,23 +742,93 @@
     const ARKON_PREF_FUEL  = 'arkon_pref_fuel';
     const ALLOWED_BRANDS = ['Ferroli','DEFRO','Stalmark','LAZAR'];
 
-    function loadArkon(){
-      try{
-        const raw = localStorage.getItem(ARKON_LS_KEY); if(!raw) return;
-        const list = JSON.parse(raw); if(!Array.isArray(list)) return;
-        state.arkon.list = list
-          .filter(r => ALLOWED_BRANDS.includes(String(r.brand||'').trim()))
-          .map(r=>({
-            id:r.id, brand:r.brand||'', model:r.model||'',
-            price:Number(r.price)||0,
-            powMin:Number(r.powMin)||null, powMax:Number(r.powMax)||null,
-            fuel:(r.fuel||r.type||'').toString().toLowerCase(),
-            type:r.type||'',
-            flue:r.flue || r['Spalin Ø [mm]'] || ''
-          }));
-        state.arkon.byBrand = state.arkon.list.reduce((a,b)=>{ (a[b.brand]??=[]).push(b); return a; },{});
-      }catch{}
-    }
+// Upewnia się, że mamy dane w localStorage; w razie braku wczytuje z ./arkon_components_boilers_v2.json
+async function ensureArkonData() {
+  try {
+    if (localStorage.getItem(ARKON_LS_KEY)) return;
+    const res = await fetch('./arkon_components_boilers_v2.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const flat = (data.boilers || []).map(b => {
+      const normBrand = (b.brand || '').trim() === 'HKS LAZAR' ? 'LAZAR' : (b.brand || '').trim();
+      // etykieta modelu do listy ARKON
+      const label = [
+        b.series,
+        b.power_kw ? `${b.power_kw} kW` : '',
+        b.variant ? `(${b.variant})` : '',
+        b.package === 'Exclusive' ? 'EXC' : 'STD'
+      ].filter(Boolean).join(' ');
+      let fuel = (b.fuel || '').toLowerCase();
+      if (fuel.includes('wood') || fuel.includes('drewno')) fuel = 'drewno';
+      else if (fuel.includes('pellet')) fuel = 'pellet';
+      return {
+        id: b.sku || (`${b.series}-${b.power_kw||''}-${b.variant||''}-${b.package||''}`).replace(/\s+/g,'').toUpperCase(),
+        brand: normBrand,
+        model: label,
+        price: Number(b.gross_price_pln) || 0,
+        powMin: Number(b.power_kw) || null,
+        powMax: Number(b.power_kw) || null,
+        fuel,
+        type: b.package || ''
+      };
+    });
+    localStorage.setItem(ARKON_LS_KEY, JSON.stringify(flat));
+    localStorage.setItem(ARKON_PING_KEY, String(Date.now()));
+  } catch (e) {
+    console.warn('ensureArkonData():', e);
+  }
+}
+
+// Ładuje dane ARKON z localStorage i normalizuje je do state.arkon.list/byBrand
+function loadArkon(){
+  try{
+    const raw = localStorage.getItem(ARKON_LS_KEY);
+    if(!raw){ state.arkon.list = []; state.arkon.byBrand = {}; return; }
+    const list = JSON.parse(raw);
+    if(!Array.isArray(list)){ state.arkon.list = []; state.arkon.byBrand = {}; return; }
+
+    state.arkon.list = list
+      .filter(r => ALLOWED_BRANDS.includes(String(r.brand||'').trim()))
+      .map(r => ({
+        id: r.id,
+        brand: r.brand || '',
+        model: r.model || '',
+        price: Number(r.price) || 0,
+        powMin: Number(r.powMin) || null,
+        powMax: Number(r.powMax) || null,
+        fuel: (r.fuel || r.type || '').toString().toLowerCase(),
+        type: r.type || '',
+        flue: r.flue || r['Spalin Ø [mm]'] || ''
+      }));
+
+    state.arkon.byBrand = state.arkon.list.reduce((acc, item) => {
+      (acc[item.brand] = acc[item.brand] || []).push(item);
+      return acc;
+    }, {});
+  }catch(e){
+    console.warn('loadArkon():', e);
+    state.arkon.list = []; state.arkon.byBrand = {};
+  }
+}
+
+// Pobiera z localStorage listę modeli danej marki/fuel i mapuje do formatu lokalnych modeli
+function modelsFromArkon(brandName, fuelFilter) {
+  try {
+    const raw = localStorage.getItem(ARKON_LS_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return list
+      .filter(x => String(x.brand||'').trim() === brandName && (!fuelFilter || (x.fuel||'').includes(fuelFilter)))
+      .map(x => ({
+        model: `${x.model}`,             // już zawiera serię/moc/pakiet
+        power: x.powMax || x.powMin || '',
+        fuel:  x.fuel || fuelFilter || '',
+        type:  x.type || '',
+        price: Number(x.price) || 0
+      }))
+      .sort((a,b)=> (a.power||0) - (b.power||0) || (a.price||0) - (b.price||0));
+  } catch { return []; }
+}
     function fillArkonDefaults(){
       try{
         localStorage.setItem(ARKON_RETURN_KEY, location.href);
@@ -885,6 +969,11 @@
         const b = activeBoiler(); if(!b) return alert('Wybierz kocioł.');
         const surcharge = BOILER_ONLY_SURCHARGES[state.brand]||0;
         addToBasket(`Kocioł: ${b.model} — tylko urządzenie`, (Number(b.price)||0) + surcharge, 1); return;
+        const BOILER_ONLY_SURCHARGES = {
+  'Ferroli': 5000,
+  'DEFRO': 0, 'Stalmark': 0, 'LAZAR': 0,
+  'LAZAR_PELLET': 0 // << DODANE
+};
       }
     });
 
@@ -981,6 +1070,16 @@
       loadArkon(); fillArkonDefaults();
       renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
       calcSuggestedKW(); updateBufferUI();
+      // INIT
+async function init(){
+  fillBrands(); fillBoilers(); fillTanks(); fillAddons();
+  await ensureArkonData();   // << DODANE
+  loadArkon(); fillArkonDefaults();
+  renderArkonPreview(); renderMustHave(); renderPreview(); renderBasket();
+  calcSuggestedKW(); updateBufferUI();
+}
+init();
+
     }
     init();
   </script>
