@@ -1,0 +1,20 @@
+code,name,category,gross_price_pln,compatibility,source
+ECONET300,Moduł internetowy EcoNET300,internet_module,768.75,"pellet, wood",PDF HKS Lazar 14.07.2025
+4HEAT,Moduł internetowy 4Heat,internet_module,596.55,"pellet, wood",PDF HKS Lazar 14.07.2025
+ECOMAXC,Moduł rozszerzający Ecomax C,controller_module,799.5,pellet,PDF HKS Lazar 14.07.2025
+SENSOR_KOTLA,Czujnik temperatury kotła,sensor,55.35,"pellet, wood",PDF HKS Lazar 14.07.2025
+SENSOR_SPALIN,Czujnik temperatury spalin,sensor,159.9,"pellet, wood",PDF HKS Lazar 14.07.2025
+SENSOR_ZEWN,Czujnik temperatury zewnętrznej,sensor,67.65,"pellet, wood",PDF HKS Lazar 14.07.2025
+STB,Wyłącznik termostatyczny STB,safety,147.6,"pellet, wood",PDF HKS Lazar 14.07.2025
+TVKIT,Zestaw hydrauliczny TV Kit (zawór termostatyczny + pompa),hydraulics,0.0,"pellet, wood",W wielu modelach w standardzie wg PDF
+GROUP_MIX3D,Grupa pompowa MIX 3D,hydraulics,1174.65,"pellet, wood",PDF HKS Lazar 14.07.2025
+GROUP_DIRECT,Grupa pompowa bezpośrednia,hydraulics,1451.4,"pellet, wood",PDF HKS Lazar 14.07.2025
+MANIFOLD_2,Rozdzielacz 2-obiegowy,hydraulics,2164.8,"pellet, wood",PDF HKS Lazar 14.07.2025
+VALVE_TV25,Zawór termostatyczny TV 1” (DN25),valve,344.4,"pellet, wood",PDF HKS Lazar 14.07.2025
+VALVE_MIX4D25,Zawór mieszający 4D DN25,valve,270.6,"pellet, wood",PDF HKS Lazar 14.07.2025
+AUTOMIX55,"Siłownik AUTOMIX 55 (230VAC, 5Nm)",valve_actuator,430.5,"pellet, wood",PDF HKS Lazar 14.07.2025
+SONDA_LAMBDA,Sonda Lambda do kotłów pelletowych,combustion,1279.2,pellet,PDF HKS Lazar 14.07.2025
+AUTO_CLEAN_EXCH,Automatyczne czyszczenie wymiennika,maintenance,984.0,pellet,PDF HKS Lazar 14.07.2025
+AUTO_ASH,Automatyczne odpopielanie,maintenance,2091.0,pellet,PDF HKS Lazar 14.07.2025
+CWU190,Zbiornik higieniczny CWU 190L,tank,0.0,"pellet, wood",PDF HKS Lazar 14.07.2025
+BUFFER_TB01300,Bufor TB01/300,buffer,3991.35,"pellet, wood",PDF HKS Lazar 14.07.2025
