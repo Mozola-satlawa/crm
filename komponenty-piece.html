@@ -343,7 +343,7 @@ const MODELS = {
   /* DEFRO_PELLET zostanie dopisane poniżej */
 };
 
-/* ===== DEFRO pellet — baza NETTO (katalog), rabat 25%, +5000 NETTO na sztukę ===== */
+/* ===== DEFRO pellet — baza NETTO (katalog), +5000 NETTO na sztukę ===== */
 const DEFRO_PELLET_BASE = [
   // Hydropell
   { model: 'DEFRO Hydropell',       power: 8,  baseNet:  9340 },
@@ -392,7 +392,7 @@ const DEFRO_PELLET = DEFRO_PELLET_BASE.map(d => ({
   model: d.model,
   power: d.power,
   fuel: 'pellet',
-  // rabat 25% (×0.75) + dopłata stała 5000 NETTO do urządzenia
+  // + dopłata stała 5000 NETTO do urządzenia
   priceNet: +(d.baseNet * 0.75 + 5000).toFixed(2),
 }));
 // dopisz gałąź do MODELS
@@ -642,5 +642,6 @@ init();
 </script>
 </body>
 </html>
+
 
 
