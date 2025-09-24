@@ -50,6 +50,23 @@ th,td{border-bottom:1px solid var(--line);padding:8px 10px} thead th{background:
 @media print{header,.btn,nav,.hint,.mini{display:none!important} body{background:#fff;color:#000}
 .panel{background:#fff;border-color:#ddd} .wrap{max-width:none;margin:0;padding:0}
 h1{color:#000} thead th{background:#f2f2f2;color:#000;border-color:#ddd} th,td{border-bottom:1px solid #ddd}}
+
+/* === FIX KONTRASTU: wymuś jasny kolor tekstu === */
+body, h1, h2, h3, h4, h5, h6,
+p, span, a, li, label, small, strong, b, i, em,
+table, thead th, tbody td, tfoot td, th, td,
+button, .btn, .card, .panel,
+.price-preview, .muted, .mini, .hint { color: var(--ink) !important; }
+input[type=text], input[type=number], select, textarea {
+  color: var(--ink) !important; background: #0d1530 !important; caret-color: var(--ink); border-color: var(--line);
+}
+select option { color: var(--ink) !important; background: #0d1530 !important; }
+::placeholder,::-webkit-input-placeholder{ color: #cfd6f5 !important; }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus{
+  -webkit-text-fill-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0d1530 inset !important;
+          box-shadow: 0 0 0px 1000px #0d1530 inset !important;
+}
 </style>
 </head>
 <body>
@@ -81,6 +98,7 @@ h1{color:#000} thead th{background:#f2f2f2;color:#000;border-color:#ddd} th,td{b
             <option value="PEREKO_PELLET">PEREKO — pellet</option>
             <option value="PEREKO_WOOD">PEREKO — zgazowujący (drewno)</option>
             <option value="LAZAR_PELLET">LAZAR — pellet</option>
+            <option value="DEFRO_PELLET">DEFRO — pellet</option>
             <option value="DEFRO_WOOD">DEFRO — kotły zasypowe (drewno)</option>
           </select>
         </div>
@@ -251,8 +269,8 @@ const RAD_NET = 750; // netto/szt.
 const BUFFERS_GROSS23 = {
   300: 3991.35,
   500: 5659.23,
-  800: +( (5659.23/500)*800 ).toFixed(2),   // ~9054.77
-  1000: +( (5659.23/500)*1000 ).toFixed(2)  // ~11318.46
+  800: +( (5659.23/500)*800 ).toFixed(2),
+  1000: +( (5659.23/500)*1000 ).toFixed(2)
 };
 
 /* ===== Zasobniki CWU (brutto 23%) ===== */
@@ -321,8 +339,64 @@ const MODELS = {
     {model:'DEFRO Optima Komfort Eko 28', power:28, fuel:'drewno', priceNet: 7035+5000},
     {model:'DEFRO Optima Komfort Eko 35', power:35, fuel:'drewno', priceNet: 7995+5000},
     {model:'DEFRO Optima Komfort Eko 45', power:45, fuel:'drewno', priceNet: 9187.5+5000},
-  ]
+  ],
+  /* DEFRO_PELLET zostanie dopisane poniżej */
 };
+
+/* ===== DEFRO pellet — baza NETTO (katalog), rabat 25%, +5000 NETTO na sztukę ===== */
+const DEFRO_PELLET_BASE = [
+  // Hydropell
+  { model: 'DEFRO Hydropell',       power: 8,  baseNet:  9340 },
+  { model: 'DEFRO Hydropell',       power: 12, baseNet:  9930 },
+  { model: 'DEFRO Hydropell',       power: 18, baseNet: 10740 },
+  { model: 'DEFRO Hydropell',       power: 24, baseNet: 11430 },
+
+  // Komfort Eko Mini
+  { model: 'DEFRO Komfort Eko Mini', power: 11, baseNet: 10820 },
+  { model: 'DEFRO Komfort Eko Mini', power: 12, baseNet: 11320 },
+  { model: 'DEFRO Komfort Eko Mini', power: 15, baseNet: 12600 },
+  { model: 'DEFRO Komfort Eko Mini', power: 20, baseNet: 13310 },
+  { model: 'DEFRO Komfort Eko Mini', power: 24, baseNet: 14670 },
+
+  // Komfort Eko Lux
+  { model: 'DEFRO Komfort Eko Lux', power: 12, baseNet: 12570 },
+  { model: 'DEFRO Komfort Eko Lux', power: 13, baseNet: 13000 },
+  { model: 'DEFRO Komfort Eko Lux', power: 14, baseNet: 13670 },
+  { model: 'DEFRO Komfort Eko Lux', power: 15, baseNet: 15010 },
+  { model: 'DEFRO Komfort Eko Lux', power: 17, baseNet: 15740 },
+  { model: 'DEFRO Komfort Eko Lux', power: 20, baseNet: 18550 },
+
+  // Delta EkoPell
+  { model: 'DEFRO Delta EkoPell',   power: 10, baseNet: 15400 },
+
+  // Evopell
+  { model: 'DEFRO Evopell',         power: 11, baseNet: 12500 },
+  { model: 'DEFRO Evopell',         power: 14, baseNet: 13490 },
+
+  // Smart Ekopell
+  { model: 'DEFRO Smart Ekopell',   power: 12, baseNet: 17800 },
+  { model: 'DEFRO Smart Ekopell',   power: 20, baseNet: 18860 },
+  { model: 'DEFRO Smart Ekopell',   power: 24, baseNet: 19450 },
+  { model: 'DEFRO Smart Ekopell',   power: 28, baseNet: 20790 },
+  { model: 'DEFRO Smart Ekopell',   power: 38, baseNet: 23320 },
+
+  // Gamma
+  { model: 'DEFRO Gamma',           power: 12, baseNet: 15920 },
+  { model: 'DEFRO Gamma',           power: 24, baseNet: 16310 },
+  { model: 'DEFRO Gamma',           power: 30, baseNet: 17190 },
+  { model: 'DEFRO Gamma',           power: 36, baseNet: 17880 },
+  { model: 'DEFRO Gamma',           power: 40, baseNet: 19140 },
+  { model: 'DEFRO Gamma',           power: 56, baseNet: 21760 },
+];
+const DEFRO_PELLET = DEFRO_PELLET_BASE.map(d => ({
+  model: d.model,
+  power: d.power,
+  fuel: 'pellet',
+  // rabat 25% (×0.75) + dopłata stała 5000 NETTO do urządzenia
+  priceNet: +(d.baseNet * 0.75 + 5000).toFixed(2),
+}));
+// dopisz gałąź do MODELS
+MODELS.DEFRO_PELLET = DEFRO_PELLET;
 
 /* ===== Stan ===== */
 const state = {
@@ -331,7 +405,7 @@ const state = {
   variant:'bez', // bez/dotacja
   selected:null,
   rads:0,
-  addChimney:false, addPumps:true, addSummerBoiler:false, // ← pompki domyślnie WŁĄCZONE także bez dotacji
+  addChimney:false, addPumps:true, addSummerBoiler:false, // pompki domyślnie WŁĄCZONE także bez dotacji
   bufRule:50, bufNeed:0, bufferSize:0,
   tankLiters:0,
 };
@@ -339,7 +413,7 @@ const basket = [];
 
 /* ===== UKRYTE DOPŁATY (BRUTTO) ===== */
 const HIDDEN_PACK_MARGIN_GROSS = 2000;          // +2000 PLN do każdego zestawu
-const HIDDEN_DOTACJA_EXTRA_GROSS = 1000;        // +1000 PLN dodatkowo dla „z dotacją”
+const HIDDEN_DOTACJA_EXTRA_GROSS = 1000;        // +1000 PLN dodatkowo dla „z dotacją” (tylko pellet)
 
 /* ===== pomocnicze ===== */
 const q = s=>document.querySelector(s);
@@ -411,7 +485,6 @@ function updateBufferCalc(){
   q('#bufHint').style.display = requiresBuffer() ? '' : 'none';
   if(requiresBuffer()){
     let pick = 0;
-    // dobieramy najbliższy ≥ zalecanego z [300,500,800,1000]
     if(need<=300) pick=300;
     else if(need<=500) pick=500;
     else if(need<=800) pick=800;
@@ -442,7 +515,7 @@ function packNet(){
   if(requiresBuffer() && state.bufferSize>0){ addGross23.push(BUFFERS_GROSS23[state.bufferSize]||0); }
 
   const compNet = addGross23.reduce((a,g)=> a + componentsNetFromGross23(g), 0);
-  const radsNet = (Number(state.rads)||0) * 750; // netto/szt.
+  const radsNet = (Number(state.rads)||0) * RAD_NET;
 
   // === UKRYTE DOPŁATY (dodawane jako BRUTTO, przeliczone na NETTO wg bieżącego VAT) ===
   const vat = Number(q('#vat').value) || VAT8;
