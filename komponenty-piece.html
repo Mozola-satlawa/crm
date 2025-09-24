@@ -391,7 +391,7 @@ const DEFRO_PELLET = DEFRO_PELLET_BASE.map(d => ({
   power: d.power,
   fuel: 'pellet',
   // + dopłata stała 5000 NETTO do urządzenia
-  priceNet: +(d.baseNet + 3000).toFixed(2),
+  priceNet: +(d.baseNet + 5000).toFixed(2),
 }));
 // dopisz gałąź do MODELS
 MODELS.DEFRO_PELLET = DEFRO_PELLET;
@@ -640,6 +640,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
