@@ -1,4 +1,116 @@
-   <div class="right" style="margin-top:8px">
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalkulator Czyste Powietrze – ARKON (z Uwagami)</title>
+<meta name="description" content="Kalkulator dotacji Czyste Powietrze 2025: źródło ciepła, ocieplenie, stolarka, limity, VAT 8/23%, zapis • import • wydruk PDF.">
+<style>
+  :root{ --bg:#0b1020; --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da; --accent:#4cc9f0; --ok:#2b8a57; --grid:#243059; }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{ margin:0;background:linear-gradient(180deg,#0a0f1e,#0c1230 60%,#0a0f1e); color:var(--ink); font:17px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif; }
+  .wrap{max-width:1200px;margin:auto;padding:24px 16px 120px}
+  header{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+  .logo{width:64px;height:64px;border-radius:12px;display:grid;place-items:center;background:#0e1538;border:1px solid #1f2a55;overflow:hidden}
+  .logo img{width:100%;height:100%;object-fit:cover;background:#0e1538}
+  h1{font-size:24px;margin:0}
+  .muted{color:var(--muted);font-size:14px}
+  .panel{background:linear-gradient(180deg,var(--p1),var(--p2));border:1px solid #1c2750;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 10px 30px #0006}
+  .grid{display:grid;gap:12px}
+  @media(min-width:960px){.cols-3{grid-template-columns:1fr 1fr 1fr}.cols-2{grid-template-columns:1fr 1fr}}
+  label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px}
+  input,select,button,textarea{font:500 16px/1.3 system-ui,Segoe UI,Roboto,Arial;color:var(--ink)}
+  input,select,textarea{width:100%;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:10px;outline:none}
+  textarea{min-height:64px;resize:vertical}
+  input:focus,select:focus,textarea:focus{border-color:#3b4fa0;box-shadow:0 0 0 3px #3b4fa033}
+  input.num{text-align:right}
+  button{background:#233261;border:1px solid #3a4ca3;color:#fff;border-radius:12px;padding:10px 12px;cursor:pointer}
+  button.ghost{background:transparent;border:1px dashed #3a4ca3}
+  button.ok{background:#194d34;border-color:var(--ok)}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .tab-btn[aria-selected="true"]{background:#1b2550;border-color:#67a1ff;box-shadow:0 0 0 2px #67a1ff44}
+  .tab-btn{background:#233261;border:1px solid #3a4ca3;border-radius:999px;padding:10px 14px}
+  .pill{display:inline-block;background:#0d1530;border:1px dashed #2b3a77;border-radius:999px;padding:8px 10px;margin:4px 8px 0 0;font-size:14px;color:#aeb8da}
+  .right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .hidden{display:none}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:middle}
+  th.num,td.num{text-align:right}
+  .num{font-variant-numeric:tabular-nums}
+  [aria-live="polite"]{outline:none}
+  .cap-badge{display:inline-block;margin-left:8px;padding:2px 8px;border:1px solid #ff7b7b;border-radius:999px;font-size:12px;color:#ffdada;background:#3a0e14}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f1b44;color:#fff;border:1px solid #3a4ca3;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px #0007;z-index:9999;display:none}
+  .toast.show{display:block}
+
+  /* Sekcja do druku */
+  .prn{display:none}
+  .prn h2{margin:0 0 8px 0;font-size:20px}
+  .prn .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .prn .card{border:1px solid #bbb;border-radius:8px;padding:10px;background:#fff;color:#000}
+  .prn table{width:100%;border-collapse:collapse;background:#fff}
+  .prn th,.prn td{border-bottom:1px solid #bbb;padding:8px;font-size:14px}
+  .prn tfoot td{font-weight:700}
+  .sign{display:flex;gap:24px;margin-top:10px}
+  .sign .line{flex:1;border-top:1px solid #000;text-align:center;padding-top:6px;font-size:13px}
+
+  /* STOPKA witryny */
+  .site-footer{max-width:1200px;margin:16px auto 24px; color:#a9b6e6}
+  .site-footer .inner{display:flex;gap:16px;align-items:center;padding:12px 16px;border:1px solid #1c2750;border-radius:12px;background:linear-gradient(180deg,#0e1740,#0f1a4a)}
+  .site-footer .f-logo{width:42px;height:42px;border-radius:10px;background:#0e1538;display:grid;place-items:center;overflow:hidden}
+  .site-footer .f-logo img{width:100%;height:100%;object-fit:cover}
+  .site-footer .f-text{font-size:13px;line-height:1.35}
+  .site-footer .f-text b{color:#dfe6ff}
+
+  /* ===== DRUK ===== */
+  @media print{
+    @page{ size:A4 landscape; margin:10mm; }
+    html,body{-webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff}
+    body{color:#000;font:14px/1.35 system-ui,Segoe UI,Roboto,Arial}
+    .wrap{max-width:none;margin:0;padding:0}
+    header{margin:0 0 8px 0}
+    h1{font-size:20px}
+    .logo{width:42px;height:42px;border-radius:8px;border:1px solid #000}
+    .panel, .tabs, .right button, .tab-btn, #tab-main, #tab-env, #tab-add, .site-footer{display:none!important}
+    .prn{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header>
+    <div class="logo" aria-hidden="true">
+      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC">
+    </div>
+    <div>
+      <h1>Kalkulator dotacji • Czyste Powietrze 2025 <span id="clientBadge" class="muted"></span></h1>
+      <div class="muted">Źródło ciepła + ocieplenie/stolarka + dodatki. VAT <span id="vatLive">8</span>%, zapis • import • wydruk PDF.</div>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Zakładki kalkulatora">
+    <button class="tab-btn" role="tab" aria-selected="true"  aria-controls="tab-main" id="tabbtn-main" type="button">Główne (Źródło ciepła)</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-env"  id="tabbtn-env"  type="button">Ocieplenie / Stolarka</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-add"  id="tabbtn-add"  type="button">Dodatki</button>
+  </div>
+
+  <!-- DANE KLIENTA -->
+  <section class="panel" aria-labelledby="clientTitle">
+    <h2 id="clientTitle" class="muted" style="margin:0 0 8px 0">Dane klienta / inwestycji</h2>
+    <div class="grid cols-3">
+      <div><label for="cl_name">Nazwa klienta / Inwestor</label><input id="cl_name" placeholder="np. Jan Kowalski"></div>
+      <div><label for="cl_phone">Telefon</label><input id="cl_phone" inputmode="tel" placeholder="np. 600 000 000"></div>
+      <div><label for="cl_email">E-mail</label><input id="cl_email" inputmode="email" placeholder="np. jan@przyklad.pl"></div>
+      <div class="cols-2" style="grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:12px">
+        <div><label for="cl_addr">Adres inwestycji</label><input id="cl_addr" placeholder="ulica, nr, miejscowość"></div>
+        <div><label for="cl_date">Data sporządzenia</label><input id="cl_date" type="date"></div>
+      </div>
+      <div style="grid-column:1 / -1">
+        <label for="cl_notes">Notatki</label>
+        <textarea id="cl_notes" placeholder="Uwagi do oferty / zakres prac"></textarea>
+      </div>
+    </div>
+    <div class="right" style="margin-top:8px">
       <button id="btnSave" class="ghost" type="button">Zapisz (przeglądarka)</button>
       <button id="btnLoad" class="ghost" type="button">Wczytaj</button>
       <button id="btnExport" class="ghost" type="button">Pobierz zapis (.arkon)</button>
