@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kalkulator Czyste Powietrze – ARKON (z Uwagami)</title>
+<title>Kalkulator Czyste Powietrze – ARKON (super wygodny)</title>
 <meta name="description" content="Kalkulator dotacji Czyste Powietrze 2025: źródło ciepła, ocieplenie, stolarka, limity, VAT 8/23%, zapis • import • wydruk PDF.">
 <style>
   :root{ --bg:#0b1020; --p1:#121a34; --p2:#172142; --ink:#e8edff; --muted:#aeb8da; --accent:#4cc9f0; --ok:#2b8a57; --grid:#243059; }
@@ -43,6 +43,11 @@
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f1b44;color:#fff;border:1px solid #3a4ca3;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px #0007;z-index:9999;display:none}
   .toast.show{display:block}
 
+  /* Panel do kalkulatora powierzchni */
+  .area-calc label{display:inline-block;font-size:14px;color:var(--muted);margin-right:4px}
+  .area-calc input{width:120px;margin-right:12px;background:#0d1530;border:1px solid #28356c;border-radius:10px;padding:8px;color:var(--ink)}
+  .area-calc span b{font-weight:700;color:var(--ink);}
+
   /* Sekcja do druku */
   .prn{display:none}
   .prn h2{margin:0 0 8px 0;font-size:20px}
@@ -80,7 +85,8 @@
 <div class="wrap" id="app">
   <header>
     <div class="logo" aria-hidden="true">
-      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC">
+      <!-- logo inserted from base64 -->
+      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC" />
     </div>
     <div>
       <h1>Kalkulator dotacji • Czyste Powietrze 2025 <span id="clientBadge" class="muted"></span></h1>
@@ -119,6 +125,8 @@
         Wczytaj z pliku
       </label>
       <button id="btnPrint" class="ok" type="button">Drukuj / PDF</button>
+      <!-- Nowy przycisk do bezpośredniego zapisu raportu do pliku PDF -->
+      <button id="btnPdf" class="ok" type="button">Eksport do PDF</button>
     </div>
   </section>
 
@@ -225,6 +233,12 @@
   <section id="tab-env" class="hidden" role="tabpanel" aria-labelledby="tabbtn-env">
     <section class="panel">
       <div class="muted">Dotacja = min( koszt NETTO × % , pow_m2 × stawka_dotacji_netto_na_m2 ). Ceny brutto liczone z VAT <span id="vatLive2">8</span>%.</div>
+    </section>
+    <!-- DODATKOWY KALKULATOR POWIERZCHNI -->
+    <section class="panel area-calc">
+      <label for="calc_length">Długość [m]</label><input id="calc_length" type="number" inputmode="decimal" placeholder="0">
+      <label for="calc_width">Szerokość [m]</label><input id="calc_width" type="number" inputmode="decimal" placeholder="0">
+      <span>Powierzchnia: <b id="calc_area">0</b> m²</span>
     </section>
     <section class="panel">
       <div class="right" style="margin-bottom:6px">
@@ -359,8 +373,8 @@
         <b>Dodatki (poza tynkiem)</b>
         <table>
           <thead><tr><th>Dodatek</th><th class="num">NETTO</th><th class="num">BRUTTO</th></tr></thead>
-        <tbody id="pr_add_body"></tbody>
-        <tfoot><tr><td class="num"><b>Razem</b></td><td class="num" id="pr_add_net">0</td><td class="num" id="pr_add_gross">0</td></tr></tfoot>
+          <tbody id="pr_add_body"></tbody>
+          <tfoot><tr><td class="num"><b>Razem</b></td><td class="num" id="pr_add_net">0</td><td class="num" id="pr_add_gross">0</td></tr></tfoot>
         </table>
       </div>
     </div>
@@ -377,7 +391,7 @@
 <footer class="site-footer" aria-label="Dane firmy">
   <div class="inner">
     <div class="f-logo" aria-hidden="true">
-      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC">
+      <img alt="ARKON" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAAB49Y7QAAAACXBIWXMAAAsSAAALEgHS3X78AAAAPElEQVR4nO3OsQkAQAwEwZL//2aWQwE0QeB0xwqG8xgk7u+FAAD8Jr8wHh8rCkZgO1FQqf8mF3dwcHBwcHBwcHBweE9QmU+Qp6wq7mPAAAAAElFTkSuQmCC" />
     </div>
     <div class="f-text">
       <b>ARKON – Przedsiębiorstwo Wielobranżowe</b><br>
@@ -397,7 +411,7 @@ function q(s){ return document.querySelector(s); }
 function qa(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
 var INT = new Intl.NumberFormat('pl-PL',{maximumFractionDigits:0});
 function fmt(n){ return isFinite(n) ? INT.format(Math.round(n)) : '—'; }
-function toNum(v){ if (typeof v !== 'string') return Number(v) || 0; var s=v.replace(/\\u00A0/g,' ').replace(/\\s+/g,'').replace(/\\./g,'').replace(',', '.'); var n=parseFloat(s); return isFinite(n)?n:0; }
+function toNum(v){ if (typeof v !== 'string') return Number(v) || 0; var s=v.replace(/\u00A0/g,' ').replace(/\s+/g,'').replace(/\./g,'').replace(',', '.'); var n=parseFloat(s); return isFinite(n)?n:0; }
 function debounce(fn,ms){ var t; ms=ms||180; return function(){ var a=arguments; clearTimeout(t); t=setTimeout(function(){ fn.apply(null,a); },ms); }; }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function toast(msg){ var el=q('#toast'); el.textContent=msg||'OK'; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800); }
@@ -589,7 +603,6 @@ function buildEnv(){
     var tdGrant=document.createElement('td'); tdGrant.className='num';
     var tdGross=document.createElement('td'); tdGross.className='num';
     var tdCopay=document.createElement('td'); tdCopay.className='num';
-
     var tdNote=document.createElement('td'); var note=document.createElement('input'); note.placeholder='np. 237 m² / 0,9×2 m'; tdNote.appendChild(note);
 
     tr.appendChild(tdSel); tr.appendChild(tdName); tr.appendChild(tdM2); tr.appendChild(tdOwn); tr.appendChild(tdRate); tr.appendChild(tdCost); tr.appendChild(tdCap); tr.appendChild(tdGrant); tr.appendChild(tdGross); tr.appendChild(tdCopay); tr.appendChild(tdNote);
@@ -643,7 +656,6 @@ function buildAddons(){
     var tdGross=document.createElement('td'); tdGross.className='num';
     var tdGrant=document.createElement('td'); tdGrant.className='num'; tdGrant.textContent='0';
     var tdCopay=document.createElement('td'); tdCopay.className='num';
-
     var tdNote=document.createElement('td'); var note=document.createElement('input'); note.placeholder='np. 118 mb / 260 m²'; tdNote.appendChild(note);
 
     tr.appendChild(tdSel); tr.appendChild(tdName); tr.appendChild(tdQty); tr.appendChild(tdUnit); tr.appendChild(tdNet); tr.appendChild(tdGross); tr.appendChild(tdGrant); tr.appendChild(tdCopay); tr.appendChild(tdNote);
@@ -870,9 +882,9 @@ function renderSummary(){
   state.mainRows.forEach(function(r){ if(r.sel && state.level.pct>0){ var lim = limActive(DATA_MAIN[r.compIdx].variants[r.vIdx].lim); need += Math.ceil(lim/state.level.pct); } });
   state.envRows.forEach(function(r){ if(r.sel && state.level.pct>0){ var capRow = (r.m2||0) * (rateForKey(r.key)||0); need += Math.ceil(capRow/state.level.pct); } });
 
-  q('#sumGrantAll').textContent = fmt(totalGrant);   // dotacja po limitach
-  q('#sumGrossAll').textContent = fmt(totalGross);   // brutto całość
-  q('#sumCopayAll').textContent = fmt(totalCopay);   // dopłata
+  q('#sumGrantAll').textContent = fmt(totalGrant);
+  q('#sumGrossAll').textContent = fmt(totalGross);
+  q('#sumCopayAll').textContent = fmt(totalCopay);
   q('#sumNeedAll').textContent  = state.level.pct ? fmt(need) : '—';
   q('#globalCap').textContent   = gCap ? fmt(gCap) : '—';
   q('#globalCapUsed').textContent = gCap ? (capUsed ? 'TAK' : 'NIE') : '—';
@@ -994,7 +1006,6 @@ function fillPrintSheet(){
   var envBody =q('#pr_env_body');  envBody.innerHTML='';
   var addBody =q('#pr_add_body');  addBody.innerHTML='';
 
-  // główne
   var mn=0, mg=0, mgr=0;
   state.mainRows.forEach(function(r){
     if(!r.sel) return;
@@ -1012,7 +1023,6 @@ function fillPrintSheet(){
   q('#pr_main_gross').textContent=fmt(mg);
   q('#pr_main_grant').textContent=fmt(mgr);
 
-  // ocieplenie
   var en=0, eg=0, egr=0;
   state.envRows.forEach(function(r,i){
     if(!r.sel) return;
@@ -1030,7 +1040,6 @@ function fillPrintSheet(){
   q('#pr_env_gross').textContent=fmt(eg);
   q('#pr_env_grant').textContent=fmt(egr);
 
-  // dodatki (bez tynku)
   var an=0, ag=0;
   state.addRows.forEach(function(r){
     if(r.auto) return;
@@ -1046,29 +1055,110 @@ function fillPrintSheet(){
   q('#pr_add_net').textContent=fmt(an);
   q('#pr_add_gross').textContent=fmt(ag);
 
-  // rozbicie ocieplenia
   renderBreakdownForPrint();
 
-  // sumy globalne
-  var totalNet   = mn + en + an + (getAddonByKey('tynk')? (getAddonByKey('tynk')._net||0) : 0);
-  var totalGross = mg + eg + ag + (getAddonByKey('tynk')? (getAddonByKey('tynk')._gross||0) : 0);
+  var m=getTotalsMain(), e=getTotalsEnv(), a=getTotalsAdd();
   var envRawGrant = e.sumGrant || 0;
   var envCap      = ENV_CAPS[state.level.name] || 0;
   var envGrant    = envCap ? Math.min(envRawGrant, envCap) : envRawGrant;
   var totalGrant  = (m.sumGrant||0) + envGrant;
   var finalGross  = (m.sumGross||0) + (e.sumGross||0) + (a.sumGross||0);
   var finalCopay  = Math.max(0, finalGross - totalGrant);
+  var totalNetVal = mn + en + an + (getAddonByKey('tynk')? (getAddonByKey('tynk')._net||0) : 0);
 
-  q('#pr_sum_net').textContent   = fmt(totalNet);
+  q('#pr_sum_net').textContent   = fmt(totalNetVal);
   q('#pr_sum_gross').textContent = fmt(finalGross);
   q('#pr_sum_grant').textContent = fmt(totalGrant);
   q('#pr_sum_copay').textContent = fmt(finalCopay);
 }
 
 function doPrint(){
+  // Przygotowanie danych i osobnego okna do druku. Niektóre przeglądarki
+  // blokują wywołanie window.print() na aktualnym dokumencie, dlatego
+  // otwieramy nowy dokument zawierający tylko arkusz do druku wraz
+  // z odpowiednimi stylami. Po zakończeniu wydruku okno jest zamykane.
   collectClient();
   fillPrintSheet();
-  window.print();
+  var printContents = document.getElementById('printSheet').innerHTML;
+  var styles = '';
+  // Zbieramy wszystkie style z bieżącej strony, aby druk wyglądał tak samo
+  document.querySelectorAll('style').forEach(function(style){
+    styles += style.innerHTML;
+  });
+  var printWindow = window.open('', '_blank', 'width=1024,height=768');
+  if (!printWindow) {
+    // Fallback: jeśli nowego okna nie udało się otworzyć, uruchamiamy standardowy druk
+    window.print();
+    return;
+  }
+  printWindow.document.open();
+  printWindow.document.write('<html><head><title>Drukuj / PDF</title><style>' + styles + '</style></head><body>' + printContents + '</body></html>');
+  printWindow.document.close();
+  // Poczekaj aż dokument w oknie jest gotowy, potem wydrukuj i zamknij
+  printWindow.focus();
+  setTimeout(function(){
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+}
+
+/* ===== eksport do PDF ===== */
+// Funkcja generująca raport w formacie PDF przy użyciu biblioteki html2pdf.js.
+// Przygotowuje sekcję #printSheet tak jak przy druku, a następnie pobiera ją
+// jako gotowy plik PDF do zapisania lokalnie. Używa ustawień dopasowanych do
+// formatu A4 w poziomie, z wysoką jakością obrazu. Nazwa pliku bazuje na
+// aktualnej dacie.
+function exportAsPDF(){
+  try{
+    // Przygotuj dane i zawartość do eksportu
+    collectClient();
+    fillPrintSheet();
+    var element = document.getElementById('printSheet');
+    var opt = {
+      filename: 'kalkulator_arkon_' + todayStr() + '.pdf',
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+    var generate = function(){
+      try{
+        html2pdf().from(element).set(opt).save();
+      }catch(e){
+        console.error('html2pdf error', e);
+        alert('Błąd podczas generowania PDF: '+e);
+      }
+    };
+    // Jeśli biblioteka jeszcze nie jest załadowana, załaduj ją dynamicznie z CDN i potem wywołaj generowanie
+    if (typeof window.html2pdf === 'undefined'){
+      var script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.crossOrigin = 'anonymous';
+      script.onload = function(){ setTimeout(generate, 100); };
+      script.onerror = function(){ alert('Nie udało się załadować biblioteki html2pdf.'); };
+      document.head.appendChild(script);
+    } else {
+      generate();
+    }
+  }catch(err){
+    console.error('Błąd podczas eksportu PDF:', err);
+    alert('Nie udało się wygenerować PDF.');
+  }
+}
+
+/* ===== AREA CALCULATOR ===== */
+function initAreaCalc(){
+  var lenInput = q('#calc_length');
+  var widthInput = q('#calc_width');
+  var areaSpan = q('#calc_area');
+  if(!lenInput || !widthInput) return;
+  function updateArea(){
+    var L=toNum(lenInput.value);
+    var W=toNum(widthInput.value);
+    var area = L * W;
+    areaSpan.textContent = isFinite(area) && area>0 ? area.toFixed(2) : '0';
+  }
+  lenInput.addEventListener('input', updateArea);
+  widthInput.addEventListener('input', updateArea);
 }
 
 /* ===== init & UI ===== */
@@ -1092,19 +1182,22 @@ function init(){
 
   q('#btnPresetMain').addEventListener('click', presetMain);
   q('#btnAutoNeedMain').addEventListener('click', autoNeedMain);
-
   q('#btnPresetEnv').addEventListener('click', presetEnv);
   q('#btnAutoNeedEnv').addEventListener('click', autoNeedEnv);
-
   q('#btnPresetAdd').addEventListener('click', presetAdd);
-
-  // zapisy
   q('#btnSave').addEventListener('click', promptSave);
   q('#btnLoad').addEventListener('click', loadAll);
   q('#btnExport').addEventListener('click', exportToFile);
   q('#btnPrint').addEventListener('click', doPrint);
+  // obsługa eksportu PDF
+  var pdfBtn = q('#btnPdf');
+  if (pdfBtn) pdfBtn.addEventListener('click', exportAsPDF);
+
+  initAreaCalc();
 }
 init();
 </script>
+<!-- Biblioteka html2pdf (zawiera html2canvas oraz jsPDF) do konwersji HTML na PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>
