@@ -351,14 +351,32 @@
 
     <h2 style="margin-top:10px">2) Ocieplenie i stolarka</h2>
     <table>
-      <thead><tr><th>Pozycja</th><th class="num">NETTO</th><th class="num">BRUTTO</th><th class="num">Dotacja</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Pozycja</th>
+          <!-- Now also show powierzchnię dla każdej pozycji ocieplenia/stolarki -->
+          <th class="num">Pow. [m²]</th>
+          <th class="num">NETTO</th>
+          <th class="num">BRUTTO</th>
+          <th class="num">Dotacja</th>
+        </tr>
+      </thead>
       <tbody id="pr_env_body"></tbody>
-      <tfoot><tr><td class="num"><b>Razem</b></td><td class="num" id="pr_env_net">0</td><td class="num" id="pr_env_gross">0</td><td class="num" id="pr_env_grant">0</td></tr></tfoot>
+      <tfoot>
+        <tr>
+          <td class="num"><b>Razem</b></td>
+          <!-- Suma powierzchni nie jest wyliczana; pozostawmy puste pole -->
+          <td class="num"></td>
+          <td class="num" id="pr_env_net">0</td>
+          <td class="num" id="pr_env_gross">0</td>
+          <td class="num" id="pr_env_grant">0</td>
+        </tr>
+      </tfoot>
     </table>
 
     <div class="cards" style="margin:10px 0">
       <div class="card">
-        <b>Rozbicie ocieplenia (w tym):</b>
+        <b>Rozbicie ocieplenia (w tym tynk, parapety, rynny, opierzenie):</b>
         <table>
           <tbody>
             <tr><td>Ocieplenie – łącznie (pozycje + dodatki)</td><td class="num" id="brk_env_total_net">0</td><td class="num" id="brk_env_total_gross">0</td></tr>
@@ -372,9 +390,24 @@
       <div class="card">
         <b>Dodatki (poza tynkiem)</b>
         <table>
-          <thead><tr><th>Dodatek</th><th class="num">NETTO</th><th class="num">BRUTTO</th></tr></thead>
-          <tbody id="pr_add_body"></tbody>
-          <tfoot><tr><td class="num"><b>Razem</b></td><td class="num" id="pr_add_net">0</td><td class="num" id="pr_add_gross">0</td></tr></tfoot>
+          <thead>
+            <tr>
+              <th>Dodatek</th>
+              <!-- Dodaj ilość, aby w wydruku było widać liczbę sztuk lub metrów -->
+              <th class="num">Ilość</th>
+              <th class="num">NETTO</th>
+              <th class="num">BRUTTO</th>
+            </tr>
+          </thead>
+        <tbody id="pr_add_body"></tbody>
+        <tfoot>
+            <tr>
+              <td class="num"><b>Razem</b></td>
+              <td class="num"></td>
+              <td class="num" id="pr_add_net">0</td>
+              <td class="num" id="pr_add_gross">0</td>
+            </tr>
+        </tfoot>
         </table>
       </div>
     </div>
@@ -842,12 +875,15 @@ function renderBreakdownForPrint(){
   q('#brk_env_total_gross').textContent = fmt(totalGross);
   q('#brk_tynk_net').textContent        = fmt(t._net||0);
   q('#brk_tynk_gross').textContent      = fmt(t._gross||0);
-  q('#brk_parapety_net').textContent    = p.sel?fmt(p._net||0):'—';
-  q('#brk_parapety_gross').textContent  = p.sel?fmt(p._gross||0):'—';
-  q('#brk_rynny_net').textContent       = r.sel?fmt(r._net||0):'—';
-  q('#brk_rynny_gross').textContent     = r.sel?fmt(r._gross||0):'—';
-  q('#brk_opierzenie_net').textContent  = o.sel?fmt(o._net||0):'—';
-  q('#brk_opierzenie_gross').textContent= o.sel?fmt(o._gross||0):'—';
+  // Zawsze pokazuj wartości (0 gdy brak) dla poszczególnych dodatków. Dzięki temu
+  // użytkownik na wydruku widzi, ile konkretnie kosztują parapety, rynny
+  // i opierzenie, nawet jeśli nie zostały wybrane (0 zamiast „—”).
+  q('#brk_parapety_net').textContent    = fmt(p._net||0);
+  q('#brk_parapety_gross').textContent  = fmt(p._gross||0);
+  q('#brk_rynny_net').textContent       = fmt(r._net||0);
+  q('#brk_rynny_gross').textContent     = fmt(r._gross||0);
+  q('#brk_opierzenie_net').textContent  = fmt(o._net||0);
+  q('#brk_opierzenie_gross').textContent= fmt(o._gross||0);
 }
 
 function renderSummary(){
@@ -1029,7 +1065,9 @@ function fillPrintSheet(){
     var name=DATA_ENV[i].name;
     var label = name + (r.note ? ' ('+r.note+')' : '');
     var tr=document.createElement('tr');
+    // Include powierzchnia (m2) entered by użytkownik
     tr.innerHTML='<td>'+label+'</td>'
+      +'<td class="num">'+fmt(r.m2||0)+'</td>'
       +'<td class="num">'+fmt(r.costNet||0)+'</td>'
       +'<td class="num">'+fmt(r._gross||0)+'</td>'
       +'<td class="num">'+fmt(r._grant||0)+'</td>';
@@ -1046,7 +1084,9 @@ function fillPrintSheet(){
     if(!r.sel) return;
     var label = (ADDONS.find(x=>x.key===r.key)?.name || r.key) + (r.note ? ' ('+r.note+')' : '');
     var tr=document.createElement('tr');
+    // dodaj ilość przy każdym dodatku
     tr.innerHTML='<td>'+label+'</td>'
+      +'<td class="num">'+fmt(r.qty||0)+'</td>'
       +'<td class="num">'+fmt(r._net||0)+'</td>'
       +'<td class="num">'+fmt(r._gross||0)+'</td>';
     addBody.appendChild(tr);
@@ -1057,6 +1097,9 @@ function fillPrintSheet(){
 
   renderBreakdownForPrint();
 
+  // Podsumowanie globalne (NETTO, BRUTTO, dotacja i dopłata). Obliczamy tak jak
+  // w podsumowaniu live – sumujemy NETTO ze źródeł ciepła, ocieplenia/stolarki
+  // oraz dodatków (bez automatycznego tynku, który już jest w ociepleniu).
   var m=getTotalsMain(), e=getTotalsEnv(), a=getTotalsAdd();
   var envRawGrant = e.sumGrant || 0;
   var envCap      = ENV_CAPS[state.level.name] || 0;
@@ -1064,7 +1107,7 @@ function fillPrintSheet(){
   var totalGrant  = (m.sumGrant||0) + envGrant;
   var finalGross  = (m.sumGross||0) + (e.sumGross||0) + (a.sumGross||0);
   var finalCopay  = Math.max(0, finalGross - totalGrant);
-  var totalNetVal = mn + en + an + (getAddonByKey('tynk')? (getAddonByKey('tynk')._net||0) : 0);
+  var totalNetVal = (m.sumNet||0) + (e.sumNet||0) + (a.sumNet||0);
 
   q('#pr_sum_net').textContent   = fmt(totalNetVal);
   q('#pr_sum_gross').textContent = fmt(finalGross);
