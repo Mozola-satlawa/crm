@@ -354,7 +354,6 @@
       <thead>
         <tr>
           <th>Pozycja</th>
-          <!-- Now also show powierzchnię dla każdej pozycji ocieplenia/stolarki -->
           <th class="num">Pow. [m²]</th>
           <th class="num">NETTO</th>
           <th class="num">BRUTTO</th>
@@ -365,7 +364,6 @@
       <tfoot>
         <tr>
           <td class="num"><b>Razem</b></td>
-          <!-- Suma powierzchni nie jest wyliczana; pozostawmy puste pole -->
           <td class="num"></td>
           <td class="num" id="pr_env_net">0</td>
           <td class="num" id="pr_env_gross">0</td>
@@ -393,7 +391,6 @@
           <thead>
             <tr>
               <th>Dodatek</th>
-              <!-- Dodaj ilość, aby w wydruku było widać liczbę sztuk lub metrów -->
               <th class="num">Ilość</th>
               <th class="num">NETTO</th>
               <th class="num">BRUTTO</th>
@@ -599,8 +596,8 @@ function debRecalcMainRow(i){ return debounce(function(){ recalcMainRow(i); },14
 var RATES_M2 = {
   sciany: { P:180, M:210, T:250 },
   strop:  { P: 80, M:140, T:200 },
-  podloga:{ P: 80, M:100, T:150 },
-  okna:   { P:650, M:1050, T:1500 },
+  podloga:{ P: 80, M:115, T:150 },   // poprawka: M było 100, powinno być 115
+  okna:   { P:480, M:840, T:1200 }, // poprawka: było 650/1050/1500, powinno być 480/840/1200
   drzwi:  { P:2000, M:2500, T:3000 },
   bramy:  { P: 600, M:1050, T:1500 }
 };
@@ -875,9 +872,6 @@ function renderBreakdownForPrint(){
   q('#brk_env_total_gross').textContent = fmt(totalGross);
   q('#brk_tynk_net').textContent        = fmt(t._net||0);
   q('#brk_tynk_gross').textContent      = fmt(t._gross||0);
-  // Zawsze pokazuj wartości (0 gdy brak) dla poszczególnych dodatków. Dzięki temu
-  // użytkownik na wydruku widzi, ile konkretnie kosztują parapety, rynny
-  // i opierzenie, nawet jeśli nie zostały wybrane (0 zamiast „—”).
   q('#brk_parapety_net').textContent    = fmt(p._net||0);
   q('#brk_parapety_gross').textContent  = fmt(p._gross||0);
   q('#brk_rynny_net').textContent       = fmt(r._net||0);
@@ -989,7 +983,7 @@ function loadAll(){
   if (typeof d.vat!=='undefined'){ setVAT(d.vat); q('#vatSel').value=String(d.vat); }
 
   if (d.main && d.main.forEach) d.main.forEach(function(m,i){ var r=state.mainRows[i]; if(!r) return; r.sel=!!m.sel; r.els.sel.checked=r.sel; r.tr.classList.toggle('is-selected', r.sel); r.vIdx=Number(m.vIdx||0); r.els.selVar.value=String(r.vIdx); r.costInput=toNum(m.cost); r.els.cost.value=r.costInput?String(r.costInput):''; r.note=m.note||''; if(r.els.note) r.els.note.value=r.note; recalcMainRow(i); });
-  if (d.env && d.env.forEach)   d.env.forEach(function(e,i){ var r=state.envRows[i]; if(!r) return; r.sel=!!e.sel; r.els.sel.checked=r.sel; r.tr.classList.toggle('is-selected', r.sel); r.m2=toNum(e.m2); r.els.m2.value=r.m2?String(e.m2):''; r.ownRate=toNum(e.ownRate); r.els.ownRate.value=r.ownRate?String(r.ownRate):''; r.note=e.note||''; if(r.els.note) r.els.note.value=r.note; recalcEnvRow(i); });
+  if (d.env && d.env.forEach)   d.env.forEach(function(e,i){ var r=state.envRows[i]; if(!r) return; r.sel=!!e.sel; r.els.sel.checked=r.sel; r.tr.classList.toggle('is-selected', r.sel); r.m2=toNum(e.m2); r.els.m2.value=r.m2?String(e.m2):''; r.ownRate=toNum(e.ownRate); r.els.ownRate.value=r.ownRate?String(e.ownRate):''; r.note=e.note||''; if(r.els.note) r.els.note.value=r.note; recalcEnvRow(i); });
   if (d.add && d.add.forEach)   d.add.forEach(function(a){ var r=getAddonByKey(a.key); if(!r) return; r.sel=!!a.sel; if(r.els.sel) r.els.sel.checked=r.sel; r.tr.classList.toggle('is-selected', r.sel); if(!r.auto){ r.qty=toNum(a.qty); if(r.els.qty) r.els.qty.value=r.qty?String(r.qty):''; } r.unitNet=toNum(a.unitNet)||r.unitNet; if(r.els.unit) r.els.unit.value=String(r.unitNet); r.note=a.note||''; if(r.els.note) r.els.note.value=r.note; recalcAddRow(state.addRows.indexOf(r)); });
   refreshLevel();
   toast('Wczytano zapis z przeglądarki.');
@@ -998,7 +992,7 @@ function exportToFile(){
   collectClient();
   var blob=new Blob([JSON.stringify({
     client:state.client,
-    typ:q('#typ').value, mies:q('#doch_mies').value, roczny:q('#doch_roczny').value, swiad:q('#swiadczenia').value,
+    typ:q('#typ').value, mies:q('#doch_mies').value, roczny:q('#doch_roczny').value, swiadczenia:q('#swiadczenia').value,
     pm:state.priceMode, vat:VAT,
     main: state.mainRows.map(r=>({sel:r.sel,vIdx:r.vIdx,cost:r.costInput,note:r.note||''})),
     env:  state.envRows.map(r=>({sel:r.sel,m2:r.m2,ownRate:r.ownRate,note:r.note||''})),
@@ -1065,7 +1059,6 @@ function fillPrintSheet(){
     var name=DATA_ENV[i].name;
     var label = name + (r.note ? ' ('+r.note+')' : '');
     var tr=document.createElement('tr');
-    // Include powierzchnia (m2) entered by użytkownik
     tr.innerHTML='<td>'+label+'</td>'
       +'<td class="num">'+fmt(r.m2||0)+'</td>'
       +'<td class="num">'+fmt(r.costNet||0)+'</td>'
@@ -1084,7 +1077,6 @@ function fillPrintSheet(){
     if(!r.sel) return;
     var label = (ADDONS.find(x=>x.key===r.key)?.name || r.key) + (r.note ? ' ('+r.note+')' : '');
     var tr=document.createElement('tr');
-    // dodaj ilość przy każdym dodatku
     tr.innerHTML='<td>'+label+'</td>'
       +'<td class="num">'+fmt(r.qty||0)+'</td>'
       +'<td class="num">'+fmt(r._net||0)+'</td>'
@@ -1097,9 +1089,7 @@ function fillPrintSheet(){
 
   renderBreakdownForPrint();
 
-  // Podsumowanie globalne (NETTO, BRUTTO, dotacja i dopłata). Obliczamy tak jak
-  // w podsumowaniu live – sumujemy NETTO ze źródeł ciepła, ocieplenia/stolarki
-  // oraz dodatków (bez automatycznego tynku, który już jest w ociepleniu).
+  // Podsumowanie globalne
   var m=getTotalsMain(), e=getTotalsEnv(), a=getTotalsAdd();
   var envRawGrant = e.sumGrant || 0;
   var envCap      = ENV_CAPS[state.level.name] || 0;
@@ -1116,28 +1106,21 @@ function fillPrintSheet(){
 }
 
 function doPrint(){
-  // Przygotowanie danych i osobnego okna do druku. Niektóre przeglądarki
-  // blokują wywołanie window.print() na aktualnym dokumencie, dlatego
-  // otwieramy nowy dokument zawierający tylko arkusz do druku wraz
-  // z odpowiednimi stylami. Po zakończeniu wydruku okno jest zamykane.
   collectClient();
   fillPrintSheet();
   var printContents = document.getElementById('printSheet').innerHTML;
   var styles = '';
-  // Zbieramy wszystkie style z bieżącej strony, aby druk wyglądał tak samo
   document.querySelectorAll('style').forEach(function(style){
     styles += style.innerHTML;
   });
   var printWindow = window.open('', '_blank', 'width=1024,height=768');
   if (!printWindow) {
-    // Fallback: jeśli nowego okna nie udało się otworzyć, uruchamiamy standardowy druk
     window.print();
     return;
   }
   printWindow.document.open();
   printWindow.document.write('<html><head><title>Drukuj / PDF</title><style>' + styles + '</style></head><body>' + printContents + '</body></html>');
   printWindow.document.close();
-  // Poczekaj aż dokument w oknie jest gotowy, potem wydrukuj i zamknij
   printWindow.focus();
   setTimeout(function(){
     printWindow.print();
@@ -1146,14 +1129,8 @@ function doPrint(){
 }
 
 /* ===== eksport do PDF ===== */
-// Funkcja generująca raport w formacie PDF przy użyciu biblioteki html2pdf.js.
-// Przygotowuje sekcję #printSheet tak jak przy druku, a następnie pobiera ją
-// jako gotowy plik PDF do zapisania lokalnie. Używa ustawień dopasowanych do
-// formatu A4 w poziomie, z wysoką jakością obrazu. Nazwa pliku bazuje na
-// aktualnej dacie.
 function exportAsPDF(){
   try{
-    // Przygotuj dane i zawartość do eksportu
     collectClient();
     fillPrintSheet();
     var element = document.getElementById('printSheet');
@@ -1171,7 +1148,6 @@ function exportAsPDF(){
         alert('Błąd podczas generowania PDF: '+e);
       }
     };
-    // Jeśli biblioteka jeszcze nie jest załadowana, załaduj ją dynamicznie z CDN i potem wywołaj generowanie
     if (typeof window.html2pdf === 'undefined'){
       var script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
@@ -1232,7 +1208,6 @@ function init(){
   q('#btnLoad').addEventListener('click', loadAll);
   q('#btnExport').addEventListener('click', exportToFile);
   q('#btnPrint').addEventListener('click', doPrint);
-  // obsługa eksportu PDF
   var pdfBtn = q('#btnPdf');
   if (pdfBtn) pdfBtn.addEventListener('click', exportAsPDF);
 
